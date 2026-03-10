@@ -9,6 +9,10 @@
  * Usage:
  *   node scripts/fetch-projects.js          # skips fetch if data already exists
  *   node scripts/fetch-projects.js --force  # always fetches from the API
+ *
+ * In a CI environment (CI=true) the script always fetches fresh data
+ * regardless of whether a cached file already exists, so the deployed
+ * site is never built from a stale snapshot.
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
@@ -21,7 +25,7 @@ const OVERRIDES_PATH = join(ROOT, 'src/data/project-overrides.json')
 const OUTPUT_PATH = join(ROOT, 'src/data/projects-generated.json')
 const GITHUB_USER = 'el-j'
 const GITHUB_API = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`
-const FORCE = process.argv.includes('--force')
+const FORCE = process.argv.includes('--force') || !!process.env.CI
 
 async function main() {
   // Skip if data already exists and --force flag is not set

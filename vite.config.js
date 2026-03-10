@@ -14,4 +14,13 @@ export default defineConfig({
     }
   },
   base: '/',
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    include: ['src/**/__tests__/**/*.test.js', 'scripts/**/__tests__/**/*.test.js'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+    },
+  },
 })
