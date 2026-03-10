@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+@theme {
+  --color-brand-500: #3b82f6;
+  --color-brand-400: #60a5fa;
+  --color-brand-600: #2563eb;
+  --font-sans: 'Geist', 'Inter', sans-serif;
+}
+
+/* Glassmorphism utility */
+@utility glass {
+  background-color: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@utility glass-hover {
+  background-color: rgba(39, 39, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Glow effect */
+@utility glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
+}
+
+@utility glow-sm {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+}
+
+/* PrimeVue overrides – scoped to our dark aesthetic */
+.p-button {
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}

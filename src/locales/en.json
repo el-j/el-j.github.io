@@ -1,0 +1,37 @@
+{
+  "hero": {
+    "greeting": "Hi, I'm el-j",
+    "role": "Software Developer & Open Source Contributor",
+    "description": "Building modern web experiences and open source tools.",
+    "cta_projects": "View Projects",
+    "cta_github": "GitHub",
+    "cta_contact": "Get in Touch"
+  },
+  "nav": {
+    "projects": "Projects",
+    "about": "About",
+    "contact": "Contact",
+    "toggle_theme": "Toggle Theme",
+    "toggle_lang": "Language"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "A selection of open source projects and tools",
+    "portfolio": {
+      "name": "Personal Portfolio",
+      "desc": "My personal portfolio site."
+    },
+    "vueLib": {
+      "name": "Vue Component Library",
+      "desc": "A highly customizable component library."
+    },
+    "view": "View Project",
+    "featured": "Featured",
+    "no_description": "No description available."
+  },
+  "footer": {
+    "made_with": "Made with",
+    "and": "and",
+    "rights": "All rights reserved."
+  }
+}

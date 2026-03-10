@@ -1,0 +1,31 @@
+{
+  "name": "el-j-github-io",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "fetch-i18n": "npx @el-j/google-sheet-translations $SHEET_ID src/locales",
+    "fetch-projects": "node scripts/fetch-projects.js",
+    "prebuild": "npm run fetch-projects",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@primevue/themes": "^4.3.3",
+    "@vueuse/core": "^13.0.0",
+    "pinia": "^3.0.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.3.3",
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.1.2",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.14",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@el-j/google-sheet-translations": "^1.3.3",
+    "tailwindcss": "^4.0.14",
+    "vite": "^6.2.1"
+  }
+}
