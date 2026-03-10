@@ -1,0 +1,20 @@
+{
+  "fabianalthaus.de": {
+    "visible": true,
+    "isExternal": true,
+    "url": "https://fabianalthaus.de",
+    "overrideName": "Personal Portfolio",
+    "i18nKey": "projects.portfolio",
+    "featured": true,
+    "customImage": null
+  },
+  "some-old-package": {
+    "visible": false
+  },
+  "vue-component-lib": {
+    "visible": true,
+    "featured": true,
+    "i18nKey": "projects.vueLib",
+    "customImage": "/assets/images/vue-lib-cover.webp"
+  }
+}
