@@ -77,7 +77,10 @@ async function main() {
       // Do not push local changes back to the spreadsheet in CI.
       syncLocalChanges: !process.env.CI,
       autoCreate: false,
-      autoTranslate: false,
+      // Generate =GOOGLETRANSLATE() formulas in the spreadsheet for any
+      // missing translations whenever new keys are synced back.
+      // This only has an effect when syncLocalChanges is true (i.e. local dev).
+      autoTranslate: true,
     })
     console.log(`[fetch-i18n] Translations written to ${TRANSLATIONS_DIR}`)
   } catch (err) {
