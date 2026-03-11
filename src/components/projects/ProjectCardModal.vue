@@ -65,6 +65,11 @@ const langDot = computed(
   () => languageColorMap[props.project.language] || 'bg-zinc-400',
 )
 
+const isGitHub = computed(() => {
+  const h = hostname.value
+  return h === 'github.com' || h.endsWith('.github.com') || h.endsWith('.github.io')
+})
+
 function onEscape(e) {
   if (e.key === 'Escape') emit('close')
 }
@@ -175,13 +180,13 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
             <span
               :class="[
                 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border',
-                hostname && hostname.includes('github.com')
+                isGitHub
                   ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25'
                   : 'bg-brand-500/15 text-brand-400 border-brand-500/25',
               ]"
             >
-              <i :class="['pi text-[8px]', hostname && hostname.includes('github.com') ? 'pi-github' : 'pi-external-link']" />
-              {{ hostname && hostname.includes('github.com') ? t('projects.open_source') : t('projects.external') }}
+              <i :class="['pi text-[8px]', isGitHub ? 'pi-github' : 'pi-external-link']" />
+              {{ isGitHub ? t('projects.open_source') : t('projects.external') }}
             </span>
           </div>
 
