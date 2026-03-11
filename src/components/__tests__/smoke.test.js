@@ -7,7 +7,7 @@
  * i18n + component contract.
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { createPinia } from 'pinia'
@@ -224,5 +224,77 @@ describe('locale completeness', () => {
       expect(en.projects[key], `en.projects.${key}`).toBeTruthy()
       expect(de.projects[key], `de.projects.${key}`).toBeTruthy()
     }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// detectLocale – locale init logic
+// ---------------------------------------------------------------------------
+
+describe('detectLocale', () => {
+  const STORAGE_KEY = 'i18n-locale'
+
+  beforeEach(() => {
+    localStorage.removeItem(STORAGE_KEY)
+  })
+
+  it('returns "en" as default when localStorage is empty', async () => {
+    const { detectLocale } = await import('../../i18n/index.js')
+    expect(detectLocale()).toBe('en')
+  })
+
+  it('returns a stored valid locale from localStorage', async () => {
+    localStorage.setItem(STORAGE_KEY, 'de')
+    const { detectLocale } = await import('../../i18n/index.js')
+    expect(detectLocale()).toBe('de')
+  })
+
+  it('ignores unsupported locale values stored in localStorage', async () => {
+    localStorage.setItem(STORAGE_KEY, 'zz')
+    const { detectLocale } = await import('../../i18n/index.js')
+    expect(detectLocale()).toBe('en')
+  })
+
+  it('SUPPORTED_LOCALES contains at least "en" and "de"', async () => {
+    const { SUPPORTED_LOCALES } = await import('../../i18n/index.js')
+    expect(SUPPORTED_LOCALES).toContain('en')
+    expect(SUPPORTED_LOCALES).toContain('de')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Navbar – locale persistence
+// ---------------------------------------------------------------------------
+
+describe('Navbar', () => {
+  const STORAGE_KEY = 'i18n-locale'
+
+  beforeEach(() => {
+    localStorage.removeItem(STORAGE_KEY)
+  })
+
+  it('persists the new locale to localStorage when the language button is toggled en→de', async () => {
+    const { default: Navbar } = await import('../layout/Navbar.vue')
+    const i18n = makeI18n('en')
+    const wrapper = mount(Navbar, {
+      global: { plugins: [i18n, createPinia()] },
+    })
+    // When locale is 'en', the button shows 'DE' (the language to switch to)
+    const langBtn = wrapper.findAll('button').find((b) => /^(EN|DE)$/i.test(b.text().trim()))
+    expect(langBtn).toBeDefined()
+    await langBtn.trigger('click')
+    expect(localStorage.getItem(STORAGE_KEY)).toBe('de')
+  })
+
+  it('cycles back to "en" from "de" and persists to localStorage', async () => {
+    const { default: Navbar } = await import('../layout/Navbar.vue')
+    const i18n = makeI18n('de')
+    const wrapper = mount(Navbar, {
+      global: { plugins: [i18n, createPinia()] },
+    })
+    const langBtn = wrapper.findAll('button').find((b) => /^(EN|DE)$/i.test(b.text().trim()))
+    expect(langBtn).toBeDefined()
+    await langBtn.trigger('click')
+    expect(localStorage.getItem(STORAGE_KEY)).toBe('en')
   })
 })
