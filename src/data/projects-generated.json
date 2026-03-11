@@ -1,0 +1,15 @@
+[
+  {
+    "id": "external-fabianalthaus.de",
+    "name": "Personal Portfolio",
+    "url": "https://fabianalthaus.de",
+    "description": null,
+    "topics": [],
+    "language": null,
+    "updatedAt": null,
+    "i18nKey": "projects.portfolio",
+    "featured": true,
+    "isExternal": true,
+    "customImage": null
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "hero": {
+    "greeting": "Hallo, ich bin el-j",
+    "role": "Softwareentwickler & Open Source Contributor",
+    "description": "Moderne Web-Erlebnisse und Open-Source-Tools.",
+    "cta_projects": "Projekte ansehen",
+    "cta_github": "GitHub",
+    "cta_contact": "Kontakt"
+  },
+  "nav": {
+    "projects": "Projekte",
+    "about": "Über mich",
+    "contact": "Kontakt",
+    "toggle_theme": "Design wechseln",
+    "toggle_lang": "Sprache"
+  },
+  "projects": {
+    "title": "Projekte",
+    "subtitle": "Eine Auswahl an Open-Source-Projekten und Tools",
+    "portfolio": {
+      "name": "Persönliches Portfolio",
+      "desc": "Meine persönliche Portfolio-Seite."
+    },
+    "vueLib": {
+      "name": "Vue Komponentenbibliothek",
+      "desc": "Eine hochgradig anpassbare Komponentenbibliothek."
+    },
+    "view": "Projekt ansehen",
+    "featured": "Empfohlen",
+    "no_description": "Keine Beschreibung verfügbar."
+  },
+  "footer": {
+    "made_with": "Erstellt mit",
+    "and": "und",
+    "rights": "Alle Rechte vorbehalten."
+  }
+}
