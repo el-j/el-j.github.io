@@ -10,6 +10,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['expand'])
+
 const { t, te } = useI18n()
 
 const cardRef = ref(null)
@@ -35,6 +37,18 @@ const description = computed(() => {
   }
   return props.project.description || t('projects.no_description')
 })
+
+const hostname = computed(() => {
+  try {
+    return new URL(props.project.url).hostname
+  } catch {
+    return ''
+  }
+})
+
+const faviconUrl = computed(
+  () => `https://www.google.com/s2/favicons?domain=${hostname.value}&sz=32`,
+)
 
 const topicColors = [
   'bg-brand-500/15 text-brand-400 border-brand-500/25',
@@ -69,10 +83,11 @@ const langDot = computed(
   <article
     ref="cardRef"
     :class="[
-      'group relative glass rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 flex flex-col',
+      'group relative glass rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 flex flex-col hover:scale-[1.02] hover:glow-sm',
       project.featured ? 'col-span-2 row-span-2' : '',
     ]"
     :style="tiltStyle"
+    @click="emit('expand', project)"
   >
     <!-- Featured badge -->
     <span
@@ -83,18 +98,37 @@ const langDot = computed(
       {{ $t('projects.featured') }}
     </span>
 
+    <!-- Screenshot / Custom image preview -->
+    <div v-if="project.customImage" class="relative w-full h-32 overflow-hidden bg-zinc-900">
+      <img
+        :src="project.customImage"
+        :alt="project.name"
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        loading="lazy"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-transparent to-transparent" />
+    </div>
+
     <!-- Card body -->
     <div class="flex flex-col flex-1 p-5 gap-4">
-      <!-- Header -->
+      <!-- Header with favicon -->
       <div class="flex items-start justify-between gap-3">
-        <div class="flex-1 min-w-0">
-          <h3 class="font-semibold text-zinc-100 truncate text-sm leading-snug">
-            {{ project.name }}
-          </h3>
-          <!-- Language dot -->
-          <div v-if="project.language" class="flex items-center gap-1.5 mt-1">
-            <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
-            <span class="text-[11px] text-zinc-500">{{ project.language }}</span>
+        <div class="flex items-center gap-2.5 flex-1 min-w-0">
+          <img
+            :src="faviconUrl"
+            :alt="project.name"
+            class="w-5 h-5 rounded flex-shrink-0"
+            loading="lazy"
+          />
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-zinc-100 truncate text-sm leading-snug">
+              {{ project.name }}
+            </h3>
+            <!-- Language dot -->
+            <div v-if="project.language" class="flex items-center gap-1.5 mt-1">
+              <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
+              <span class="text-[11px] text-zinc-500">{{ project.language }}</span>
+            </div>
           </div>
         </div>
         <!-- External link icon -->
@@ -131,15 +165,12 @@ const langDot = computed(
         <span v-if="project.updatedAt" class="text-[10px] text-zinc-600">
           {{ new Date(project.updatedAt).toLocaleDateString() }}
         </span>
-        <a
-          :href="project.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 text-[11px] font-medium text-brand-400 hover:text-brand-300 transition-colors ml-auto"
+        <span
+          class="inline-flex items-center gap-1 text-[11px] font-medium text-brand-400 group-hover:text-brand-300 transition-colors ml-auto"
         >
           {{ $t('projects.view') }}
-          <i class="pi pi-arrow-right text-[9px]" />
-        </a>
+          <i class="pi pi-arrow-right text-[9px] transition-transform duration-200 group-hover:translate-x-0.5" />
+        </span>
       </div>
     </div>
 
