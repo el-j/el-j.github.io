@@ -72,6 +72,7 @@ const FIXTURE_PROJECT = {
   id: 'test-1',
   name: 'Test Project',
   url: 'https://el-j.github.io/test-project',
+  homepage: null,
   description: 'A great test project.',
   topics: ['vue', 'vite'],
   language: 'TypeScript',
@@ -179,6 +180,113 @@ describe('ProjectCard', () => {
     })
     expect(wrapper.find('article').classes()).not.toContain('col-span-2')
   })
+
+  it('emits "expand" with the project when the card is clicked', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const wrapper = mount(ProjectCard, {
+      props: { project: FIXTURE_PROJECT },
+      global: defaultGlobal(),
+    })
+    await wrapper.find('article').trigger('click')
+    expect(wrapper.emitted('expand')).toBeTruthy()
+    expect(wrapper.emitted('expand')[0]).toEqual([FIXTURE_PROJECT])
+  })
+
+  it('renders a favicon image derived from the project URL', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const wrapper = mount(ProjectCard, {
+      props: { project: FIXTURE_PROJECT },
+      global: defaultGlobal(),
+    })
+    const imgs = wrapper.findAll('img')
+    const faviconImg = imgs.find((img) =>
+      img.attributes('src')?.includes('google.com/s2/favicons'),
+    )
+    expect(faviconImg).toBeDefined()
+    expect(faviconImg.attributes('src')).toContain('el-j.github.io')
+  })
+
+  it('renders a custom image when customImage is set', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const projectWithImage = {
+      ...FIXTURE_PROJECT,
+      id: 'test-img',
+      customImage: '/assets/images/test-cover.webp',
+    }
+    const wrapper = mount(ProjectCard, {
+      props: { project: projectWithImage },
+      global: defaultGlobal(),
+    })
+    const imgs = wrapper.findAll('img')
+    const coverImg = imgs.find((img) =>
+      img.attributes('src') === '/assets/images/test-cover.webp',
+    )
+    expect(coverImg).toBeDefined()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// ProjectCardModal
+// ---------------------------------------------------------------------------
+
+describe('ProjectCardModal', () => {
+  it('renders the project name when visible', async () => {
+    const { default: ProjectCardModal } = await import('../projects/ProjectCardModal.vue')
+    const wrapper = mount(ProjectCardModal, {
+      props: { project: FIXTURE_PROJECT, visible: true },
+      global: defaultGlobal(),
+    })
+    expect(wrapper.text()).toContain('Test Project')
+  })
+
+  it('does not render content when visible is false', async () => {
+    const { default: ProjectCardModal } = await import('../projects/ProjectCardModal.vue')
+    const wrapper = mount(ProjectCardModal, {
+      props: { project: FIXTURE_PROJECT, visible: false },
+      global: defaultGlobal(),
+    })
+    expect(wrapper.find('h2').exists()).toBe(false)
+  })
+
+  it('emits "close" when the close button is clicked', async () => {
+    const { default: ProjectCardModal } = await import('../projects/ProjectCardModal.vue')
+    const wrapper = mount(ProjectCardModal, {
+      props: { project: FIXTURE_PROJECT, visible: true },
+      global: defaultGlobal(),
+    })
+    const closeBtn = wrapper.findAll('button').find((b) =>
+      b.attributes('aria-label') === en.projects.close,
+    )
+    expect(closeBtn).toBeDefined()
+    await closeBtn.trigger('click')
+    expect(wrapper.emitted('close')).toBeTruthy()
+  })
+
+  it('renders all topics (not truncated) in the modal', async () => {
+    const { default: ProjectCardModal } = await import('../projects/ProjectCardModal.vue')
+    const projectWithManyTopics = {
+      ...FIXTURE_PROJECT,
+      id: 'test-topics',
+      topics: ['vue', 'vite', 'typescript', 'tailwind', 'pinia', 'vitest'],
+    }
+    const wrapper = mount(ProjectCardModal, {
+      props: { project: projectWithManyTopics, visible: true },
+      global: defaultGlobal(),
+    })
+    for (const topic of projectWithManyTopics.topics) {
+      expect(wrapper.text()).toContain(topic)
+    }
+  })
+
+  it('renders View Project and Close action buttons', async () => {
+    const { default: ProjectCardModal } = await import('../projects/ProjectCardModal.vue')
+    const wrapper = mount(ProjectCardModal, {
+      props: { project: FIXTURE_PROJECT, visible: true },
+      global: defaultGlobal(),
+    })
+    expect(wrapper.text()).toContain(en.projects.view)
+    expect(wrapper.text()).toContain(en.projects.close)
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -219,7 +327,7 @@ describe('locale completeness', () => {
   })
 
   it('projects section keys are present in both locales', () => {
-    const projectKeys = ['title', 'subtitle', 'view', 'featured', 'no_description']
+    const projectKeys = ['title', 'subtitle', 'view', 'featured', 'no_description', 'close', 'last_updated', 'open_source', 'external']
     for (const key of projectKeys) {
       expect(en.projects[key], `en.projects.${key}`).toBeTruthy()
       expect(de.projects[key], `de.projects.${key}`).toBeTruthy()

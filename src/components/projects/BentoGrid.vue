@@ -2,12 +2,25 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ProjectCard from './ProjectCard.vue'
+import ProjectCardModal from './ProjectCardModal.vue'
 import projectsData from '@/data/projects-generated.json'
 
 const { t } = useI18n()
 
 const projects = ref(projectsData)
 const visible = ref(false)
+
+const selectedProject = ref(null)
+const modalVisible = ref(false)
+
+function openModal(project) {
+  selectedProject.value = project
+  modalVisible.value = true
+}
+
+function closeModal() {
+  modalVisible.value = false
+}
 
 onMounted(() => {
   // Trigger entrance animation after mount
@@ -49,8 +62,17 @@ onMounted(() => {
         v-for="project in projects"
         :key="project.id"
         :project="project"
+        @expand="openModal"
       />
     </TransitionGroup>
+
+    <!-- Expanded card modal -->
+    <ProjectCardModal
+      v-if="selectedProject"
+      :project="selectedProject"
+      :visible="modalVisible"
+      @close="closeModal"
+    />
   </section>
 </template>
 
