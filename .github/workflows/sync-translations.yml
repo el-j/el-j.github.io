@@ -1,0 +1,36 @@
+name: Sync Translations
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Share the 'pages' concurrency group with deploy.yml to avoid conflicting runs
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync translations to Google Sheets
+        uses: el-j/google-sheet-translations@v1
+        with:
+          google-client-email: ${{ secrets.GOOGLE_CLIENT_EMAIL }}
+          google-private-key: ${{ secrets.GOOGLE_PRIVATE_KEY }}
+          google-spreadsheet-id: ${{ secrets.GOOGLE_SPREADSHEET_ID }}
+          sheet-titles: 'i18n'
+          translations-output-dir: 'src/locales'
+          locales-output-path: 'src/i18n/locales.ts'
+          data-json-path: 'src/lib/languageData.json'
+          sync-local-changes: 'true'
+          auto-create: 'false'
+          source-locale: 'en'
+          target-locales: 'de'
