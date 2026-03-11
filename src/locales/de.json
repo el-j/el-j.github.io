@@ -27,7 +27,11 @@
     },
     "view": "Projekt ansehen",
     "featured": "Empfohlen",
-    "no_description": "Keine Beschreibung verfügbar."
+    "no_description": "Keine Beschreibung verfügbar.",
+    "close": "Schließen",
+    "last_updated": "Zuletzt aktualisiert",
+    "open_source": "Open Source",
+    "external": "Extern"
   },
   "footer": {
     "made_with": "Erstellt mit",
