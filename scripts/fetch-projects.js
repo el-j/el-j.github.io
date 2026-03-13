@@ -28,6 +28,10 @@ const GITHUB_USER = 'el-j'
 const GITHUB_API = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`
 const FORCE = process.argv.includes('--force') || !!process.env.CI
 
+function resolveScreenshot(override, homepage, url) {
+  return override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
+}
+
 async function main() {
   // Skip if data already exists and --force flag is not set
   if (!FORCE && existsSync(OUTPUT_PATH)) {
@@ -92,7 +96,7 @@ async function main() {
       const override = overrides[repo.name] || {}
       const homepage = override.homepage ?? repo.homepage ?? null
       const url = override.url || `https://${GITHUB_USER}.github.io/${repo.name}`
-      const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
+      const screenshot = resolveScreenshot(override, homepage, url)
       return {
         id: repo.id,
         name: override.overrideName || repo.name,
@@ -110,7 +114,8 @@ async function main() {
         stars: override.stars ?? repo.stargazers_count ?? null,
         forks: override.forks ?? repo.forks_count ?? null,
         openIssues: override.openIssues ?? repo.open_issues_count ?? null,
-        license: override.license || repo.license?.spdx_id || repo.license?.name || null,
+        // Prefer readable license names and fall back to SPDX identifiers when names are unavailable.
+        license: override.license || repo.license?.name || repo.license?.spdx_id || null,
         defaultBranch: override.defaultBranch || repo.default_branch || null,
         archived: override.archived ?? repo.archived ?? false,
       }
@@ -123,7 +128,7 @@ async function main() {
     if (!override.isExternal) continue
 
     const homepage = override.homepage || override.url || null
-    const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || `https://${key}`)
+    const screenshot = resolveScreenshot(override, homepage, `https://${key}`)
 
     projects.push({
       id: `external-${key}`,
