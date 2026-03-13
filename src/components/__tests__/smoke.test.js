@@ -81,6 +81,12 @@ const FIXTURE_PROJECT = {
   featured: false,
   isExternal: false,
   customImage: null,
+  screenshot: null,
+  stars: 12,
+  forks: 3,
+  openIssues: 1,
+  license: 'MIT',
+  archived: false,
 }
 
 const FIXTURE_FEATURED = { ...FIXTURE_PROJECT, id: 'test-featured', featured: true }
@@ -170,6 +176,18 @@ describe('ProjectCard', () => {
     })
     expect(wrapper.find('article').classes()).toContain('col-span-2')
     expect(wrapper.find('article').classes()).toContain('row-span-2')
+  })
+
+  it('renders stat chips for stars, forks, issues and license', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const wrapper = mount(ProjectCard, {
+      props: { project: FIXTURE_PROJECT },
+      global: defaultGlobal(),
+    })
+    expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.stars))
+    expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.forks))
+    expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.openIssues))
+    expect(wrapper.text()).toContain(FIXTURE_PROJECT.license)
   })
 
   it('does NOT apply col-span-2 for non-featured cards', async () => {
@@ -327,7 +345,23 @@ describe('locale completeness', () => {
   })
 
   it('projects section keys are present in both locales', () => {
-    const projectKeys = ['title', 'subtitle', 'view', 'featured', 'no_description', 'close', 'last_updated', 'open_source', 'external']
+    const projectKeys = [
+      'title',
+      'subtitle',
+      'view',
+      'featured',
+      'no_description',
+      'close',
+      'last_updated',
+      'open_source',
+      'external',
+      'stars',
+      'forks',
+      'issues',
+      'license',
+      'homepage',
+      'archived',
+    ]
     for (const key of projectKeys) {
       expect(en.projects[key], `en.projects.${key}`).toBeTruthy()
       expect(de.projects[key], `de.projects.${key}`).toBeTruthy()

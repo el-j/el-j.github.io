@@ -18,6 +18,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
+import { buildScreenshotUrl } from '../src/utils/screenshot.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -26,6 +27,10 @@ const OUTPUT_PATH = join(ROOT, 'src/data/projects-generated.json')
 const GITHUB_USER = 'el-j'
 const GITHUB_API = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`
 const FORCE = process.argv.includes('--force') || !!process.env.CI
+
+function resolveScreenshot(override, homepage, url) {
+  return override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
+}
 
 async function main() {
   // Skip if data already exists and --force flag is not set
@@ -89,19 +94,30 @@ async function main() {
     })
     .map((repo) => {
       const override = overrides[repo.name] || {}
+      const homepage = override.homepage ?? repo.homepage ?? null
+      const url = override.url || `https://${GITHUB_USER}.github.io/${repo.name}`
+      const screenshot = resolveScreenshot(override, homepage, url)
       return {
         id: repo.id,
         name: override.overrideName || repo.name,
-        url: override.url || `https://${GITHUB_USER}.github.io/${repo.name}`,
-        homepage: repo.homepage || null,
-        description: repo.description || null,
-        topics: repo.topics || [],
-        language: repo.language || null,
+        url,
+        homepage,
+        description: override.description || repo.description || null,
+        topics: override.topics || repo.topics || [],
+        language: override.language || repo.language || null,
         updatedAt: repo.pushed_at || null,
         i18nKey: override.i18nKey || null,
         featured: override.featured || false,
         isExternal: false,
         customImage: override.customImage || null,
+        screenshot,
+        stars: override.stars ?? repo.stargazers_count ?? null,
+        forks: override.forks ?? repo.forks_count ?? null,
+        openIssues: override.openIssues ?? repo.open_issues_count ?? null,
+        // Prefer readable license names and fall back to SPDX identifiers when names are unavailable.
+        license: override.license || repo.license?.name || repo.license?.spdx_id || null,
+        defaultBranch: override.defaultBranch || repo.default_branch || null,
+        archived: override.archived ?? repo.archived ?? false,
       }
     })
 
@@ -111,12 +127,15 @@ async function main() {
     if (override.visible === false) continue
     if (!override.isExternal) continue
 
+    const homepage = override.homepage || override.url || null
+    const screenshot = resolveScreenshot(override, homepage, `https://${key}`)
+
     projects.push({
       id: `external-${key}`,
       name: override.overrideName || key,
       url: override.url || `https://${key}`,
-      homepage: override.url || null,
-      description: null,
+      homepage,
+      description: override.description || null,
       topics: override.topics || [],
       language: override.language || null,
       updatedAt: null,
@@ -124,6 +143,13 @@ async function main() {
       featured: override.featured || false,
       isExternal: true,
       customImage: override.customImage || null,
+      screenshot,
+      stars: override.stars ?? null,
+      forks: override.forks ?? null,
+      openIssues: override.openIssues ?? null,
+      license: override.license || null,
+      defaultBranch: override.defaultBranch || null,
+      archived: override.archived || false,
     })
   }
 
