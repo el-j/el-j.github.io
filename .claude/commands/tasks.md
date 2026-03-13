@@ -1,0 +1,6 @@
+- [x] Map project data + UI gaps
+- [x] Implement richer metadata fetch (stars/forks/issues/license/homepage/title) and preview image url generation
+- [x] Surface metadata + preview in cards/modal with dark watermark background
+- [x] Adjust overrides/i18n to cover new fields
+- [x] Update/add tests and run test suite
+- [x] Manual verification + screenshot

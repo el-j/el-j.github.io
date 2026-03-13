@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import ProjectCard from './ProjectCard.vue'
 import ProjectCardModal from './ProjectCardModal.vue'
 import projectsData from '@/data/projects-generated.json'
+import watermarkUrl from '@/assets/images/projects-watermark.svg'
 
 const { t } = useI18n()
 
@@ -12,6 +13,7 @@ const visible = ref(false)
 
 const selectedProject = ref(null)
 const modalVisible = ref(false)
+const watermarkStyle = { backgroundImage: `url(${watermarkUrl})` }
 
 function openModal(project) {
   selectedProject.value = project
@@ -31,7 +33,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="projects" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  <section id="projects" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 pointer-events-none opacity-70">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,.08),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(147,51,234,.06),transparent_35%),radial-gradient(circle_at_50%_80%,rgba(56,189,248,.05),transparent_40%)]" />
+      <div class="absolute inset-0 bg-center bg-contain" :style="watermarkStyle" />
+    </div>
     <!-- Section header -->
     <div class="mb-12 text-center">
       <h2 class="text-3xl sm:text-4xl font-bold text-zinc-100 mb-3">

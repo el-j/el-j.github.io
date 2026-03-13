@@ -31,7 +31,13 @@
     "close": "Schließen",
     "last_updated": "Zuletzt aktualisiert",
     "open_source": "Open Source",
-    "external": "Extern"
+    "external": "Extern",
+    "stars": "Sterne",
+    "forks": "Forks",
+    "issues": "Offene Issues",
+    "license": "Lizenz",
+    "homepage": "Live-Seite",
+    "archived": "Archiviert"
   },
   "footer": {
     "made_with": "Erstellt mit",

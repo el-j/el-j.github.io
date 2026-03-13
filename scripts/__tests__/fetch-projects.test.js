@@ -9,6 +9,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
+import { buildScreenshotUrl } from '../../src/utils/screenshot.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..', '..')
@@ -33,18 +34,29 @@ function processRepos(repos, overrides) {
     })
     .map((repo) => {
       const override = overrides[repo.name] || {}
+      const homepage = override.homepage ?? repo.homepage ?? null
+      const url = override.url || `https://el-j.github.io/${repo.name}`
+      const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
       return {
         id: repo.id,
         name: override.overrideName || repo.name,
-        url: override.url || `https://el-j.github.io/${repo.name}`,
-        description: repo.description || null,
-        topics: repo.topics || [],
-        language: repo.language || null,
+        url,
+        homepage,
+        description: override.description || repo.description || null,
+        topics: override.topics || repo.topics || [],
+        language: override.language || repo.language || null,
         updatedAt: repo.pushed_at || null,
         i18nKey: override.i18nKey || null,
         featured: override.featured || false,
         isExternal: false,
         customImage: override.customImage || null,
+        screenshot,
+        stars: override.stars ?? repo.stargazers_count ?? null,
+        forks: override.forks ?? repo.forks_count ?? null,
+        openIssues: override.openIssues ?? repo.open_issues_count ?? null,
+        license: override.license || repo.license?.spdx_id || repo.license?.name || null,
+        defaultBranch: override.defaultBranch || repo.default_branch || null,
+        archived: override.archived ?? repo.archived ?? false,
       }
     })
 
@@ -53,11 +65,15 @@ function processRepos(repos, overrides) {
     if (override.visible === false) continue
     if (!override.isExternal) continue
 
+    const homepage = override.homepage || override.url || null
+    const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || `https://${key}`)
+
     projects.push({
       id: `external-${key}`,
       name: override.overrideName || key,
       url: override.url || `https://${key}`,
-      description: null,
+      homepage,
+      description: override.description || null,
       topics: override.topics || [],
       language: override.language || null,
       updatedAt: null,
@@ -65,6 +81,13 @@ function processRepos(repos, overrides) {
       featured: override.featured || false,
       isExternal: true,
       customImage: override.customImage || null,
+      screenshot,
+      stars: override.stars ?? null,
+      forks: override.forks ?? null,
+      openIssues: override.openIssues ?? null,
+      license: override.license || null,
+      defaultBranch: override.defaultBranch || null,
+      archived: override.archived || false,
     })
   }
 
@@ -90,6 +113,13 @@ const REPO_WITH_PAGES = {
   topics: ['vue', 'typescript'],
   language: 'TypeScript',
   pushed_at: '2024-01-15T10:00:00Z',
+  homepage: 'https://example.com/my-project',
+  stargazers_count: 5,
+  forks_count: 2,
+  open_issues_count: 1,
+  license: { spdx_id: 'MIT' },
+  default_branch: 'main',
+  archived: false,
 }
 
 const REPO_WITHOUT_PAGES = {
@@ -154,6 +184,12 @@ describe('fetch-projects: mapping', () => {
     expect(result[0].name).toBe('my-project')
   })
 
+  it('maps homepage and builds screenshot URL', () => {
+    const result = processRepos([REPO_WITH_PAGES], {})
+    expect(result[0].homepage).toBe('https://example.com/my-project')
+    expect(result[0].screenshot).toContain('https://s0.wp.com/mshots/v1/')
+  })
+
   it('uses override URL when provided', () => {
     const result = processRepos([REPO_WITH_PAGES], {
       'my-project': { url: 'https://custom.example.com' },
@@ -173,6 +209,25 @@ describe('fetch-projects: mapping', () => {
     expect(result[0].updatedAt).toBe('2024-01-15T10:00:00Z')
   })
 
+  it('includes numeric metadata like stars, forks, and open issues', () => {
+    const result = processRepos([REPO_WITH_PAGES], {})
+    expect(result[0].stars).toBe(5)
+    expect(result[0].forks).toBe(2)
+    expect(result[0].openIssues).toBe(1)
+  })
+
+  it('creates a screenshot URL based on homepage/url when none provided', () => {
+    const result = processRepos([REPO_WITH_PAGES], {})
+    expect(result[0].screenshot).toBe(buildScreenshotUrl(REPO_WITH_PAGES.homepage))
+  })
+
+  it('prefers customImage override as screenshot source', () => {
+    const result = processRepos([REPO_WITH_PAGES], {
+      'my-project': { customImage: '/cover.webp' },
+    })
+    expect(result[0].screenshot).toBe('/cover.webp')
+  })
+
   it('marks project as featured when override sets featured: true', () => {
     const result = processRepos([REPO_WITH_PAGES], {
       'my-project': { featured: true },
@@ -183,6 +238,16 @@ describe('fetch-projects: mapping', () => {
   it('sets isExternal: false for GitHub repos', () => {
     const result = processRepos([REPO_WITH_PAGES], {})
     expect(result[0].isExternal).toBe(false)
+  })
+
+  it('maps repository stats and metadata', () => {
+    const result = processRepos([REPO_WITH_PAGES], {})
+    expect(result[0].stars).toBe(5)
+    expect(result[0].forks).toBe(2)
+    expect(result[0].openIssues).toBe(1)
+    expect(result[0].license).toBe('MIT')
+    expect(result[0].defaultBranch).toBe('main')
+    expect(result[0].archived).toBe(false)
   })
 })
 
