@@ -79,21 +79,21 @@ const langDot = computed(
 
 const statChips = computed(() => {
   const chips = []
-  if (props.project.stars ?? null) {
+  if (props.project.stars != null) {
     chips.push({
       icon: 'pi pi-star-fill text-amber-400',
       label: props.project.stars,
       aria: t('projects.stars'),
     })
   }
-  if (props.project.forks ?? null) {
+  if (props.project.forks != null) {
     chips.push({
       icon: 'pi pi-code-branch text-cyan-300',
       label: props.project.forks,
       aria: t('projects.forks'),
     })
   }
-  if (props.project.openIssues ?? null) {
+  if (props.project.openIssues != null) {
     chips.push({
       icon: 'pi pi-exclamation-circle text-rose-300',
       label: props.project.openIssues,
@@ -198,7 +198,7 @@ const watermarkStyle = computed(() => ({
           :aria-label="chip.aria"
           class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800/80"
         >
-          <i :class="['text-[11px]', chip.icon]" />
+          <i :class="['text-[11px]', chip.icon]" aria-hidden="true" />
           <span class="font-semibold text-zinc-200">{{ chip.label }}</span>
         </span>
       </div>

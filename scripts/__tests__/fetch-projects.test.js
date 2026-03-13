@@ -23,6 +23,10 @@ const ROOT = join(__dirname, '..', '..')
  * Keeping it here (rather than importing) so the test stays self-contained
  * and does not need to mock fs / fetch.
  */
+function resolveScreenshot(override, homepage, url) {
+  return override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
+}
+
 function processRepos(repos, overrides) {
   const repoNames = new Set(repos.map((r) => r.name))
 
@@ -36,7 +40,7 @@ function processRepos(repos, overrides) {
       const override = overrides[repo.name] || {}
       const homepage = override.homepage ?? repo.homepage ?? null
       const url = override.url || `https://el-j.github.io/${repo.name}`
-      const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
+      const screenshot = resolveScreenshot(override, homepage, url)
       return {
         id: repo.id,
         name: override.overrideName || repo.name,
@@ -54,7 +58,7 @@ function processRepos(repos, overrides) {
         stars: override.stars ?? repo.stargazers_count ?? null,
         forks: override.forks ?? repo.forks_count ?? null,
         openIssues: override.openIssues ?? repo.open_issues_count ?? null,
-        license: override.license || repo.license?.spdx_id || repo.license?.name || null,
+        license: override.license || repo.license?.name || repo.license?.spdx_id || null,
         defaultBranch: override.defaultBranch || repo.default_branch || null,
         archived: override.archived ?? repo.archived ?? false,
       }
@@ -66,7 +70,7 @@ function processRepos(repos, overrides) {
     if (!override.isExternal) continue
 
     const homepage = override.homepage || override.url || null
-    const screenshot = override.customImage || override.screenshot || buildScreenshotUrl(homepage || `https://${key}`)
+    const screenshot = resolveScreenshot(override, homepage, `https://${key}`)
 
     projects.push({
       id: `external-${key}`,
@@ -117,7 +121,7 @@ const REPO_WITH_PAGES = {
   stargazers_count: 5,
   forks_count: 2,
   open_issues_count: 1,
-  license: { spdx_id: 'MIT' },
+  license: { spdx_id: 'MIT', name: 'MIT License' },
   default_branch: 'main',
   archived: false,
 }
@@ -209,13 +213,6 @@ describe('fetch-projects: mapping', () => {
     expect(result[0].updatedAt).toBe('2024-01-15T10:00:00Z')
   })
 
-  it('includes numeric metadata like stars, forks, and open issues', () => {
-    const result = processRepos([REPO_WITH_PAGES], {})
-    expect(result[0].stars).toBe(5)
-    expect(result[0].forks).toBe(2)
-    expect(result[0].openIssues).toBe(1)
-  })
-
   it('creates a screenshot URL based on homepage/url when none provided', () => {
     const result = processRepos([REPO_WITH_PAGES], {})
     expect(result[0].screenshot).toBe(buildScreenshotUrl(REPO_WITH_PAGES.homepage))
@@ -245,7 +242,7 @@ describe('fetch-projects: mapping', () => {
     expect(result[0].stars).toBe(5)
     expect(result[0].forks).toBe(2)
     expect(result[0].openIssues).toBe(1)
-    expect(result[0].license).toBe('MIT')
+    expect(result[0].license).toBe('MIT License')
     expect(result[0].defaultBranch).toBe('main')
     expect(result[0].archived).toBe(false)
   })
