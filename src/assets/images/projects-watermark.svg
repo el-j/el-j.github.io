@@ -1,0 +1,18 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.08"/>
+      <stop offset="50%" stop-color="#a855f7" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.05"/>
+    </linearGradient>
+    <radialGradient id="g2" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#g2)"/>
+  <path d="M220 340C400 120 720 120 900 340C1080 560 1320 560 1430 430" stroke="url(#g1)" stroke-width="48" stroke-linecap="round" stroke-opacity="0.18"/>
+  <path d="M260 560C480 760 960 760 1220 560" stroke="url(#g1)" stroke-width="36" stroke-linecap="round" stroke-opacity="0.12"/>
+  <text x="180" y="220" fill="#FFFFFF" fill-opacity="0.04" font-family="Geist, Inter, sans-serif" font-size="120" letter-spacing="8">el-j / open source</text>
+  <text x="180" y="780" fill="#FFFFFF" fill-opacity="0.03" font-family="Geist, Inter, sans-serif" font-size="96" letter-spacing="6">craft, automate, share</text>
+</svg>

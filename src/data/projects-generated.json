@@ -5,12 +5,24 @@
     "url": "https://fabianalthaus.de",
     "homepage": "https://fabianalthaus.de",
     "description": null,
-    "topics": [],
-    "language": null,
+    "topics": [
+      "portfolio",
+      "personal-brand",
+      "vue",
+      "tailwind"
+    ],
+    "language": "Vue",
     "updatedAt": null,
     "i18nKey": "projects.portfolio",
     "featured": true,
     "isExternal": true,
-    "customImage": null
+    "customImage": null,
+    "screenshot": "https://s0.wp.com/mshots/v1/https%3A%2F%2Ffabianalthaus.de?w=1200&h=630",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": null,
+    "defaultBranch": null,
+    "archived": false
   }
 ]
