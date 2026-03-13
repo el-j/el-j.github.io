@@ -3,10 +3,17 @@
     "visible": true,
     "isExternal": true,
     "url": "https://fabianalthaus.de",
+    "homepage": "https://fabianalthaus.de",
+    "screenshot": "https://s0.wp.com/mshots/v1/https%3A%2F%2Ffabianalthaus.de?w=1200&h=630",
     "overrideName": "Personal Portfolio",
     "i18nKey": "projects.portfolio",
     "featured": true,
-    "customImage": null
+    "customImage": null,
+    "topics": ["portfolio", "personal-brand", "vue", "tailwind"],
+    "language": "Vue",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0
   },
   "some-old-package": {
     "visible": false

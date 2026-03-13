@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { useMouseInElement } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
+import { buildScreenshotUrl } from '@/utils/screenshot'
+import { languageColorMap } from '@/utils/metadata'
+import watermarkUrl from '@/assets/images/projects-watermark.svg'
 
 const props = defineProps({
   project: {
@@ -50,6 +53,13 @@ const faviconUrl = computed(
   () => `https://www.google.com/s2/favicons?domain=${hostname.value}&sz=32`,
 )
 
+const coverImage = computed(
+  () =>
+    props.project.customImage ||
+    props.project.screenshot ||
+    buildScreenshotUrl(props.project.homepage || props.project.url),
+)
+
 const topicColors = [
   'bg-brand-500/15 text-brand-400 border-brand-500/25',
   'bg-violet-500/15 text-violet-400 border-violet-500/25',
@@ -63,20 +73,46 @@ function topicColor(index) {
   return topicColors[index % topicColors.length]
 }
 
-const languageColorMap = {
-  JavaScript: 'bg-yellow-400',
-  TypeScript: 'bg-blue-400',
-  Vue: 'bg-emerald-400',
-  Python: 'bg-blue-500',
-  Rust: 'bg-orange-500',
-  Go: 'bg-cyan-400',
-  HTML: 'bg-red-400',
-  CSS: 'bg-violet-400',
-}
-
 const langDot = computed(
   () => languageColorMap[props.project.language] || 'bg-zinc-400',
 )
+
+const statChips = computed(() => {
+  const chips = []
+  if (props.project.stars ?? null) {
+    chips.push({
+      icon: 'pi pi-star-fill text-amber-400',
+      label: props.project.stars,
+      aria: t('projects.stars'),
+    })
+  }
+  if (props.project.forks ?? null) {
+    chips.push({
+      icon: 'pi pi-code-branch text-cyan-300',
+      label: props.project.forks,
+      aria: t('projects.forks'),
+    })
+  }
+  if (props.project.openIssues ?? null) {
+    chips.push({
+      icon: 'pi pi-exclamation-circle text-rose-300',
+      label: props.project.openIssues,
+      aria: t('projects.issues'),
+    })
+  }
+  if (props.project.license) {
+    chips.push({
+      icon: 'pi pi-shield',
+      label: props.project.license,
+      aria: t('projects.license'),
+    })
+  }
+  return chips
+})
+
+const watermarkStyle = computed(() => ({
+  backgroundImage: `url(${watermarkUrl})`,
+}))
 </script>
 
 <template>
@@ -99,13 +135,19 @@ const langDot = computed(
     </span>
 
     <!-- Screenshot / Custom image preview -->
-    <div v-if="project.customImage" class="relative w-full h-32 overflow-hidden bg-zinc-900">
+    <div class="relative w-full h-32 overflow-hidden bg-zinc-900/80">
       <img
-        :src="project.customImage"
+        v-if="coverImage"
+        :src="coverImage"
         :alt="project.name"
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
       />
+      <div
+        v-else
+        class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,.08),transparent_35%),radial-gradient(circle_at_80%_30%,rgba(147,51,234,.06),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(56,189,248,.05),transparent_35%)]"
+      />
+      <div class="absolute inset-0 bg-center bg-cover opacity-[0.08]" :style="watermarkStyle" />
       <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-transparent to-transparent" />
     </div>
 
@@ -148,6 +190,18 @@ const langDot = computed(
       <p class="text-xs text-zinc-400 leading-relaxed flex-1 line-clamp-3">
         {{ description }}
       </p>
+
+      <div v-if="statChips.length" class="flex flex-wrap gap-2 text-[11px] text-zinc-400">
+        <span
+          v-for="chip in statChips"
+          :key="chip.icon + chip.label"
+          :aria-label="chip.aria"
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800/80"
+        >
+          <i :class="['text-[11px]', chip.icon]" />
+          <span class="font-semibold text-zinc-200">{{ chip.label }}</span>
+        </span>
+      </div>
 
       <!-- Topics / Tech stack -->
       <div v-if="project.topics && project.topics.length" class="flex flex-wrap gap-1.5">
