@@ -135,7 +135,7 @@ const watermarkStyle = computed(() => ({
     </span>
 
     <!-- Screenshot / Custom image preview -->
-    <div class="relative w-full h-32 overflow-hidden bg-zinc-900/80">
+    <div class="relative w-full h-32 overflow-hidden bg-zinc-200/80 dark:bg-zinc-900/80">
       <img
         v-if="coverImage"
         :src="coverImage"
@@ -163,13 +163,13 @@ const watermarkStyle = computed(() => ({
             loading="lazy"
           />
           <div class="flex-1 min-w-0">
-            <h3 class="font-semibold text-zinc-100 truncate text-sm leading-snug">
+            <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 truncate text-sm leading-snug">
               {{ project.name }}
             </h3>
             <!-- Language dot -->
             <div v-if="project.language" class="flex items-center gap-1.5 mt-1">
               <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
-              <span class="text-[11px] text-zinc-500">{{ project.language }}</span>
+              <span class="text-[11px] text-zinc-500 dark:text-zinc-500">{{ project.language }}</span>
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ const watermarkStyle = computed(() => ({
           :href="project.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-100 hover:bg-zinc-700/50 transition-all opacity-0 group-hover:opacity-100"
+          class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/80 dark:hover:bg-zinc-700/50 transition-all opacity-0 group-hover:opacity-100"
           :aria-label="$t('projects.view')"
           @click.stop
         >
@@ -187,19 +187,19 @@ const watermarkStyle = computed(() => ({
       </div>
 
       <!-- Description -->
-      <p class="text-xs text-zinc-400 leading-relaxed flex-1 line-clamp-3">
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed flex-1 line-clamp-3">
         {{ description }}
       </p>
 
-      <div v-if="statChips.length" class="flex flex-wrap gap-2 text-[11px] text-zinc-400">
+      <div v-if="statChips.length" class="flex flex-wrap gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
         <span
           v-for="chip in statChips"
           :key="chip.icon + chip.label"
           :aria-label="chip.aria"
-          class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800/80"
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80"
         >
           <i :class="['text-[11px]', chip.icon]" aria-hidden="true" />
-          <span class="font-semibold text-zinc-200">{{ chip.label }}</span>
+          <span class="font-semibold text-zinc-700 dark:text-zinc-200">{{ chip.label }}</span>
         </span>
       </div>
 
@@ -215,8 +215,8 @@ const watermarkStyle = computed(() => ({
       </div>
 
       <!-- Footer: Updated at -->
-      <div class="flex items-center justify-between pt-1 border-t border-zinc-800">
-        <span v-if="project.updatedAt" class="text-[10px] text-zinc-600">
+      <div class="flex items-center justify-between pt-1 border-t border-zinc-200 dark:border-zinc-800">
+        <span v-if="project.updatedAt" class="text-[10px] text-zinc-400 dark:text-zinc-600">
           {{ new Date(project.updatedAt).toLocaleDateString() }}
         </span>
         <span
