@@ -46,7 +46,7 @@ function closeModal() {
       class="flex flex-col items-center justify-center py-24 text-zinc-500 dark:text-zinc-600"
     >
       <i class="pi pi-box text-5xl mb-4 opacity-30" />
-      <p class="text-sm">No projects available yet. Run <code class="font-mono text-xs bg-zinc-800 px-1.5 py-0.5 rounded">npm run fetch-projects</code> to populate.</p>
+      <p class="text-sm">No projects available yet. Run <code class="font-mono text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-1.5 py-0.5 rounded">npm run fetch-projects</code> to populate.</p>
     </div>
 
     <!-- Bento Grid -->
