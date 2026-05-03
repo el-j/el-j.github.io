@@ -108,8 +108,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
       <!-- Modal content -->
       <Transition name="modal-content" appear>
         <div
-          v-if="visible"
-          class="glass relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-700/50 shadow-2xl"
+          class="glass relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-2xl"
         >
           <!-- Header -->
           <div class="flex items-center gap-3 p-5 pb-0">
@@ -120,16 +119,16 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
               loading="lazy"
             />
             <div class="flex-1 min-w-0">
-              <h2 class="text-lg font-bold text-zinc-100 truncate">
+              <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 truncate">
                 {{ project.name }}
               </h2>
               <div v-if="project.language" class="flex items-center gap-1.5 mt-0.5">
                 <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
-                <span class="text-xs text-zinc-400">{{ project.language }}</span>
+                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ project.language }}</span>
               </div>
             </div>
             <button
-              class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50 transition-all"
+              class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/80 dark:hover:bg-zinc-700/50 transition-all"
               :aria-label="t('projects.close')"
               @click="emit('close')"
             >
@@ -139,7 +138,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
 
           <!-- Screenshot / Image area -->
           <div class="px-5 pt-4">
-            <div class="relative rounded-xl overflow-hidden bg-zinc-900/70 border border-zinc-800/60">
+            <div class="relative rounded-xl overflow-hidden bg-zinc-100/70 dark:bg-zinc-900/70 border border-zinc-200/60 dark:border-zinc-800/60">
               <img
                 v-if="coverImage"
                 :src="coverImage"
@@ -166,7 +165,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
 
           <!-- Description -->
           <div class="px-5 pt-4">
-            <p class="text-sm text-zinc-300 leading-relaxed">
+            <p class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
               {{ description }}
             </p>
           </div>
@@ -188,7 +187,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
           </div>
 
           <!-- Metadata row -->
-          <div class="flex flex-wrap items-center gap-3 px-5 pt-4 text-xs text-zinc-500">
+          <div class="flex flex-wrap items-center gap-3 px-5 pt-4 text-xs text-zinc-500 dark:text-zinc-500">
             <span v-if="project.updatedAt" class="inline-flex items-center gap-1">
               <i class="pi pi-calendar text-[10px]" />
               {{ t('projects.last_updated') }}:
@@ -222,15 +221,15 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
             </span>
           </div>
 
-          <div v-if="statChips.length" class="flex flex-wrap gap-2 px-5 pt-3 text-[11px] text-zinc-400">
+          <div v-if="statChips.length" class="flex flex-wrap gap-2 px-5 pt-3 text-[11px] text-zinc-500 dark:text-zinc-400">
             <span
               v-for="chip in statChips"
               :key="chip.icon + chip.label"
               :aria-label="chip.aria"
-              class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-900/60 border border-zinc-800/80"
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80"
             >
               <i :class="['text-[11px]', chip.icon]" aria-hidden="true" />
-              <span class="font-semibold text-zinc-100">{{ chip.label }}</span>
+              <span class="font-semibold text-zinc-700 dark:text-zinc-100">{{ chip.label }}</span>
             </span>
           </div>
 
@@ -246,7 +245,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
               {{ t('projects.view') }}
             </a>
             <button
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass text-zinc-300 hover:text-zinc-100 text-sm font-medium transition-colors border border-zinc-700/50 hover:border-zinc-600/50"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 text-sm font-medium transition-colors border border-zinc-300/50 dark:border-zinc-700/50 hover:border-zinc-400/50 dark:hover:border-zinc-600/50"
               @click="emit('close')"
             >
               {{ t('projects.close') }}
