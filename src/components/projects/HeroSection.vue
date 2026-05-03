@@ -27,15 +27,15 @@ const { t } = useI18n()
       </div>
 
       <!-- Heading -->
-      <h1 class="text-5xl sm:text-7xl font-bold tracking-tight text-zinc-100 mb-6 leading-[1.1]">
+      <h1 class="text-5xl sm:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 leading-[1.1]">
         {{ t('hero.greeting') }}
       </h1>
 
-      <p class="text-xl sm:text-2xl font-medium text-zinc-400 mb-4 max-w-2xl mx-auto">
+      <p class="text-xl sm:text-2xl font-medium text-zinc-500 dark:text-zinc-400 mb-4 max-w-2xl mx-auto">
         {{ t('hero.role') }}
       </p>
 
-      <p class="text-base text-zinc-500 mb-10 max-w-lg mx-auto">
+      <p class="text-base text-zinc-500 dark:text-zinc-500 mb-10 max-w-lg mx-auto">
         {{ t('hero.description') }}
       </p>
 
@@ -61,7 +61,7 @@ const { t } = useI18n()
     </div>
 
     <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-zinc-600 animate-bounce">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-zinc-400 dark:text-zinc-600 animate-bounce">
       <i class="pi pi-chevron-down text-xs" />
     </div>
   </section>

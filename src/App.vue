@@ -6,7 +6,7 @@ import BentoGrid from './components/projects/BentoGrid.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-zinc-950 text-zinc-100">
+  <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
     <Navbar />
 
     <main>
