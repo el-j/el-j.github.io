@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ProjectCard from './ProjectCard.vue'
 import ProjectCardModal from './ProjectCardModal.vue'
@@ -9,7 +9,6 @@ import watermarkUrl from '@/assets/images/projects-watermark.svg'
 const { t } = useI18n()
 
 const projects = ref(projectsData)
-const visible = ref(false)
 
 const selectedProject = ref(null)
 const modalVisible = ref(false)
@@ -23,13 +22,6 @@ function openModal(project) {
 function closeModal() {
   modalVisible.value = false
 }
-
-onMounted(() => {
-  // Trigger entrance animation after mount
-  requestAnimationFrame(() => {
-    visible.value = true
-  })
-})
 </script>
 
 <template>
@@ -40,10 +32,10 @@ onMounted(() => {
     </div>
     <!-- Section header -->
     <div class="mb-12 text-center">
-      <h2 class="text-3xl sm:text-4xl font-bold text-zinc-100 mb-3">
+      <h2 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
         {{ t('projects.title') }}
       </h2>
-      <p class="text-zinc-500 text-base max-w-xl mx-auto">
+      <p class="text-zinc-500 dark:text-zinc-500 text-base max-w-xl mx-auto">
         {{ t('projects.subtitle') }}
       </p>
     </div>
@@ -51,10 +43,10 @@ onMounted(() => {
     <!-- Empty state -->
     <div
       v-if="!projects.length"
-      class="flex flex-col items-center justify-center py-24 text-zinc-600"
+      class="flex flex-col items-center justify-center py-24 text-zinc-500 dark:text-zinc-600"
     >
       <i class="pi pi-box text-5xl mb-4 opacity-30" />
-      <p class="text-sm">No projects available yet. Run <code class="font-mono text-xs bg-zinc-800 px-1.5 py-0.5 rounded">npm run fetch-projects</code> to populate.</p>
+      <p class="text-sm">No projects available yet. Run <code class="font-mono text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-1.5 py-0.5 rounded">npm run fetch-projects</code> to populate.</p>
     </div>
 
     <!-- Bento Grid -->
