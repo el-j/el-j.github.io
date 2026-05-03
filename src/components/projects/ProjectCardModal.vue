@@ -108,7 +108,7 @@ onUnmounted(() => document.removeEventListener('keydown', onEscape))
       <!-- Modal content -->
       <Transition name="modal-content" appear>
         <div
-          class="glass relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-2xl"
+          class="glass relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-zinc-200/80 dark:border-zinc-700/50 shadow-2xl"
         >
           <!-- Header -->
           <div class="flex items-center gap-3 p-5 pb-0">
