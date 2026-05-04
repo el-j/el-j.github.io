@@ -37,7 +37,15 @@
     "issues": "Open issues",
     "license": "License",
     "homepage": "Live site",
-    "archived": "Archived"
+    "archived": "Archived",
+    "filter_all": "All",
+    "filter_language": "Language",
+    "filter_archived": "Show archived",
+    "sort_label": "Sort by",
+    "sort_newest": "Newest",
+    "sort_stars": "Most stars",
+    "sort_forks": "Most forks",
+    "sort_az": "A – Z"
   },
   "footer": {
     "made_with": "Made with",

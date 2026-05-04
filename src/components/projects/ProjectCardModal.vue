@@ -1,14 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { buildScreenshotUrl } from '@/utils/screenshot'
 import { languageColorMap } from '@/utils/metadata'
 import watermarkUrl from '@/assets/images/projects-watermark.svg'
+import type { Project } from '@/types/project'
 
 const props = defineProps({
   project: {
-    type: Object,
-    required: true,
+    type: Object as PropType<Project>,
+    required: true as const,
   },
   visible: {
     type: Boolean,

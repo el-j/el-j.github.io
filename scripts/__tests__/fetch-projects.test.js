@@ -32,14 +32,13 @@ function processRepos(repos, overrides) {
 
   const projects = repos
     .filter((repo) => {
-      if (!repo.has_pages) return false
       const override = overrides[repo.name]
       return !(override && override.visible === false)
     })
     .map((repo) => {
       const override = overrides[repo.name] || {}
       const homepage = override.homepage ?? repo.homepage ?? null
-      const url = override.url || `https://el-j.github.io/${repo.name}`
+      const url = override.url || repo.homepage || (repo.has_pages ? `https://el-j.github.io/${repo.name}` : `https://github.com/el-j/${repo.name}`)
       const screenshot = resolveScreenshot(override, homepage, url)
       return {
         id: repo.id,
@@ -151,15 +150,15 @@ const REPO_HIDDEN_BY_OVERRIDE = {
 // ---------------------------------------------------------------------------
 
 describe('fetch-projects: filtering', () => {
-  it('includes repos that have GitHub Pages enabled', () => {
-    const result = processRepos([REPO_WITH_PAGES], {})
-    expect(result).toHaveLength(1)
-    expect(result[0].name).toBe('my-project')
+  it('includes repos regardless of has_pages', () => {
+    const result = processRepos([REPO_WITH_PAGES, REPO_WITHOUT_PAGES], {})
+    expect(result).toHaveLength(2)
   })
 
-  it('excludes repos where has_pages is false', () => {
+  it('includes repos without GitHub Pages (links to github.com instead)', () => {
     const result = processRepos([REPO_WITHOUT_PAGES], {})
-    expect(result).toHaveLength(0)
+    expect(result).toHaveLength(1)
+    expect(result[0].url).toBe('https://github.com/el-j/no-pages-project')
   })
 
   it('excludes repos marked visible: false in overrides', () => {
@@ -201,9 +200,9 @@ describe('fetch-projects: mapping', () => {
     expect(result[0].url).toBe('https://custom.example.com')
   })
 
-  it('constructs default GitHub Pages URL from repo name', () => {
-    const result = processRepos([REPO_WITH_PAGES], {})
-    expect(result[0].url).toBe('https://el-j.github.io/my-project')
+  it('uses github.com URL when has_pages is false and no homepage', () => {
+    const result = processRepos([REPO_WITHOUT_PAGES], {})
+    expect(result[0].url).toBe('https://github.com/el-j/no-pages-project')
   })
 
   it('maps topics, language, and updatedAt from the repo object', () => {
