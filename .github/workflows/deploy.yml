@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write   # push production build to gh-pages branch
+  pages: write      # configure Pages source via API
+  pull-requests: write
 
 # Allow only one concurrent deployment; do not cancel in-progress so a
 # partially-deployed release is never left in an inconsistent state.
@@ -86,21 +86,55 @@ jobs:
           GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
           GOOGLE_SPREADSHEET_ID: ${{ secrets.GOOGLE_SPREADSHEET_ID }}
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: dist
           path: ./dist
+          retention-days: 1
 
-  # ── Deploy ──────────────────────────────────────────────────────────────────
+  # ── Deploy to gh-pages branch ────────────────────────────────────────────────
   deploy:
     name: Deploy
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    environment:
+      name: github-pages
+      url: https://el-j.github.io/
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./dist
+
+      # Switch GitHub Pages to serve from the gh-pages branch so that both
+      # the production build (root) and PR previews (preview/pr-N/) coexist
+      # on the same branch and are accessible under el-j.github.io/.
+      - name: Configure GitHub Pages source to gh-pages branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.repos.updateInformationAboutPagesSite({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                build_type: 'legacy',
+                source: { branch: 'gh-pages', path: '/' },
+              });
+              console.log('Pages source configured: gh-pages branch / root');
+            } catch (err) {
+              // Already set, or insufficient scope — either way non-fatal.
+              console.warn(`Could not update Pages source (may already be correct): ${err.message}`);
+            }
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          # keep_files preserves preview/pr-N/ subdirectories written by the
+          # PR preview workflow so that live previews are not wiped on every
+          # production deploy.
+          keep_files: true
 
