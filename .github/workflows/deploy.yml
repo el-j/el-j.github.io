@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # push production build to gh-pages branch
-  pages: write      # configure Pages source via API
-  pull-requests: write
+  contents: read    # checkout only
+  pages: write      # enable / configure GitHub Pages
+  id-token: write   # required by actions/deploy-pages for OIDC
 
 # Allow only one concurrent deployment; do not cancel in-progress so a
 # partially-deployed release is never left in an inconsistent state.
@@ -73,6 +73,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Configure GitHub Pages (switches source to GitHub Actions mode so the
+      # deploy-pages action can publish the artifact; also provides base_path).
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       # prebuild runs fetch-i18n (Google Sheets → src/locales/) then
       # fetch-projects (GitHub API → src/data/projects-generated.json).
       # Both scripts are CI-aware: fetch-projects always refreshes (CI=true),
@@ -86,55 +91,21 @@ jobs:
           GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
           GOOGLE_SPREADSHEET_ID: ${{ secrets.GOOGLE_SPREADSHEET_ID }}
 
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: dist
           path: ./dist
-          retention-days: 1
 
-  # ── Deploy to gh-pages branch ────────────────────────────────────────────────
+  # ── Deploy to GitHub Pages ───────────────────────────────────────────────────
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: github-pages
-      url: https://el-j.github.io/
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: ./dist
-
-      # Switch GitHub Pages to serve from the gh-pages branch so that both
-      # the production build (root) and PR previews (preview/pr-N/) coexist
-      # on the same branch and are accessible under el-j.github.io/.
-      - name: Configure GitHub Pages source to gh-pages branch
-        uses: actions/github-script@v7
-        with:
-          script: |
-            try {
-              await github.rest.repos.updateInformationAboutPagesSite({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                build_type: 'legacy',
-                source: { branch: 'gh-pages', path: '/' },
-              });
-              console.log('Pages source configured: gh-pages branch / root');
-            } catch (err) {
-              // Already set, or insufficient scope — either way non-fatal.
-              console.warn(`Could not update Pages source (may already be correct): ${err.message}`);
-            }
-
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          # keep_files preserves preview/pr-N/ subdirectories written by the
-          # PR preview workflow so that live previews are not wiped on every
-          # production deploy.
-          keep_files: true
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
