@@ -37,7 +37,15 @@
     "issues": "Offene Issues",
     "license": "Lizenz",
     "homepage": "Live-Seite",
-    "archived": "Archiviert"
+    "archived": "Archiviert",
+    "filter_all": "Alle",
+    "filter_language": "Sprache",
+    "filter_archived": "Archivierte anzeigen",
+    "sort_label": "Sortieren nach",
+    "sort_newest": "Neueste",
+    "sort_stars": "Meiste Sterne",
+    "sort_forks": "Meiste Forks",
+    "sort_az": "A – Z"
   },
   "footer": {
     "made_with": "Erstellt mit",
