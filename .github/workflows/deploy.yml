@@ -91,6 +91,22 @@ jobs:
           GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
           GOOGLE_SPREADSHEET_ID: ${{ secrets.GOOGLE_SPREADSHEET_ID }}
 
+      # The preview workflow pushes individual PR builds to the gh-pages branch
+      # at preview/pr-N/ (used as a plain git storage branch, not served by
+      # GitHub Pages directly).  Merge whatever previews exist right now into
+      # dist/ so they are part of the single Pages artifact that deploy-pages
+      # publishes.  If the branch or the directory does not exist yet (first
+      # run, or all PRs closed) the step exits cleanly without failing.
+      - name: Include PR preview builds in Pages artifact
+        run: |
+          git fetch origin gh-pages --depth=1 2>/dev/null || true
+          git archive FETCH_HEAD preview 2>/dev/null | tar -x -C dist/ || true
+          if [ -d dist/preview ]; then
+            echo "Included preview directories: $(ls dist/preview)"
+          else
+            echo "No preview builds to include"
+          fi
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
