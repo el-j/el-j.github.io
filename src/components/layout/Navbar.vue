@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from '@/i18n/index.js'
+import { LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from '@/i18n/index'
 
 const { locale } = useI18n()
 const isDark = useDark({ selector: 'html' })

@@ -13,14 +13,19 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: '/',
+  base: process.env.VITE_BASE ?? '/',
   test: {
     environment: 'happy-dom',
     globals: true,
-    include: ['src/**/__tests__/**/*.test.js', 'scripts/**/__tests__/**/*.test.js'],
+    include: [
+      'src/**/__tests__/**/*.test.ts',
+      'src/**/__tests__/**/*.test.js',
+      'scripts/**/__tests__/**/*.test.ts',
+      'scripts/**/__tests__/**/*.test.js',
+    ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text', 'lcov', 'json-summary'],
     },
   },
 })

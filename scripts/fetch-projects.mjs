@@ -18,7 +18,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
-import { buildScreenshotUrl } from '../src/utils/screenshot.js'
+import { buildScreenshotUrl } from '../src/utils/screenshot'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -82,11 +82,6 @@ async function main() {
   // Process GitHub repositories
   const projects = repos
     .filter((repo) => {
-      // Only include repos with GitHub Pages enabled (repo.has_pages === true).
-      // This ensures only repos that have a published GitHub Pages site are
-      // surfaced on the landing page. If you want to include repos without
-      // Pages, remove this check or add a `forceInclude` override.
-      if (!repo.has_pages) return false
       // Apply visibility override from project-overrides.json
       const override = overrides[repo.name]
       if (override && override.visible === false) return false
@@ -95,7 +90,7 @@ async function main() {
     .map((repo) => {
       const override = overrides[repo.name] || {}
       const homepage = override.homepage ?? repo.homepage ?? null
-      const url = override.url || `https://${GITHUB_USER}.github.io/${repo.name}`
+      const url = override.url || repo.homepage || (repo.has_pages ? `https://${GITHUB_USER}.github.io/${repo.name}` : `https://github.com/${GITHUB_USER}/${repo.name}`)
       const screenshot = resolveScreenshot(override, homepage, url)
       return {
         id: repo.id,

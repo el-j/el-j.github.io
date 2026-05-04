@@ -1,4 +1,4 @@
-export const languageColorMap = {
+export const languageColorMap: Record<string, string> = {
   JavaScript: 'bg-yellow-400',
   TypeScript: 'bg-blue-400',
   Vue: 'bg-emerald-400',

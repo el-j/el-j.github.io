@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "fetch-i18n": "node scripts/fetch-i18n.js",
-    "fetch-projects": "node scripts/fetch-projects.js",
+    "fetch-i18n": "node scripts/fetch-i18n.mjs",
+    "fetch-projects": "tsx scripts/fetch-projects.mjs",
     "prebuild": "npm run fetch-i18n && npm run fetch-projects",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
+    "check": "vue-tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -28,10 +29,15 @@
     "@el-j/google-sheet-translations": "^1.3.3",
     "@tailwindcss/vite": "^4.0.14",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/coverage-v8": "^4.1.5",
     "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.9.1",
     "happy-dom": "^20.8.3",
     "tailwindcss": "^4.0.14",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
     "vite": "^6.2.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "vue-tsc": "^3.2.8"
   }
 }

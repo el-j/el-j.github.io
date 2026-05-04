@@ -2,28 +2,121 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
+    branches: [main]
 
 jobs:
-  ci:
-    name: Build & Test
+  # ── Type-check ──────────────────────────────────────────────────────────────
+  lint:
+    name: Type-check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type-check
+        run: npm run check
+
+  # ── Unit tests + coverage ───────────────────────────────────────────────────
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Post coverage summary comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summaryPath = 'coverage/coverage-summary.json';
+            if (!fs.existsSync(summaryPath)) {
+              console.log('No coverage summary found, skipping comment');
+              return;
+            }
+            const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+            const t = summary.total;
+            const pct = (v) => `${v.pct.toFixed(1)}%`;
+            const icon = (v) => v.pct >= 80 ? '🟢' : v.pct >= 50 ? '🟡' : '🔴';
+            const body = [
+              '## 📊 Coverage Report',
+              '',
+              '| Metric | Coverage |',
+              '|--------|----------|',
+              `| ${icon(t.statements)} Statements | ${pct(t.statements)} (${t.statements.covered}/${t.statements.total}) |`,
+              `| ${icon(t.branches)} Branches | ${pct(t.branches)} (${t.branches.covered}/${t.branches.total}) |`,
+              `| ${icon(t.functions)} Functions | ${pct(t.functions)} (${t.functions.covered}/${t.functions.total}) |`,
+              `| ${icon(t.lines)} Lines | ${pct(t.lines)} (${t.lines.covered}/${t.lines.total}) |`,
+              '',
+              `> Full HTML report available as a [workflow artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith('## 📊 Coverage Report'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  # ── Build check ─────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -36,13 +129,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Vite build — validates the entire production pipeline except i18n
-      # (locale files already committed as fallback serve that purpose here).
       - name: Build
         run: npm run build
         env:
           NODE_ENV: production
 
-      # Unit + component smoke tests
-      - name: Test
-        run: npm test
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
