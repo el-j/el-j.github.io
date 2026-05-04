@@ -6,8 +6,9 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write       # push preview build to gh-pages storage branch
+  pull-requests: write  # post preview URL comment
+  actions: write        # dispatch deploy.yml to include preview in Pages artifact
 
 concurrency:
   group: pr-preview-${{ github.event.number }}
@@ -44,7 +45,11 @@ jobs:
         env:
           VITE_BASE: /preview/pr-${{ github.event.number }}/
 
-      - name: Deploy to gh-pages preview sub-path
+      # Store the preview build on the gh-pages branch at preview/pr-N/.
+      # This branch is NOT directly served by GitHub Pages; the production
+      # deploy workflow (deploy.yml) reads it and merges the content into
+      # the Pages artifact before publishing.
+      - name: Store preview build on gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,6 +94,20 @@ jobs:
                 body,
               });
             }
+
+      # Trigger a full production redeploy so the new/updated preview is
+      # merged into the Pages artifact and becomes publicly accessible.
+      - name: Trigger Pages redeploy to publish preview
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main',
+            });
+            console.log(`Triggered production redeploy to include preview/pr-${context.issue.number}`);
 
   # ── Remove preview on PR close ─────────────────────────────────────────────
   cleanup-preview:
@@ -142,3 +161,16 @@ jobs:
                 body,
               });
             }
+
+      # Trigger a full production redeploy so the removed preview is no
+      # longer included in the published Pages artifact.
+      - name: Trigger Pages redeploy to remove preview
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main',
+            });
