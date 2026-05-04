@@ -8,8 +8,9 @@
     "fetch-i18n": "node scripts/fetch-i18n.js",
     "fetch-projects": "node scripts/fetch-projects.js",
     "prebuild": "npm run fetch-i18n && npm run fetch-projects",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
+    "check": "vue-tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -29,6 +30,7 @@
     "@tailwindcss/vite": "^4.0.14",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.9.1",
     "happy-dom": "^20.8.3",
     "tailwindcss": "^4.0.14",
     "typescript": "^6.0.3",
