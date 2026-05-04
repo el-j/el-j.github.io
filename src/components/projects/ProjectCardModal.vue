@@ -10,7 +10,7 @@ import type { Project } from '@/types/project'
 const props = defineProps({
   project: {
     type: Object as PropType<Project>,
-    required: true as const,
+    required: true,
   },
   visible: {
     type: Boolean,
