@@ -72,14 +72,11 @@ const isGitHub = computed(() => {
 
 const statChips = computed(() => {
   const chips = []
-  if (props.project.stars != null) {
+  if (props.project.stars != null && props.project.stars > 0) {
     chips.push({ icon: 'pi pi-star-fill text-amber-400', label: props.project.stars, aria: t('projects.stars') })
   }
-  if (props.project.forks != null) {
+  if (props.project.forks != null && props.project.forks > 0) {
     chips.push({ icon: 'pi pi-code-branch text-cyan-300', label: props.project.forks, aria: t('projects.forks') })
-  }
-  if (props.project.openIssues != null) {
-    chips.push({ icon: 'pi pi-exclamation-circle text-rose-300', label: props.project.openIssues, aria: t('projects.issues') })
   }
   if (props.project.license) {
     chips.push({ icon: 'pi pi-shield', label: props.project.license, aria: t('projects.license') })

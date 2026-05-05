@@ -8,20 +8,12 @@
     "overrideName": "Personal Portfolio",
     "i18nKey": "projects.portfolio",
     "featured": true,
+    "category": "Portfolio",
     "customImage": null,
     "topics": ["portfolio", "personal-brand", "vue", "tailwind"],
     "language": "Vue",
     "stars": 0,
     "forks": 0,
     "openIssues": 0
-  },
-  "some-old-package": {
-    "visible": false
-  },
-  "vue-component-lib": {
-    "visible": true,
-    "featured": true,
-    "i18nKey": "projects.vueLib",
-    "customImage": "/assets/images/vue-lib-cover.webp"
   }
 }

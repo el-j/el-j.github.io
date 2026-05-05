@@ -6,6 +6,7 @@ export interface Project {
   description: string | null
   topics: string[]
   language: string | null
+  category: string | null
   updatedAt: string | null
   i18nKey: string | null
   featured: boolean

@@ -28,6 +28,31 @@ const GITHUB_USER = 'el-j'
 const GITHUB_API = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`
 const FORCE = process.argv.includes('--force') || !!process.env.CI
 
+// Map GitHub topics to a human-readable category label
+const TOPIC_CATEGORY_MAP = {
+  portfolio: 'Portfolio',
+  website: 'Website',
+  web: 'Website',
+  webapp: 'Web App',
+  'web-app': 'Web App',
+  cli: 'CLI',
+  library: 'Library',
+  lib: 'Library',
+  plugin: 'Plugin',
+  tool: 'Tool',
+  api: 'API',
+  mobile: 'Mobile',
+  game: 'Game',
+  bot: 'Bot',
+}
+
+function inferCategory(topics = []) {
+  for (const topic of topics) {
+    if (TOPIC_CATEGORY_MAP[topic]) return TOPIC_CATEGORY_MAP[topic]
+  }
+  return null
+}
+
 function resolveScreenshot(override, homepage, url) {
   return override.customImage || override.screenshot || buildScreenshotUrl(homepage || url)
 }
@@ -102,6 +127,7 @@ async function main() {
         description: override.description || repo.description || null,
         topics: override.topics || repo.topics || [],
         language: override.language || repo.language || null,
+        category: override.category || inferCategory(override.topics || repo.topics || []),
         updatedAt: repo.pushed_at || null,
         i18nKey: override.i18nKey || null,
         featured: override.featured || false,
@@ -135,6 +161,7 @@ async function main() {
       description: override.description || null,
       topics: override.topics || [],
       language: override.language || null,
+      category: override.category || inferCategory(override.topics || []),
       updatedAt: null,
       i18nKey: override.i18nKey || null,
       featured: override.featured || false,
