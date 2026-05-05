@@ -82,6 +82,8 @@ async function main() {
   // Process GitHub repositories
   const projects = repos
     .filter((repo) => {
+      // Exclude forks – only show repos owned by the user
+      if (repo.fork) return false
       // Apply visibility override from project-overrides.json
       const override = overrides[repo.name]
       if (override && override.visible === false) return false
