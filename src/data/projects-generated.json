@@ -12,6 +12,7 @@
       "tailwind"
     ],
     "language": "Vue",
+    "category": "Portfolio",
     "updatedAt": null,
     "i18nKey": "projects.portfolio",
     "featured": true,

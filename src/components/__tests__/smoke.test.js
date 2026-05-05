@@ -76,6 +76,7 @@ const FIXTURE_PROJECT = {
   description: 'A great test project.',
   topics: ['vue', 'vite'],
   language: 'TypeScript',
+  category: null,
   updatedAt: '2024-06-01T00:00:00Z',
   i18nKey: null,
   featured: false,
@@ -86,6 +87,7 @@ const FIXTURE_PROJECT = {
   forks: 3,
   openIssues: 1,
   license: 'MIT',
+  defaultBranch: 'main',
   archived: false,
 }
 
@@ -159,13 +161,22 @@ describe('ProjectCard', () => {
     expect(urls).toContain(FIXTURE_PROJECT.url)
   })
 
-  it('shows the language dot when language is set', async () => {
+  it('shows the language dot when language is set and no category', async () => {
     const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
     const wrapper = mount(ProjectCard, {
       props: { project: FIXTURE_PROJECT },
       global: defaultGlobal(),
     })
     expect(wrapper.text()).toContain('TypeScript')
+  })
+
+  it('shows category label when category is set', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const wrapper = mount(ProjectCard, {
+      props: { project: { ...FIXTURE_PROJECT, category: 'Web App' } },
+      global: defaultGlobal(),
+    })
+    expect(wrapper.text()).toContain('Web App')
   })
 
   it('applies col-span-2 row-span-2 classes for featured cards', async () => {
@@ -178,16 +189,29 @@ describe('ProjectCard', () => {
     expect(wrapper.find('article').classes()).toContain('row-span-2')
   })
 
-  it('renders stat chips for stars, forks, issues and license', async () => {
+  it('renders stat chips for stars, forks and license (not issues)', async () => {
     const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
     const wrapper = mount(ProjectCard, {
       props: { project: FIXTURE_PROJECT },
       global: defaultGlobal(),
     })
+    // stars (12 > 0) and forks (3 > 0) are shown; issues chip is hidden; license is shown
     expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.stars))
     expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.forks))
-    expect(wrapper.text()).toContain(String(FIXTURE_PROJECT.openIssues))
+    expect(wrapper.find('.pi-exclamation-circle').exists()).toBe(false)
     expect(wrapper.text()).toContain(FIXTURE_PROJECT.license)
+  })
+
+  it('hides zero stars and forks', async () => {
+    const { default: ProjectCard } = await import('../projects/ProjectCard.vue')
+    const projectNoStats = { ...FIXTURE_PROJECT, stars: 0, forks: 0, license: null }
+    const wrapper = mount(ProjectCard, {
+      props: { project: projectNoStats },
+      global: defaultGlobal(),
+    })
+    // No stat chips should be rendered at all
+    expect(wrapper.find('.pi-star-fill').exists()).toBe(false)
+    expect(wrapper.find('.pi-code-branch').exists()).toBe(false)
   })
 
   it('does NOT apply col-span-2 for non-featured cards', async () => {
@@ -351,10 +375,12 @@ describe('locale completeness', () => {
       'view',
       'featured',
       'no_description',
+      'no_projects',
       'close',
       'last_updated',
       'open_source',
       'external',
+      'category',
       'stars',
       'forks',
       'issues',
