@@ -81,25 +81,18 @@ const langDot = computed(
 
 const statChips = computed(() => {
   const chips = []
-  if (props.project.stars != null) {
+  if (props.project.stars != null && props.project.stars > 0) {
     chips.push({
       icon: 'pi pi-star-fill text-amber-400',
       label: props.project.stars,
       aria: t('projects.stars'),
     })
   }
-  if (props.project.forks != null) {
+  if (props.project.forks != null && props.project.forks > 0) {
     chips.push({
       icon: 'pi pi-code-branch text-cyan-300',
       label: props.project.forks,
       aria: t('projects.forks'),
-    })
-  }
-  if (props.project.openIssues != null) {
-    chips.push({
-      icon: 'pi pi-exclamation-circle text-rose-300',
-      label: props.project.openIssues,
-      aria: t('projects.issues'),
     })
   }
   if (props.project.license) {
@@ -168,10 +161,16 @@ const watermarkStyle = computed(() => ({
             <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 truncate text-sm leading-snug">
               {{ project.name }}
             </h3>
-            <!-- Language dot -->
-            <div v-if="project.language" class="flex items-center gap-1.5 mt-1">
-              <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
-              <span class="text-[11px] text-zinc-500 dark:text-zinc-500">{{ project.language }}</span>
+            <!-- Category / Language indicator -->
+            <div v-if="project.category || project.language" class="flex items-center gap-1.5 mt-1">
+              <template v-if="project.category">
+                <i class="pi pi-tag text-[9px] text-brand-400" aria-hidden="true" />
+                <span class="text-[11px] text-zinc-500 dark:text-zinc-500">{{ project.category }}</span>
+              </template>
+              <template v-else>
+                <span :class="['w-2 h-2 rounded-full flex-shrink-0', langDot]" />
+                <span class="text-[11px] text-zinc-500 dark:text-zinc-500">{{ project.language }}</span>
+              </template>
             </div>
           </div>
         </div>

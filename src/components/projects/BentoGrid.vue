@@ -16,36 +16,30 @@ const modalVisible = ref(false)
 const watermarkStyle = { backgroundImage: `url(${watermarkUrl})` }
 
 // ── Filters ─────────────────────────────────────────────────────────────────
-const activeLanguage = ref<string | null>(null)
-const showArchived = ref(false)
+const activeCategory = ref<string | null>(null)
 
-type SortKey = 'newest' | 'stars' | 'forks' | 'az'
+type SortKey = 'newest' | 'az'
 const sortKey = ref<SortKey>('newest')
 
 const sortOptions: { key: SortKey; labelKey: string }[] = [
   { key: 'newest', labelKey: 'projects.sort_newest' },
-  { key: 'stars',  labelKey: 'projects.sort_stars' },
-  { key: 'forks',  labelKey: 'projects.sort_forks' },
   { key: 'az',     labelKey: 'projects.sort_az' },
 ]
 
-// Collect unique non-null languages
-const languages = computed<string[]>(() => {
-  const langs = new Set<string>()
+// Collect unique non-null categories
+const categories = computed<string[]>(() => {
+  const cats = new Set<string>()
   for (const p of allProjects) {
-    if (p.language) langs.add(p.language)
+    if (p.category) cats.add(p.category)
   }
-  return Array.from(langs).sort()
+  return Array.from(cats).sort()
 })
 
 const projects = computed<Project[]>(() => {
-  let list = allProjects.slice()
+  let list = allProjects.filter(p => !p.archived)
 
-  if (!showArchived.value) {
-    list = list.filter(p => !p.archived)
-  }
-  if (activeLanguage.value) {
-    list = list.filter(p => p.language === activeLanguage.value)
+  if (activeCategory.value) {
+    list = list.filter(p => p.category === activeCategory.value)
   }
 
   list.sort((a, b) => {
@@ -54,10 +48,6 @@ const projects = computed<Project[]>(() => {
     if (!a.featured && b.featured) return 1
 
     switch (sortKey.value) {
-      case 'stars':
-        return (b.stars ?? 0) - (a.stars ?? 0)
-      case 'forks':
-        return (b.forks ?? 0) - (a.forks ?? 0)
       case 'az':
         return a.name.localeCompare(b.name)
       case 'newest':
@@ -101,46 +91,36 @@ function closeModal() {
 
     <!-- Filter + Sort bar -->
     <div class="mb-8 flex flex-wrap items-center gap-3">
-      <!-- Language filter chips -->
+      <!-- Category filter chips -->
       <div class="flex flex-wrap gap-2">
         <button
           :class="[
             'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
-            activeLanguage === null
+            activeCategory === null
               ? 'bg-brand-500 text-white border-brand-500'
               : 'text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 hover:border-brand-400 hover:text-brand-400',
           ]"
-          @click="activeLanguage = null"
+          @click="activeCategory = null"
         >
           {{ t('projects.filter_all') }}
         </button>
         <button
-          v-for="lang in languages"
-          :key="lang"
+          v-for="cat in categories"
+          :key="cat"
           :class="[
             'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
-            activeLanguage === lang
+            activeCategory === cat
               ? 'bg-brand-500 text-white border-brand-500'
               : 'text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 hover:border-brand-400 hover:text-brand-400',
           ]"
-          @click="activeLanguage = lang"
+          @click="activeCategory = cat"
         >
-          {{ lang }}
+          {{ cat }}
         </button>
       </div>
 
       <!-- Spacer -->
       <div class="flex-1" />
-
-      <!-- Archived toggle -->
-      <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-zinc-500 dark:text-zinc-400 select-none">
-        <input
-          v-model="showArchived"
-          type="checkbox"
-          class="w-3.5 h-3.5 rounded border-zinc-300 dark:border-zinc-600 accent-brand-500"
-        />
-        {{ t('projects.filter_archived') }}
-      </label>
 
       <!-- Sort dropdown -->
       <div class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
@@ -166,7 +146,7 @@ function closeModal() {
       class="flex flex-col items-center justify-center py-24 text-zinc-500 dark:text-zinc-600"
     >
       <i class="pi pi-box text-5xl mb-4 opacity-30" />
-      <p class="text-sm">No projects match the current filters.</p>
+      <p class="text-sm">{{ t('projects.no_projects') }}</p>
     </div>
 
     <!-- Bento Grid -->
