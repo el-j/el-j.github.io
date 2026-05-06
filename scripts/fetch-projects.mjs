@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /**
- * scripts/fetch-projects.js
+ * scripts/fetch-projects.mjs
  *
  * Build-time self-discovery script.
  * Fetches repositories for the el-j GitHub user, merges them with
- * local overrides, and writes the result to src/data/projects-generated.json.
+ * local overrides, and writes:
+ *  - src/data/projects-generated.json  – flat list of all projects
+ *  - src/data/project-groups-generated.json – grouped project bundles
  *
  * Usage:
- *   node scripts/fetch-projects.js          # skips fetch if data already exists
- *   node scripts/fetch-projects.js --force  # always fetches from the API
+ *   node scripts/fetch-projects.mjs          # skips fetch if data already exists
+ *   node scripts/fetch-projects.mjs --force  # always fetches from the API
  *
  * In a CI environment (CI=true) the script always fetches fresh data
  * regardless of whether a cached file already exists, so the deployed
@@ -24,8 +26,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const OVERRIDES_PATH = join(ROOT, 'src/data/project-overrides.json')
 const OUTPUT_PATH = join(ROOT, 'src/data/projects-generated.json')
+const GROUPS_OUTPUT_PATH = join(ROOT, 'src/data/project-groups-generated.json')
 const GITHUB_USER = 'el-j'
 const GITHUB_API = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`
+const GITHUB_REPO_API = `https://api.github.com/repos/${GITHUB_USER}`
 const FORCE = process.argv.includes('--force') || !!process.env.CI
 
 // Map GitHub topics to a human-readable category label
@@ -59,7 +63,7 @@ function resolveScreenshot(override, homepage, url) {
 
 async function main() {
   // Skip if data already exists and --force flag is not set
-  if (!FORCE && existsSync(OUTPUT_PATH)) {
+  if (!FORCE && existsSync(OUTPUT_PATH) && existsSync(GROUPS_OUTPUT_PATH)) {
     try {
       const existing = JSON.parse(readFileSync(OUTPUT_PATH, 'utf-8'))
       if (Array.isArray(existing) && existing.length > 0) {
@@ -146,11 +150,36 @@ async function main() {
 
   // Append purely external projects (those only defined in overrides, not from GitHub)
   for (const [key, override] of Object.entries(overrides)) {
+    // Skip internal/meta keys
+    if (key.startsWith('__')) continue
     if (repoNames.has(key)) continue // already processed above
     if (override.visible === false) continue
     if (!override.isExternal) continue
 
     const homepage = override.homepage || override.url || null
+
+    // Best-effort: try to fetch additional metadata from a matching private GitHub repo.
+    // This enriches external projects that may correspond to a private repository.
+    let privateRepoData = null
+    if (process.env.GITHUB_TOKEN) {
+      try {
+        const repoSlug = key.replace(/\./g, '-').replace(/[^a-zA-Z0-9-_]/g, '')
+        const repoRes = await fetch(`${GITHUB_REPO_API}/${repoSlug}`, {
+          headers: {
+            'User-Agent': 'el-j-build-script/1.0',
+            Accept: 'application/vnd.github.v3+json',
+            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+          },
+        })
+        if (repoRes.ok) {
+          privateRepoData = await repoRes.json()
+          console.log(`[fetch-projects] Enriched external project "${key}" from private repo "${repoSlug}".`)
+        }
+      } catch {
+        // Silently ignore – private repo lookup is best-effort
+      }
+    }
+
     const screenshot = resolveScreenshot(override, homepage, `https://${key}`)
 
     projects.push({
@@ -158,22 +187,22 @@ async function main() {
       name: override.overrideName || key,
       url: override.url || `https://${key}`,
       homepage,
-      description: override.description || null,
-      topics: override.topics || [],
-      language: override.language || null,
-      category: override.category || inferCategory(override.topics || []),
-      updatedAt: null,
+      description: override.description || privateRepoData?.description || null,
+      topics: override.topics || privateRepoData?.topics || [],
+      language: override.language || privateRepoData?.language || null,
+      category: override.category || inferCategory(override.topics || privateRepoData?.topics || []),
+      updatedAt: privateRepoData?.pushed_at || null,
       i18nKey: override.i18nKey || null,
       featured: override.featured || false,
       isExternal: true,
       customImage: override.customImage || null,
       screenshot,
-      stars: override.stars ?? null,
-      forks: override.forks ?? null,
-      openIssues: override.openIssues ?? null,
-      license: override.license || null,
-      defaultBranch: override.defaultBranch || null,
-      archived: override.archived || false,
+      stars: override.stars ?? privateRepoData?.stargazers_count ?? null,
+      forks: override.forks ?? privateRepoData?.forks_count ?? null,
+      openIssues: override.openIssues ?? privateRepoData?.open_issues_count ?? null,
+      license: override.license || privateRepoData?.license?.name || privateRepoData?.license?.spdx_id || null,
+      defaultBranch: override.defaultBranch || privateRepoData?.default_branch || null,
+      archived: override.archived || privateRepoData?.archived || false,
     })
   }
 
@@ -187,6 +216,96 @@ async function main() {
 
   writeFileSync(OUTPUT_PATH, JSON.stringify(projects, null, 2) + '\n', 'utf-8')
   console.log(`[fetch-projects] Wrote ${projects.length} projects to ${OUTPUT_PATH}`)
+
+  // ── Build project groups ────────────────────────────────────────────────────
+  const groupDefs = overrides.__groups || {}
+  const byName = new Map(projects.map((p) => [p.name, p]))
+
+  // Auto-detect groups from repo names sharing a common hyphenated prefix
+  // (only used as fallback when __groups does not define a group for that prefix)
+  const prefixMap = new Map()
+  for (const project of projects) {
+    // Use the original repo key name for prefix detection
+    const parts = project.name.split('-')
+    if (parts.length >= 2) {
+      const prefix = parts[0].toLowerCase()
+      if (!prefixMap.has(prefix)) prefixMap.set(prefix, [])
+      prefixMap.get(prefix).push(project)
+    }
+  }
+
+  const groups = []
+  const groupedProjectNames = new Set()
+
+  // Process explicit group definitions first
+  for (const [slug, def] of Object.entries(groupDefs)) {
+    const resolvedRepos = (def.repos || [])
+      .map((repoName) => byName.get(repoName) ?? null)
+      .filter(Boolean)
+
+    if (resolvedRepos.length < 2) continue
+
+    resolvedRepos.forEach((p) => groupedProjectNames.add(p.name))
+
+    const screenshot =
+      def.screenshot ??
+      resolvedRepos.find((p) => p.screenshot)?.screenshot ??
+      resolvedRepos.find((p) => p.customImage)?.customImage ??
+      null
+
+    const updatedAt =
+      resolvedRepos
+        .map((p) => p.updatedAt)
+        .filter(Boolean)
+        .sort((a, b) => new Date(b) - new Date(a))[0] ?? null
+
+    groups.push({
+      slug,
+      title: def.title || slug,
+      description: def.description || null,
+      repos: resolvedRepos,
+      screenshot,
+      featured: def.featured || false,
+      category: def.category || resolvedRepos.find((p) => p.category)?.category || null,
+      updatedAt,
+    })
+  }
+
+  // Auto-detect groups from common name prefixes (only for unassigned projects)
+  for (const [prefix, prefixRepos] of prefixMap.entries()) {
+    // Skip if a group already exists with this slug
+    if (groups.some((g) => g.slug === prefix)) continue
+
+    const ungrouped = prefixRepos.filter((p) => !groupedProjectNames.has(p.name))
+    if (ungrouped.length < 2) continue
+
+    ungrouped.forEach((p) => groupedProjectNames.add(p.name))
+
+    const screenshot =
+      ungrouped.find((p) => p.screenshot)?.screenshot ??
+      ungrouped.find((p) => p.customImage)?.customImage ??
+      null
+
+    const updatedAt =
+      ungrouped
+        .map((p) => p.updatedAt)
+        .filter(Boolean)
+        .sort((a, b) => new Date(b) - new Date(a))[0] ?? null
+
+    groups.push({
+      slug: prefix,
+      title: prefix.charAt(0).toUpperCase() + prefix.slice(1),
+      description: null,
+      repos: ungrouped,
+      screenshot,
+      featured: false,
+      category: ungrouped.find((p) => p.category)?.category || null,
+      updatedAt,
+    })
+  }
+
+  writeFileSync(GROUPS_OUTPUT_PATH, JSON.stringify(groups, null, 2) + '\n', 'utf-8')
+  console.log(`[fetch-projects] Wrote ${groups.length} groups to ${GROUPS_OUTPUT_PATH}`)
 }
 
 main().catch((err) => {

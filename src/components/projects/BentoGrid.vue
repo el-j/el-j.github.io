@@ -1,15 +1,32 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ProjectCard from './ProjectCard.vue'
+import ProjectGroupCard from './ProjectGroupCard.vue'
 import ProjectCardModal from './ProjectCardModal.vue'
 import type { Project } from '@/types/project'
+import type { ProjectGroup } from '@/types/projectGroup'
 import projectsData from '@/data/projects-generated.json'
+import projectGroupsData from '@/data/project-groups-generated.json'
+import { groupProjects } from '@/utils/groupProjects'
 import watermarkUrl from '@/assets/images/projects-watermark.svg'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const allProjects = projectsData as Project[]
+const allGroupDefs = projectGroupsData as ProjectGroup[]
+
+// Build groupDefs map for groupProjects util from the generated groups
+// (they are already resolved; we just need to know which project names are grouped)
+const groupedProjectNames = computed(() => {
+  const names = new Set<string>()
+  for (const g of allGroupDefs) {
+    for (const r of g.repos) names.add(r.name)
+  }
+  return names
+})
 
 const selectedProject = ref<Project | null>(null)
 const modalVisible = ref(false)
@@ -26,17 +43,48 @@ const sortOptions: { key: SortKey; labelKey: string }[] = [
   { key: 'az',     labelKey: 'projects.sort_az' },
 ]
 
-// Collect unique non-null categories
+// Collect unique non-null categories from both projects and groups
 const categories = computed<string[]>(() => {
   const cats = new Set<string>()
   for (const p of allProjects) {
     if (p.category) cats.add(p.category)
   }
+  for (const g of allGroupDefs) {
+    if (g.category) cats.add(g.category)
+  }
   return Array.from(cats).sort()
 })
 
+const singletonProjects = computed<Project[]>(() => {
+  return allProjects.filter((p) => !groupedProjectNames.value.has(p.name))
+})
+
+const filteredGroups = computed<ProjectGroup[]>(() => {
+  let list = allGroupDefs
+
+  if (activeCategory.value) {
+    list = list.filter((g) => g.category === activeCategory.value)
+  }
+
+  list = [...list].sort((a, b) => {
+    if (a.featured && !b.featured) return -1
+    if (!a.featured && b.featured) return 1
+    switch (sortKey.value) {
+      case 'az': return a.title.localeCompare(b.title)
+      case 'newest':
+      default:
+        if (a.updatedAt && b.updatedAt) return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        if (a.updatedAt) return -1
+        if (b.updatedAt) return 1
+        return 0
+    }
+  })
+
+  return list
+})
+
 const projects = computed<Project[]>(() => {
-  let list = allProjects.filter(p => !p.archived)
+  let list = singletonProjects.value.filter(p => !p.archived)
 
   if (activeCategory.value) {
     list = list.filter(p => p.category === activeCategory.value)
@@ -61,6 +109,8 @@ const projects = computed<Project[]>(() => {
 
   return list
 })
+
+const hasItems = computed(() => projects.value.length > 0 || filteredGroups.value.length > 0)
 
 function openModal(project: Project) {
   selectedProject.value = project
@@ -142,7 +192,7 @@ function closeModal() {
 
     <!-- Empty state -->
     <div
-      v-if="!projects.length"
+      v-if="!hasItems"
       class="flex flex-col items-center justify-center py-24 text-zinc-500 dark:text-zinc-600"
     >
       <i class="pi pi-box text-5xl mb-4 opacity-30" />
@@ -150,19 +200,27 @@ function closeModal() {
     </div>
 
     <!-- Bento Grid -->
-    <TransitionGroup
+    <div
       v-else
-      tag="div"
-      name="bento"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-[minmax(200px,auto)]"
     >
-      <ProjectCard
-        v-for="project in projects"
-        :key="project.id"
-        :project="project"
-        @expand="openModal"
+      <!-- Group cards first -->
+      <ProjectGroupCard
+        v-for="group in filteredGroups"
+        :key="group.slug"
+        :group="group"
       />
-    </TransitionGroup>
+
+      <!-- Singleton project cards -->
+      <TransitionGroup name="bento" tag="div" class="contents">
+        <ProjectCard
+          v-for="project in projects"
+          :key="project.id"
+          :project="project"
+          @expand="openModal"
+        />
+      </TransitionGroup>
+    </div>
 
     <!-- Expanded card modal -->
     <ProjectCardModal
