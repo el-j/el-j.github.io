@@ -47,12 +47,5 @@
     "openIssues": 0
   },
   "__groups": {
-    "flowy": {
-      "title": "Flowy",
-      "description": "A collection of repositories for the Flowy project – a modern workflow and automation toolkit.",
-      "repos": [],
-      "featured": false,
-      "category": "Web App"
-    }
   }
 }

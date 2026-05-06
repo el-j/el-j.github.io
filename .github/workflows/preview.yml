@@ -95,6 +95,78 @@ jobs:
               });
             }
 
+      # ── E2E visual diff against the preview build ────────────────────────
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E visual tests against preview build
+        id: e2e
+        run: npm run e2e
+        continue-on-error: true
+        env:
+          CI: true
+
+      - name: Upload E2E screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-e2e-screenshots
+          path: e2e/screenshots/
+          retention-days: 7
+
+      - name: Upload E2E diff screenshots on failure
+        if: steps.e2e.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-e2e-diffs
+          path: test-results/
+          retention-days: 7
+
+      - name: Post E2E visual diff comment on PR
+        if: steps.e2e.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = `https://el-j.github.io/preview/pr-${{ github.event.number }}/`;
+            const body = [
+              '## 📸 E2E Visual Diff – Preview',
+              '',
+              `**Preview URL:** [${previewUrl}](${previewUrl})`,
+              '',
+              '⚠️ **Screenshots have changed** compared to the committed baseline.',
+              '',
+              'Diff screenshots are available as a',
+              `[workflow artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).`,
+              '',
+              'If the changes are **intentional**, run the following locally and commit the updated screenshots:',
+              '',
+              '```bash',
+              'npm run e2e:update',
+              '```',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith('## 📸 E2E Visual Diff – Preview'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
       # Trigger a full production redeploy so the new/updated preview is
       # merged into the Pages artifact and becomes publicly accessible.
       - name: Trigger Pages redeploy to publish preview

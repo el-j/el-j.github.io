@@ -140,3 +140,94 @@ jobs:
           name: dist
           path: dist/
           retention-days: 1
+
+  # ── E2E Tests ───────────────────────────────────────────────────────────────
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Run E2E tests
+        run: npm run e2e
+        env:
+          CI: true
+
+      - name: Upload E2E screenshots (baseline)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: e2e/screenshots/
+          retention-days: 14
+
+      - name: Upload E2E diff screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-diff-screenshots
+          path: test-results/
+          retention-days: 7
+
+      - name: Post E2E diff comment on PR
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '## 📸 E2E Visual Diff Detected',
+              '',
+              'Screenshots have changed. Please review the diffs in the',
+              `[workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).`,
+              '',
+              'If the changes are **intentional**, run the following locally and commit the updated screenshots:',
+              '',
+              '```bash',
+              'npm run e2e:update',
+              '```',
+              '',
+              '> ⚠️ This PR cannot be merged until the E2E job passes.',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith('## 📸 E2E Visual Diff'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
