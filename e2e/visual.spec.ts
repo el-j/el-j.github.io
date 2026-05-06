@@ -13,7 +13,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-import projectGroups from '../src/data/project-groups-generated.json'
+import projectGroups from '../src/data/project-groups-generated.json' with { type: 'json' }
 
 const firstGroup = projectGroups[0] as { slug: string } | undefined
 

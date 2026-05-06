@@ -11,7 +11,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-import projectGroups from '../src/data/project-groups-generated.json'
+import projectGroups from '../src/data/project-groups-generated.json' with { type: 'json' }
 
 test.describe('Project Detail Page', () => {
   // Use the first available group from generated data, or skip if none exist
