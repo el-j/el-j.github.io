@@ -15,5 +15,37 @@
     "stars": 0,
     "forks": 0,
     "openIssues": 0
+  },
+  "inquam-services.de": {
+    "visible": true,
+    "isExternal": true,
+    "url": "https://inquam-services.de",
+    "homepage": "https://inquam-services.de",
+    "overrideName": "Inquam Services",
+    "featured": false,
+    "category": "Website",
+    "customImage": null,
+    "topics": ["website", "services", "vue"],
+    "language": "Vue",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0
+  },
+  "dziekonska.com": {
+    "visible": true,
+    "isExternal": true,
+    "url": "https://dziekonska.com",
+    "homepage": "https://dziekonska.com",
+    "overrideName": "Dziekonska",
+    "featured": false,
+    "category": "Portfolio",
+    "customImage": null,
+    "topics": ["portfolio", "website"],
+    "language": null,
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0
+  },
+  "__groups": {
   }
 }
