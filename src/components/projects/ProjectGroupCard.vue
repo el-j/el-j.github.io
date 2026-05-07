@@ -57,6 +57,7 @@ function navigate() {
 
 <template>
   <article
+    data-testid="group-card"
     class="group relative glass rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 flex flex-col hover:scale-[1.02] hover:glow-sm col-span-2"
     @click="navigate"
   >
