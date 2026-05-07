@@ -64,8 +64,8 @@ test.describe('Landing page', () => {
   })
 
   test('group card navigates to detail page', async ({ page }) => {
-    // Look for a group card (col-span-2 article)
-    const groupCard = page.locator('article.col-span-2').first()
+    // Look for a group card (data-testid="group-card")
+    const groupCard = page.locator('article[data-testid="group-card"]').first()
     const hasGroupCard = (await groupCard.count()) > 0
 
     if (hasGroupCard) {

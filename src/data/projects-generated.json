@@ -25,5 +25,56 @@
     "license": null,
     "defaultBranch": null,
     "archived": false
+  },
+  {
+    "id": "external-inquam-services.de",
+    "name": "Inquam Services",
+    "url": "https://inquam-services.de",
+    "homepage": "https://inquam-services.de",
+    "description": null,
+    "topics": [
+      "website",
+      "services",
+      "vue"
+    ],
+    "language": "Vue",
+    "category": "Website",
+    "updatedAt": null,
+    "i18nKey": null,
+    "featured": false,
+    "isExternal": true,
+    "customImage": null,
+    "screenshot": "https://s0.wp.com/mshots/v1/https%3A%2F%2Finquam-services.de%2F?w=1200&h=630",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": null,
+    "defaultBranch": null,
+    "archived": false
+  },
+  {
+    "id": "external-dziekonska.com",
+    "name": "Dziekonska",
+    "url": "https://dziekonska.com",
+    "homepage": "https://dziekonska.com",
+    "description": null,
+    "topics": [
+      "portfolio",
+      "website"
+    ],
+    "language": null,
+    "category": "Portfolio",
+    "updatedAt": null,
+    "i18nKey": null,
+    "featured": false,
+    "isExternal": true,
+    "customImage": null,
+    "screenshot": "https://s0.wp.com/mshots/v1/https%3A%2F%2Fdziekonska.com%2F?w=1200&h=630",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": null,
+    "defaultBranch": null,
+    "archived": false
   }
 ]
