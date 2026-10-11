@@ -1,22 +1,22 @@
 ---
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import LatestDeployment from '@/components/workstation/LatestDeployment.astro';
-import SynthGroovebox from '@/components/workstation/SynthGroovebox.astro';
+import ProjectSchematicsDeck from '@/components/workstation/ProjectSchematicsDeck.astro';
 import LiveTerminal from '@/components/workstation/LiveTerminal.astro';
 import TokenAstVisualizer from '@/components/workstation/TokenAstVisualizer.astro';
 ---
 
 <WorkstationLayout activeTab="about">
-  <!-- 2x2 Workstation Matrix (Exactly mirroring the concept moodboard) -->
+  <!-- 2x2 Workstation Matrix (Unified Cyberdeck & Architecture Inspector) -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-    <!-- Top Left: Latest Deployment & Git Graph -->
+    <!-- Top Left: Latest Deployment & Fleet Status -->
     <div class="lg:col-span-5">
       <LatestDeployment />
     </div>
 
-    <!-- Top Right: + SYNTH_T1 + Pocket Synthesizer -->
+    <!-- Top Right: Real Project Schematics & Architecture Deck -->
     <div class="lg:col-span-7">
-      <SynthGroovebox />
+      <ProjectSchematicsDeck />
     </div>
 
     <!-- Bottom Left: CLI / DEBUG_ENV Live Terminal REPL -->
@@ -30,35 +30,35 @@ import TokenAstVisualizer from '@/components/workstation/TokenAstVisualizer.astr
     </div>
   </div>
 
-  <!-- Deep Bio / Philosophy Drawer -->
+  <!-- Deep Bio / Philosophy Drawer (Sourced from fabianalthaus.de) -->
   <div class="mt-4 pt-3 border-t border-[var(--crt-border-dim)] text-xs font-mono grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
       <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
         <span>[01]</span>
-        <span>THE DUAL-MINDED CRAFT</span>
+        <span>CONCEPT & INTERFACE DESIGN</span>
       </div>
       <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Bridging high-craft UI design with low-level fullstack systems engineering. I don't build generic SaaS templates; I design tactile interfaces, design token pipelines, and resilient compilers.
+        Designer and professional consultant for digital and analogue interfaces, apps, and hardware. Human-centered ergonomics for complex industrial machines, SIEM platforms, and open-source electronics tools.
       </p>
     </div>
 
     <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
       <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
         <span>[02]</span>
-        <span>ZERO-JS BASELINE</span>
+        <span>FULLSTACK & CI/CD INFRASTRUCTURE</span>
       </div>
       <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Rebuilt this entire portfolio in Astro 5. Sub-50ms paint times, zero runtime JavaScript payload by default, with isolated islands for terminal REPL and Web Audio synthesis.
+        Creator of <strong class="text-[var(--crt-phosphor-bright)]">RunZero</strong> (dual-engine runner fleet) and <strong class="text-[var(--crt-phosphor-bright)]">@el-j/google-sheet-translations</strong>. Zero-runtime Astro architecture, Docker/OrbStack micro-VMs, and Linux automation.
       </p>
     </div>
 
     <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
       <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
         <span>[03]</span>
-        <span>LINUX & ERGONOMICS</span>
+        <span>HARDWARE & PHYSICAL COMPUTING</span>
       </div>
       <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Living in the terminal: Neovim, Zsh, custom CLI tools, and tiling window managers. The keyboard is the primary input device, and developer ergonomics drive every architecture decision.
+        Fritzing EDA concepts, DomeDrum MIDI controllers, E-CUBE biotech instruments, and KTM Motohall museum IoT sensor networks. Bridging physical circuits and microcontrollers with modern web software.
       </p>
     </div>
   </div>
