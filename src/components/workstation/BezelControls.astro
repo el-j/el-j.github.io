@@ -1,115 +1,285 @@
 ---
-// BezelControls.astro
+// BezelControls.astro - Tactile Physical Hardware Controls on CRT Bezel
 ---
 
-<div class="mt-4 pt-3 border-t border-[#353842] flex flex-wrap items-center justify-between gap-4 text-xs select-none">
-  <!-- Left: Red Stencil Date Stamp -->
+<footer class="mt-4 pt-3 border-t border-[#353842] flex flex-wrap items-center justify-between gap-4 text-xs select-none" aria-label="Workstation Hardware Controls">
+  <!-- Left: Red Stencil Date Stamp & Model Badge -->
   <div class="flex items-center gap-3">
-    <div class="bezel-screw" title="M4 Bezel Screw"></div>
+    <div class="bezel-screw" title="M4 Bezel Screw" aria-hidden="true"></div>
     <div
-      class="font-mono font-bold tracking-widest text-[#ff3333] text-sm uppercase px-2 py-0.5 bg-black/60 border border-[#ff3333]/40 rounded shadow-[0_0_8px_rgba(255,50,50,0.5)]"
+      class="font-mono font-bold tracking-widest text-[#ff3333] text-sm uppercase px-2.5 py-0.5 bg-black/80 border border-[#ff3333]/50 rounded shadow-[0_0_10px_rgba(255,50,50,0.6)] select-all"
       id="bezel-date-stamp"
     >
       OCT. 11 2026
     </div>
-    <span class="text-[10px] text-[#787f91] hidden sm:inline font-mono">MODEL: CRT-2084-UX</span>
+    <span class="text-[10px] text-[#787f91] hidden sm:inline font-mono tracking-wider">CHASSIS: CRT-2084-UX // ARCH-LINUX</span>
   </div>
 
   <!-- Center: Phosphor Theme Selector -->
-  <div class="flex items-center gap-1.5 font-mono text-[11px] bg-black/40 p-1 rounded border border-[#3c414f]">
-    <span class="text-[#787f91] px-1 text-[10px]">PHOSPHOR:</span>
+  <div class="flex items-center gap-1.5 font-mono text-[11px] bg-black/60 p-1 rounded-md border border-[#3c414f]" role="group" aria-label="CRT Phosphor Theme Selector">
+    <span class="text-[#787f91] px-1 text-[10px] uppercase font-bold">PHOSPHOR:</span>
     <button
-      class="theme-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#ff9d00] text-[#ff9d00] bg-[#ff9d00]/10 hover:bg-[#ff9d00]/20 transition-all active:scale-95"
+      type="button"
+      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
       data-set-theme="amber"
     >
       AMBER
     </button>
     <button
-      class="theme-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#00ff66]/50 text-[#00ff66] bg-transparent hover:bg-[#00ff66]/10 transition-all active:scale-95"
+      type="button"
+      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
       data-set-theme="green"
     >
       GREEN
     </button>
     <button
-      class="theme-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#00e5ff]/50 text-[#00e5ff] bg-transparent hover:bg-[#00e5ff]/10 transition-all active:scale-95"
+      type="button"
+      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
       data-set-theme="ice"
     >
       ICE
     </button>
     <button
-      class="theme-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#d6d3d1]/50 text-[#e7e5e4] bg-transparent hover:bg-white/10 transition-all active:scale-95"
+      type="button"
+      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
       data-set-theme="paper"
     >
       PAPER
     </button>
   </div>
 
-  <!-- Right: Hardware Toggles & Power LED -->
-  <div class="flex items-center gap-4 font-mono text-[11px] text-[#9ba1b0]">
-    <!-- Scanlines Toggle -->
-    <label class="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors" title="Toggle CRT scanline raster">
-      <span class="text-[10px]">SCANLINES</span>
-      <input type="checkbox" id="toggle-scanlines" checked class="sr-only" />
-      <span class="toggle-slider w-7 h-3.5 bg-[#17181b] border border-[#4a4e5a] rounded-full inline-block relative after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:w-2.5 after:h-2.5 after:bg-[#ff9d00] after:rounded-full after:transition-transform"></span>
-    </label>
+  <!-- Right: Physical Industrial Toggle Switches -->
+  <div class="flex items-center gap-5 font-mono text-[11px] text-[#abb2bf]">
+    <!-- Scanlines Switch -->
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] tracking-wider text-[#8b92a2]">SCANLINES</span>
+      <button
+        type="button"
+        id="btn-toggle-scanlines"
+        role="switch"
+        aria-checked="true"
+        class="hardware-rocker-switch"
+        title="Toggle CRT raster scanlines"
+      >
+        <span class="rocker-track">
+          <span class="rocker-thumb">
+            <span class="led-dot"></span>
+          </span>
+        </span>
+      </button>
+      <span id="label-scanlines-state" class="text-[9px] font-bold text-[var(--crt-phosphor-bright)] w-6 text-left">ON</span>
+    </div>
 
-    <!-- Audio SFX Toggle -->
-    <label class="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors" title="Toggle mechanical click sound FX">
-      <span class="text-[10px]">SOUND_FX</span>
-      <input type="checkbox" id="toggle-sound-fx" class="sr-only" />
-      <span class="toggle-slider w-7 h-3.5 bg-[#17181b] border border-[#4a4e5a] rounded-full inline-block relative after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:w-2.5 after:h-2.5 after:bg-[#5c6370] after:rounded-full after:transition-transform"></span>
-    </label>
+    <!-- Audio SFX Switch -->
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] tracking-wider text-[#8b92a2]">SOUND_FX</span>
+      <button
+        type="button"
+        id="btn-toggle-sound"
+        role="switch"
+        aria-checked="false"
+        class="hardware-rocker-switch"
+        title="Toggle tactile mechanical click sounds"
+      >
+        <span class="rocker-track">
+          <span class="rocker-thumb">
+            <span class="led-dot"></span>
+          </span>
+        </span>
+      </button>
+      <span id="label-sound-state" class="text-[9px] font-bold text-[#636875] w-6 text-left">OFF</span>
+    </div>
 
     <!-- Power Indicator LED -->
     <div class="flex items-center gap-1.5 pl-2 border-l border-[#3a3e4b]">
-      <span class="w-2.5 h-2.5 rounded-full bg-[#00ff66] shadow-[0_0_8px_#00ff66]"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-[#00ff66] shadow-[0_0_8px_#00ff66]" aria-hidden="true"></span>
       <span class="text-[10px] font-bold text-[#abb2bf]">PWR</span>
     </div>
 
-    <div class="bezel-screw" title="M4 Bezel Screw"></div>
+    <div class="bezel-screw" title="M4 Bezel Screw" aria-hidden="true"></div>
   </div>
-</div>
+</footer>
+
+<style>
+  /* Physical Industrial Rocker Switch */
+  .hardware-rocker-switch {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    outline: none;
+  }
+
+  .hardware-rocker-switch:focus-visible .rocker-track {
+    outline: 2px solid var(--crt-phosphor);
+    outline-offset: 2px;
+  }
+
+  .rocker-track {
+    width: 38px;
+    height: 18px;
+    background: #111317;
+    border: 1px solid #454a57;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 1px rgba(255, 255, 255, 0.08);
+    transition: background 0.2s ease, border-color 0.2s ease;
+    display: block;
+  }
+
+  .rocker-thumb {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(180deg, #616777 0%, #353944 100%);
+    border: 1px solid #757c8f;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1.2), background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .led-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #252830;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* ON State */
+  .hardware-rocker-switch[aria-checked="true"] .rocker-track {
+    background: rgba(255, 157, 0, 0.15);
+    border-color: var(--crt-border);
+  }
+
+  .hardware-rocker-switch[aria-checked="true"] .rocker-thumb {
+    transform: translateX(18px);
+    background: linear-gradient(180deg, #8890a2 0%, #464c5a 100%);
+  }
+
+  .hardware-rocker-switch[aria-checked="true"] .led-dot {
+    background: var(--crt-phosphor-bright);
+    box-shadow: 0 0 6px var(--crt-glow);
+  }
+
+  /* Theme Button styles */
+  .theme-btn {
+    border-color: #454a57;
+    color: #8b92a2;
+    background: transparent;
+  }
+
+  .theme-btn.active-theme {
+    border-color: var(--crt-phosphor);
+    color: var(--crt-phosphor-bright);
+    background: rgba(255, 157, 0, 0.15);
+    box-shadow: 0 0 8px var(--crt-glow);
+  }
+</style>
 
 <script>
-  // Phosphor Theme Switcher logic
-  const themeButtons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
-  const savedTheme = localStorage.getItem('crt-theme') || 'amber';
-  document.documentElement.setAttribute('data-theme', savedTheme);
+  function setupBezelControls() {
+    // 1. Phosphor Theme Buttons
+    const themeButtons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
+    const savedTheme = localStorage.getItem('crt-theme') || 'amber';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 
-  themeButtons.forEach((btn) => {
-    const theme = btn.getAttribute('data-set-theme');
-    if (theme === savedTheme) {
-      btn.classList.add('glow-text');
+    function updateThemeButtons(current: string) {
+      themeButtons.forEach((btn) => {
+        const t = btn.getAttribute('data-set-theme');
+        if (t === current) {
+          btn.classList.add('active-theme');
+        } else {
+          btn.classList.remove('active-theme');
+        }
+      });
     }
 
-    btn.addEventListener('click', () => {
-      const selected = btn.getAttribute('data-set-theme') || 'amber';
-      document.documentElement.setAttribute('data-theme', selected);
-      localStorage.setItem('crt-theme', selected);
+    updateThemeButtons(savedTheme);
 
-      // Play audio click if sound engine initialized
-      if ((window as any).__playClickSound) {
-        (window as any).__playClickSound();
+    themeButtons.forEach((btn) => {
+      btn.onclick = () => {
+        const selected = btn.getAttribute('data-set-theme') || 'amber';
+        document.documentElement.setAttribute('data-theme', selected);
+        localStorage.setItem('crt-theme', selected);
+        updateThemeButtons(selected);
+
+        if ((window as any).__playClickSound) {
+          (window as any).__playClickSound();
+        }
+      };
+    });
+
+    // 2. Scanlines Switch
+    const scanlinesBtn = document.getElementById('btn-toggle-scanlines') as HTMLButtonElement | null;
+    const scanlinesLabel = document.getElementById('label-scanlines-state');
+    const savedScanlines = localStorage.getItem('crt-scanlines');
+    const scanlinesActive = savedScanlines === null ? true : savedScanlines === 'true';
+
+    function setScanlines(active: boolean) {
+      if (scanlinesBtn) scanlinesBtn.setAttribute('aria-checked', active ? 'true' : 'false');
+      if (scanlinesLabel) {
+        scanlinesLabel.textContent = active ? 'ON' : 'OFF';
+        scanlinesLabel.className = active
+          ? 'text-[9px] font-bold text-[var(--crt-phosphor-bright)] w-6 text-left'
+          : 'text-[9px] font-bold text-[#636875] w-6 text-left';
       }
-    });
-  });
+      document.documentElement.style.setProperty('--scanline-opacity', active ? '0.18' : '0');
+      localStorage.setItem('crt-scanlines', active ? 'true' : 'false');
+    }
 
-  // Scanlines toggle
-  const scanlinesToggle = document.getElementById('toggle-scanlines') as HTMLInputElement | null;
-  if (scanlinesToggle) {
-    scanlinesToggle.addEventListener('change', () => {
-      document.documentElement.style.setProperty(
-        '--scanline-opacity',
-        scanlinesToggle.checked ? '0.18' : '0'
-      );
-    });
+    setScanlines(scanlinesActive);
+
+    if (scanlinesBtn) {
+      scanlinesBtn.onclick = () => {
+        const isCurrent = scanlinesBtn.getAttribute('aria-checked') === 'true';
+        const next = !isCurrent;
+        setScanlines(next);
+        if ((window as any).__playClickSound) {
+          (window as any).__playClickSound();
+        }
+      };
+    }
+
+    // 3. Sound FX Switch
+    const soundBtn = document.getElementById('btn-toggle-sound') as HTMLButtonElement | null;
+    const soundLabel = document.getElementById('label-sound-state');
+    const savedSound = localStorage.getItem('crt-sound') === 'true';
+
+    function setSound(active: boolean) {
+      (window as any).__soundEnabled = active;
+      if (soundBtn) soundBtn.setAttribute('aria-checked', active ? 'true' : 'false');
+      if (soundLabel) {
+        soundLabel.textContent = active ? 'ON' : 'OFF';
+        soundLabel.className = active
+          ? 'text-[9px] font-bold text-[var(--crt-phosphor-bright)] w-6 text-left'
+          : 'text-[9px] font-bold text-[#636875] w-6 text-left';
+      }
+      localStorage.setItem('crt-sound', active ? 'true' : 'false');
+    }
+
+    setSound(savedSound);
+
+    if (soundBtn) {
+      soundBtn.onclick = () => {
+        const isCurrent = soundBtn.getAttribute('aria-checked') === 'true';
+        const next = !isCurrent;
+        setSound(next);
+        if (next && (window as any).__playClickSound) {
+          (window as any).__playClickSound();
+        }
+      };
+    }
   }
 
-  // Audio SFX toggle
-  const soundToggle = document.getElementById('toggle-sound-fx') as HTMLInputElement | null;
-  if (soundToggle) {
-    soundToggle.addEventListener('change', () => {
-      (window as any).__soundEnabled = soundToggle.checked;
-    });
-  }
+  // Bind on initial load and on Astro view transitions navigation
+  setupBezelControls();
+  document.addEventListener('astro:page-load', setupBezelControls);
 </script>
