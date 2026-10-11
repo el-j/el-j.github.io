@@ -1,0 +1,77 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import { getCollection } from 'astro:content';
+
+const dotfiles = await getCollection('dotfiles');
+---
+
+<WorkstationLayout activeTab="dotfiles" title="Dotfiles & Linux Configs // el-j">
+  <div class="space-y-4">
+    <!-- Header banner -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--crt-border-dim)] pb-2">
+      <div>
+        <h2 class="text-sm font-bold glow-bright uppercase m-0 flex items-center gap-2">
+          <span>[04_DOTFILES]</span>
+          <span>LINUX, NEOVIM & TERMINAL CONFIGURATIONS</span>
+        </h2>
+        <p class="text-[11px] text-[var(--crt-phosphor-dim)] m-0">
+          The keyboard-driven workbench. Modular configs vetted for sub-20ms latency and high developer velocity.
+        </p>
+      </div>
+      <div class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+        MODULES: <strong class="text-[var(--crt-phosphor-bright)]">{dotfiles.length}</strong>
+      </div>
+    </div>
+
+    <!-- Dotfiles Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {dotfiles.map((dot) => (
+        <article class="terminal-card text-xs flex flex-col justify-between hover:border-[var(--crt-phosphor-bright)] transition-colors">
+          <div>
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-dashed border-[var(--crt-border-dim)] pb-1.5 mb-2">
+              <span class="text-[10px] px-1.5 py-0.2 bg-[var(--crt-phosphor)]/15 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-bright)] font-bold">
+                {dot.data.category}
+              </span>
+              <span class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+                PATH: {dot.data.path}
+              </span>
+            </div>
+
+            <!-- Title & Description -->
+            <h3 class="text-sm font-bold text-[var(--crt-phosphor-bright)] mb-1 glow-text">
+              {dot.data.title}
+            </h3>
+            <p class="text-[11px] text-[var(--crt-phosphor)] leading-relaxed opacity-90 mb-3">
+              {dot.data.description}
+            </p>
+
+            <!-- Highlights -->
+            <div class="space-y-1 mb-3">
+              <div class="text-[10px] font-bold text-[var(--crt-phosphor-dim)]">// KEY HIGHLIGHTS:</div>
+              <ul class="list-disc list-inside space-y-0.5 text-[10px] text-[var(--crt-phosphor)] opacity-90">
+                {dot.data.keyHighlights.map((hl) => (
+                  <li>{hl}</li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Code Snippet Box -->
+            {dot.data.snippet && (
+              <div class="p-2 bg-black/70 border border-[var(--crt-border-dim)] rounded font-mono text-[10px] overflow-x-auto">
+                <div class="text-[var(--crt-phosphor-dim)] text-[9px] mb-1">// CONFIG SNIPPET:</div>
+                <pre class="text-[var(--crt-phosphor-bright)] m-0 leading-relaxed">{dot.data.snippet}</pre>
+              </div>
+            )}
+          </div>
+
+          <!-- Footer -->
+          <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] mt-3 flex items-center justify-between text-[10px]">
+            <span class="text-[var(--crt-phosphor-dim)] font-mono">STATUS: ACTIVE IN PROD</span>
+            <span class="text-[var(--crt-phosphor-bright)] font-bold">POSlX_COMPLIANT</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</WorkstationLayout>

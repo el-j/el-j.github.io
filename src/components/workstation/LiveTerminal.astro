@@ -1,0 +1,241 @@
+---
+// LiveTerminal.astro
+---
+
+<div class="terminal-card text-xs flex flex-col h-full min-h-[300px]" id="terminal-island">
+  <!-- Terminal Title Bar -->
+  <div class="terminal-header text-[var(--crt-phosphor)]">
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[LIVE]</span>
+      <span class="font-bold">CLI / DEBUG_ENV</span>
+    </div>
+    <div class="flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+      <button class="hover:text-[var(--crt-phosphor)] cursor-pointer" id="term-btn-min" title="Minimize">[ _ ]</button>
+      <button class="hover:text-[var(--crt-phosphor)] cursor-pointer" id="term-btn-max" title="Maximize">[ &square; ]</button>
+      <button class="hover:text-red-400 cursor-pointer" id="term-btn-clear" title="Clear">[ x ]</button>
+    </div>
+  </div>
+
+  <!-- Terminal Output Buffer -->
+  <div
+    class="flex-1 overflow-y-auto space-y-1.5 font-mono text-[11px] leading-relaxed p-1 text-[var(--crt-phosphor)] scrollbar-thin"
+    id="terminal-output"
+  >
+    <div class="text-[var(--crt-phosphor-dim)]">
+      Linux el-j-station 6.12.9-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
+    </div>
+    <div class="text-[var(--crt-phosphor-dim)]">
+      Type <span class="text-[var(--crt-phosphor-bright)] font-bold">help</span> to view available system commands. Autocomplete with [Tab].
+    </div>
+    <div class="border-b border-dashed border-[var(--crt-border-dim)] my-1.5 opacity-50"></div>
+  </div>
+
+  <!-- Terminal Input Prompt -->
+  <form class="flex items-center gap-1.5 pt-2 border-t border-[var(--crt-border-dim)] font-mono text-[11px]" id="terminal-form">
+    <span class="text-[var(--crt-phosphor-bright)] font-bold whitespace-nowrap">el-j@station:~$</span>
+    <input
+      type="text"
+      id="terminal-input"
+      class="flex-1 bg-transparent border-none outline-none text-[var(--crt-phosphor)] font-mono text-[11px] p-0 m-0 focus:ring-0"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder=""
+    />
+    <span class="cursor-blink"></span>
+  </form>
+</div>
+
+<script>
+  const output = document.getElementById('terminal-output');
+  const form = document.getElementById('terminal-form');
+  const input = document.getElementById('terminal-input') as HTMLInputElement | null;
+  const clearBtn = document.getElementById('term-btn-clear');
+
+  const commandHistory: string[] = [];
+  let historyIdx = -1;
+
+  const COMMANDS: Record<string, (args: string[]) => string> = {
+    help: () => `AVAILABLE COMMANDS:
+  help              - Display this list of commands
+  uname -a          - Print system & kernel architecture
+  cat about.md      - Display bio & engineering philosophy
+  ls projects       - List curated flagship case studies
+  ls cli_tools      - List developer tools & CLI packages
+  ls dotfiles       - List Linux, Neovim, & Zsh configs
+  theme <name>      - Switch phosphor theme (amber | green | ice | paper)
+  git log --graph   - Render ASCII branch topology
+  contact           - Display communication channels
+  cowsay <text>     - The quintessential Unix wisdom
+  matrix            - Phosphor stream simulation
+  clear             - Clear terminal buffer`,
+
+    'uname -a': () => `Linux el-j-station 6.12.9-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux`,
+    uname: () => `Linux`,
+
+    'cat about.md': () => `FABIAN ALTHAUS (el-j) // FULLSTACK_UX_DEV // LINUX_NERD
+-----------------------------------------------------------------
+Role: Lead Fullstack Engineer & Design Technologist
+Mindset: Bridging compiler ASTs with pixel-perfect design tokens.
+Stack: Astro 5, TypeScript, Rust, Linux, Tailwind 4, Web Audio, Figma.
+Philosophy: Zero unnecessary runtime JS, sub-50ms latency, high-craft aesthetics.`,
+
+    'ls projects': () => `CURATED CASE STUDIES:
+  [1] personal-workstation    - Cyber-Tactile CRT Workstation in Astro 5
+  [2] tokendrive-ast-engine   - Design Token Compiler & AST Bridge
+  [3] inquam-platform         - High-throughput Cloud Management Interface
+Type 'open projects' to navigate to Projects view.`,
+
+    'ls cli_tools': () => `DEVELOPER TOOLS & PACKAGES:
+  [1] git-graph-stream        - Real-time ASCII branch visualizer
+  [2] ast-inspector           - Terminal REPL for AST token traversal
+Type 'open cli' to navigate to CLI tools view.`,
+
+    'ls dotfiles': () => `SYSTEM CONFIGURATIONS:
+  [1] neovim-lua-craft        - Zero-bloat Lua Neovim config with AST hover
+  [2] zsh-power-prompt        - Asynchronous Git cyber-prompt
+Type 'open dotfiles' to navigate to Dotfiles view.`,
+
+    'git log --graph': () => `* 1de3c49 (HEAD -> feat/renew-nerdy) docs: add Cyber-Tactile CRT Workstation
+* 7a8f092 feat(ast): map design token tree to typescript AST
+|\\
+| * a5b1284 perf(audio): teenage engineering synth island
+* e901b22 feat(arch): astro 5 static site generation baseline`,
+
+    contact: () => `COMMUNICATION CHANNELS:
+  Email:    info@fabianalthaus.de
+  GitHub:   https://github.com/el-j
+  Portfolio: https://fabianalthaus.de`,
+
+    clear: () => '',
+
+    sudo: () => `[SECURITY ALERT] User 'el-j' is not in sudoers file. This incident has been logged.`,
+
+    matrix: () => `1010010101010101010101010101010101010101010101010101
+0101011010101010101010101010101010101010101010101010
+PHOSPHOR BUFFER OVERFLOW: You took the red pill.`,
+  };
+
+  function appendLine(html: string) {
+    if (!output) return;
+    const line = document.createElement('div');
+    line.innerHTML = html;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function handleCommand(cmdRaw: string) {
+    const raw = cmdRaw.trim();
+    if (!raw) return;
+
+    commandHistory.push(raw);
+    historyIdx = commandHistory.length;
+
+    // Display user command
+    appendLine(`<div class="text-[var(--crt-phosphor-bright)]"><span class="text-[var(--crt-phosphor-dim)]">el-j@station:~$</span> ${escapeHtml(raw)}</div>`);
+
+    const [cmd, ...args] = raw.split(' ');
+    const lower = cmd.toLowerCase();
+
+    // Custom Commands
+    if (lower === 'clear') {
+      if (output) output.innerHTML = '';
+      return;
+    }
+
+    if (lower === 'open') {
+      const dest = args[0];
+      if (dest === 'projects') window.location.href = '/projects';
+      else if (dest === 'cli' || dest === 'cli_tools') window.location.href = '/cli-tools';
+      else if (dest === 'dotfiles') window.location.href = '/dotfiles';
+      else if (dest === 'about') window.location.href = '/';
+      else appendLine(`<span class="text-red-400">Unknown destination: ${dest}. Try 'open projects', 'open cli', 'open dotfiles'.</span>`);
+      return;
+    }
+
+    if (lower === 'theme') {
+      const theme = (args[0] || '').toLowerCase();
+      if (['amber', 'green', 'ice', 'paper'].includes(theme)) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('crt-theme', theme);
+        appendLine(`<span class="text-[var(--crt-phosphor-bright)]">Switched CRT phosphor theme to: [${theme.toUpperCase()}]</span>`);
+      } else {
+        appendLine(`<span class="text-red-400">Invalid theme. Supported: amber, green, ice, paper</span>`);
+      }
+      return;
+    }
+
+    if (lower === 'cowsay') {
+      const text = args.join(' ') || 'Hello from the CRT Workstation!';
+      const cow = `  < ${escapeHtml(text)} >
+  ------------------------------------
+         \\   ^__^
+          \\  (oo)\\_______
+             (__)\\       )\\/\\
+                 ||----w |
+                 ||     ||`;
+      appendLine(`<pre class="text-[var(--crt-phosphor)] my-1 leading-none">${cow}</pre>`);
+      return;
+    }
+
+    // Direct Match
+    const handler = COMMANDS[raw] || COMMANDS[lower];
+    if (handler) {
+      appendLine(`<pre class="text-[var(--crt-phosphor)] font-mono whitespace-pre-wrap">${escapeHtml(handler(args))}</pre>`);
+    } else {
+      appendLine(`<span class="text-red-400">command not found: ${escapeHtml(raw)}. Type 'help' for available commands.</span>`);
+    }
+
+    // Trigger sound if active
+    if ((window as any).__playClickSound) {
+      (window as any).__playClickSound();
+    }
+  }
+
+  function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  if (form && input) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = input.value;
+      input.value = '';
+      handleCommand(val);
+    });
+
+    // History and tab autocomplete
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIdx > 0) {
+          historyIdx--;
+          input.value = commandHistory[historyIdx] || '';
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIdx < commandHistory.length - 1) {
+          historyIdx++;
+          input.value = commandHistory[historyIdx] || '';
+        } else {
+          historyIdx = commandHistory.length;
+          input.value = '';
+        }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const current = input.value.trim().toLowerCase();
+        const matches = Object.keys(COMMANDS).filter((c) => c.startsWith(current));
+        if (matches.length === 1) {
+          input.value = matches[0];
+        } else if (matches.length > 1) {
+          appendLine(`<span class="text-[var(--crt-phosphor-dim)]">${matches.join('  ')}</span>`);
+        }
+      }
+    });
+  }
+
+  if (clearBtn && output) {
+    clearBtn.addEventListener('click', () => {
+      output.innerHTML = '';
+    });
+  }
+</script>
