@@ -44,7 +44,11 @@
     "filter_category": "Kategorie",
     "sort_label": "Sortieren nach",
     "sort_newest": "Neueste",
-    "sort_az": "A – Z"
+    "sort_az": "A – Z",
+    "group_count": "{n} Repositories",
+    "group_count_one": "{n} Repository",
+    "back": "← Alle Projekte",
+    "group_badge": "Projektgruppe"
   },
   "footer": {
     "made_with": "Erstellt mit",

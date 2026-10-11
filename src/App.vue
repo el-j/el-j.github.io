@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
 import Navbar from './components/layout/Navbar.vue'
 import Footer from './components/layout/Footer.vue'
-import HeroSection from './components/projects/HeroSection.vue'
-import BentoGrid from './components/projects/BentoGrid.vue'
 </script>
 
 <template>
@@ -10,8 +9,7 @@ import BentoGrid from './components/projects/BentoGrid.vue'
     <Navbar />
 
     <main>
-      <HeroSection />
-      <BentoGrid />
+      <RouterView />
     </main>
 
     <Footer />
