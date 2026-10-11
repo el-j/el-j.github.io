@@ -1,0 +1,145 @@
+---
+// TokenAstVisualizer.astro
+---
+
+<div class="terminal-card text-xs flex flex-col h-full min-h-[300px]" id="ast-visualizer-card">
+  <!-- Title Bar -->
+  <div class="terminal-header text-[var(--crt-phosphor)]">
+    <div class="flex items-center gap-1.5 font-bold">
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[AST]</span>
+      <span>token specs &rarr; COMPILER_AST</span>
+    </div>
+    <div class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+      <span>FIGMA_VARS &hArr; TS_NODES</span>
+    </div>
+  </div>
+
+  <!-- Interactive Vector Graphic Area -->
+  <div class="flex-1 relative flex flex-col justify-between p-2 font-mono">
+    <div class="grid grid-cols-12 gap-2 items-center">
+      <!-- Left: Token Specs -->
+      <div class="col-span-5 border border-dashed border-[var(--crt-border-dim)] p-2 rounded bg-black/40">
+        <div class="text-[10px] font-bold text-[var(--crt-phosphor-bright)] mb-1 flex items-center justify-between">
+          <span>token specs</span>
+          <span class="text-[9px] text-[var(--crt-phosphor-dim)]">W3C</span>
+        </div>
+
+        <div class="space-y-1 text-[10px]" id="tokens-list">
+          <div class="token-item cursor-pointer p-1 rounded hover:bg-[var(--crt-phosphor)]/15 border border-transparent hover:border-[var(--crt-border-dim)] transition-colors active" data-token="color" data-val="#ff9d00">
+            <span class="text-[var(--crt-phosphor-dim)]">--phosphor:</span>
+            <span class="text-[var(--crt-phosphor-bright)] font-bold">#ff9d00</span>
+          </div>
+          <div class="token-item cursor-pointer p-1 rounded hover:bg-[var(--crt-phosphor)]/15 border border-transparent hover:border-[var(--crt-border-dim)] transition-colors" data-token="radius" data-val="18px">
+            <span class="text-[var(--crt-phosphor-dim)]">--radius-bezel:</span>
+            <span class="text-[var(--crt-phosphor-bright)] font-bold">18px</span>
+          </div>
+          <div class="token-item cursor-pointer p-1 rounded hover:bg-[var(--crt-phosphor)]/15 border border-transparent hover:border-[var(--crt-border-dim)] transition-colors" data-token="scanline" data-val="0.18">
+            <span class="text-[var(--crt-phosphor-dim)]">--scanline-op:</span>
+            <span class="text-[var(--crt-phosphor-bright)] font-bold">0.18</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Transform Arrow / Impact -->
+      <div class="col-span-2 flex flex-col items-center justify-center text-center">
+        <span class="text-xs text-[var(--crt-phosphor-dim)] font-mono">&rarr;</span>
+        <div class="w-6 h-6 my-1 flex items-center justify-center text-[var(--crt-phosphor-bright)] text-sm animate-pulse">
+          &#10038;
+        </div>
+        <span class="text-[8px] text-[var(--crt-phosphor-dim)] uppercase">Compiler</span>
+      </div>
+
+      <!-- Right: AST Tree Graph -->
+      <div class="col-span-5 border border-dashed border-[var(--crt-border-dim)] p-2 rounded bg-black/40">
+        <div class="text-[10px] font-bold text-[var(--crt-phosphor-bright)] mb-1 flex items-center justify-between">
+          <span>AST Node</span>
+          <span class="text-[9px] text-[var(--crt-phosphor-dim)]">TypeScript</span>
+        </div>
+
+        <div class="space-y-1 font-mono text-[10px]" id="ast-inspector-box">
+          <div class="text-[var(--crt-phosphor)] p-1 bg-black/50 border border-[var(--crt-border-dim)] rounded leading-tight">
+            <div class="text-[9px] text-[var(--crt-phosphor-dim)]" id="ast-node-type">TypeAliasDeclaration</div>
+            <div class="text-[var(--crt-phosphor-bright)] font-bold truncate" id="ast-node-ident">Identifier("PhosphorToken")</div>
+            <div class="text-[9px] text-[var(--crt-phosphor-dim)]" id="ast-node-val">LiteralType("#ff9d00")</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Inspect Info Banner -->
+    <div class="my-2 p-1.5 bg-black/60 border border-[var(--crt-border-dim)] rounded text-[10px] text-[var(--crt-phosphor-bright)]">
+      <span class="text-[var(--crt-phosphor-dim)]">// COMPILER STATUS:</span>
+      <span id="compiler-msg">AST generation synchronized with Figma tokens (0ms latency).</span>
+    </div>
+
+    <!-- Tech Badges from Moodboard Visual -->
+    <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] flex flex-wrap items-center justify-between gap-2 text-[11px]">
+      <div class="flex items-center gap-1.5 font-bold">
+        <span class="text-[var(--crt-phosphor-dim)]">::</span>
+        <span class="text-[var(--crt-phosphor-bright)] hover:underline cursor-pointer" title="React Server Components & Islands">react</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-bold">
+        <span class="text-[var(--crt-phosphor-dim)]">::</span>
+        <span class="text-[var(--crt-phosphor-bright)] hover:underline cursor-pointer" title="Vue 3 & Composition API">vue</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-bold">
+        <span class="text-[var(--crt-phosphor-dim)]">::</span>
+        <span class="text-[var(--crt-phosphor-bright)] hover:underline cursor-pointer" title="Figma Design Tokens & Variables">figma</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-bold">
+        <span class="text-[var(--crt-phosphor-dim)]">::</span>
+        <span class="text-[var(--crt-phosphor-bright)] hover:underline cursor-pointer" title="Arch / Debian / POSIX Linux">linux</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Interactive Token -> AST Inspector
+  const tokenItems = document.querySelectorAll<HTMLElement>('.token-item');
+  const astNodeType = document.getElementById('ast-node-type');
+  const astNodeIdent = document.getElementById('ast-node-ident');
+  const astNodeVal = document.getElementById('ast-node-val');
+  const compilerMsg = document.getElementById('compiler-msg');
+
+  const AST_MAP: Record<string, { type: string; ident: string; val: string; desc: string }> = {
+    color: {
+      type: 'VariableDeclaration: const',
+      ident: 'Identifier("PHOSPHOR_COLOR")',
+      val: 'StringLiteral("#ff9d00")',
+      desc: 'W3C Color token resolved to AST StringLiteral with WCAG 7.2:1 contrast ratio.'
+    },
+    radius: {
+      type: 'PropertyAssignment',
+      ident: 'Identifier("borderRadius")',
+      val: 'NumericLiteral(18) + Unit("px")',
+      desc: 'Bezel curvature token emitted into CSS AST ruleset.'
+    },
+    scanline: {
+      type: 'CustomPropertyDeclaration',
+      ident: 'Identifier("--scanline-op")',
+      val: 'FloatLiteral(0.18)',
+      desc: 'Raster scanline shader coefficient compiled into CSS variables.'
+    }
+  };
+
+  tokenItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      tokenItems.forEach((t) => t.classList.remove('bg-[var(--crt-phosphor)]/20', 'border-[var(--crt-border)]'));
+      item.classList.add('bg-[var(--crt-phosphor)]/20', 'border-[var(--crt-border)]');
+
+      const tokenKey = item.getAttribute('data-token') || 'color';
+      const data = AST_MAP[tokenKey];
+      if (data && astNodeType && astNodeIdent && astNodeVal && compilerMsg) {
+        astNodeType.textContent = data.type;
+        astNodeIdent.textContent = data.ident;
+        astNodeVal.textContent = data.val;
+        compilerMsg.textContent = data.desc;
+      }
+
+      if ((window as any).__playClickSound) {
+        (window as any).__playClickSound();
+      }
+    });
+  });
+</script>

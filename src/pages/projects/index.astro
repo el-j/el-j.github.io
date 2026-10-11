@@ -1,0 +1,119 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+---
+
+<WorkstationLayout activeTab="projects" title="Projects & Case Studies // el-j">
+  <div class="space-y-4">
+    <!-- Header banner -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--crt-border-dim)] pb-2">
+      <div>
+        <h2 class="text-sm font-bold glow-bright uppercase m-0 flex items-center gap-2">
+          <span>[02_PROJECTS]</span>
+          <span>CURATED CASE STUDIES & ARCHITECTURE SCHEMATICS</span>
+        </h2>
+        <p class="text-[11px] text-[var(--crt-phosphor-dim)] m-0">
+          No generic repo dumps. Every project highlights architectural problem solving and tactile UX craft.
+        </p>
+      </div>
+      <div class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+        TOTAL_STUDIES: <strong class="text-[var(--crt-phosphor-bright)]">{projects.length}</strong>
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {projects.map((proj) => (
+        <article class="terminal-card text-xs flex flex-col justify-between hover:border-[var(--crt-phosphor-bright)] transition-colors">
+          <div>
+            <!-- Card Header -->
+            <div class="flex items-center justify-between border-b border-dashed border-[var(--crt-border-dim)] pb-1.5 mb-2">
+              <span class="px-1.5 py-0.2 bg-[var(--crt-phosphor)]/15 border border-[var(--crt-border-dim)] text-[10px] text-[var(--crt-phosphor-bright)] font-bold">
+                {proj.data.category}
+              </span>
+              <span class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+                {proj.data.year} // {proj.data.role}
+              </span>
+            </div>
+
+            <!-- Title & Description -->
+            <h3 class="text-sm font-bold text-[var(--crt-phosphor-bright)] mb-1 glow-text">
+              {proj.data.title}
+            </h3>
+            <p class="text-[11px] text-[var(--crt-phosphor)] leading-relaxed opacity-90 mb-3">
+              {proj.data.description}
+            </p>
+
+            <!-- Highlights -->
+            {proj.data.uxHighlight && (
+              <div class="mb-2 p-1.5 bg-black/40 border border-[var(--crt-border-dim)] rounded text-[10px]">
+                <strong class="text-[var(--crt-phosphor-bright)] block mb-0.5">&gt; UX/UI CRAFT:</strong>
+                <span class="text-[var(--crt-phosphor)] opacity-90">{proj.data.uxHighlight}</span>
+              </div>
+            )}
+
+            {proj.data.architectureHighlight && (
+              <div class="mb-2 p-1.5 bg-black/40 border border-[var(--crt-border-dim)] rounded text-[10px]">
+                <strong class="text-[var(--crt-phosphor-bright)] block mb-0.5">&gt; ARCHITECTURE:</strong>
+                <span class="text-[var(--crt-phosphor)] opacity-90">{proj.data.architectureHighlight}</span>
+              </div>
+            )}
+
+            <!-- Metrics -->
+            {proj.data.metrics && (
+              <div class="grid grid-cols-3 gap-1 my-2 text-[9px] text-center font-mono">
+                {Object.entries(proj.data.metrics).map(([k, v]) => (
+                  <div class="p-1 bg-black/50 border border-[var(--crt-border-dim)] rounded">
+                    <span class="block text-[var(--crt-phosphor-dim)] truncate">{k}</span>
+                    <strong class="text-[var(--crt-phosphor-bright)]">{v}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <!-- Footer Tech Stack & Links -->
+          <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] mt-3">
+            <div class="flex flex-wrap items-center gap-1 mb-2">
+              {proj.data.stack.map((tech) => (
+                <span class="text-[9px] px-1 py-0.2 bg-black/60 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-dim)]">
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+            <div class="flex items-center justify-between text-[11px]">
+              <div class="flex items-center gap-3">
+                {proj.data.demoUrl && (
+                  <a
+                    href={proj.data.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--crt-phosphor-bright)] hover:underline font-bold flex items-center gap-1"
+                  >
+                    <span>[LIVE_DEMO]</span>
+                    <span>&nearr;</span>
+                  </a>
+                )}
+                {proj.data.githubUrl && (
+                  <a
+                    href={proj.data.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--crt-phosphor)] hover:underline flex items-center gap-1 opacity-80"
+                  >
+                    <span>[SOURCE_CODE]</span>
+                    <span>&nearr;</span>
+                  </a>
+                )}
+              </div>
+              <span class="text-[9px] text-[var(--crt-phosphor-dim)] font-mono">SPEC_VERIFIED</span>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</WorkstationLayout>

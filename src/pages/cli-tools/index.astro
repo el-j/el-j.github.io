@@ -1,0 +1,131 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import { getCollection } from 'astro:content';
+
+const tools = await getCollection('cli_tools');
+---
+
+<WorkstationLayout activeTab="cli_tools" title="CLI Tools & Packages // el-j">
+  <div class="space-y-4">
+    <!-- Header banner -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--crt-border-dim)] pb-2">
+      <div>
+        <h2 class="text-sm font-bold glow-bright uppercase m-0 flex items-center gap-2">
+          <span>[03_CLI_TOOLS]</span>
+          <span>OPEN-SOURCE CLI TOOLS & DEVELOPER ERGONOMICS</span>
+        </h2>
+        <p class="text-[11px] text-[var(--crt-phosphor-dim)] m-0">
+          Terminal-native workflows, AST query utilities, and developer ergonomics packages.
+        </p>
+      </div>
+      <div class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+        PACKAGES: <strong class="text-[var(--crt-phosphor-bright)]">{tools.length}</strong>
+      </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {tools.map((tool) => (
+        <article class="terminal-card text-xs flex flex-col justify-between hover:border-[var(--crt-phosphor-bright)] transition-colors">
+          <div>
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-dashed border-[var(--crt-border-dim)] pb-1.5 mb-2">
+              <span class="text-[10px] px-1.5 py-0.2 bg-[var(--crt-phosphor)]/15 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-bright)] font-bold">
+                {tool.data.language}
+              </span>
+              <span class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+                BIN: /{tool.data.name}
+              </span>
+            </div>
+
+            <!-- Title & Summary -->
+            <h3 class="text-sm font-bold text-[var(--crt-phosphor-bright)] mb-1 glow-text">
+              {tool.data.name}
+            </h3>
+            <p class="text-[11px] text-[var(--crt-phosphor)] leading-relaxed opacity-90 mb-3">
+              {tool.data.summary}
+            </p>
+
+            <!-- Command Run Demo -->
+            <div class="p-2 bg-black/60 border border-[var(--crt-border-dim)] rounded font-mono text-[10px] mb-3">
+              <div class="text-[var(--crt-phosphor-dim)] mb-1">// EXECUTE:</div>
+              <div class="text-[var(--crt-phosphor-bright)] flex items-center gap-2">
+                <span>$</span>
+                <span>{tool.data.command}</span>
+              </div>
+            </div>
+
+            <!-- Installation Box -->
+            <div class="p-2 bg-black/40 border border-dashed border-[var(--crt-border-dim)] rounded font-mono text-[10px] flex items-center justify-between gap-2">
+              <span class="text-[var(--crt-phosphor)] truncate">{tool.data.installCmd}</span>
+              <button
+                class="copy-btn px-1.5 py-0.5 border border-[var(--crt-border-dim)] text-[9px] hover:bg-[var(--crt-phosphor)]/20 active:scale-95 transition-all text-[var(--crt-phosphor-bright)]"
+                data-cmd={tool.data.installCmd}
+              >
+                COPY
+              </button>
+            </div>
+          </div>
+
+          <!-- Tags & Links -->
+          <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] mt-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-1">
+                {tool.data.tags.map((tag) => (
+                  <span class="text-[9px] px-1 py-0.2 bg-black/60 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-dim)]">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <div class="flex items-center gap-2 text-[11px]">
+                {tool.data.githubUrl && (
+                  <a
+                    href={tool.data.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--crt-phosphor-bright)] hover:underline flex items-center gap-1"
+                  >
+                    <span>[GITHUB]</span>
+                    <span>&nearr;</span>
+                  </a>
+                )}
+                {tool.data.npmUrl && (
+                  <a
+                    href={tool.data.npmUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--crt-phosphor)] hover:underline flex items-center gap-1 opacity-80"
+                  >
+                    <span>[NPM]</span>
+                    <span>&nearr;</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</WorkstationLayout>
+
+<script>
+  // Copy button interaction
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>('.copy-btn');
+  copyButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cmd = btn.getAttribute('data-cmd');
+      if (cmd) {
+        navigator.clipboard.writeText(cmd);
+        const originalText = btn.textContent;
+        btn.textContent = 'COPIED!';
+        btn.classList.add('bg-[var(--crt-phosphor)]/40');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('bg-[var(--crt-phosphor)]/40');
+        }, 1500);
+      }
+    });
+  });
+</script>

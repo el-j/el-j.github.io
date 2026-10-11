@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+.astro/
 *.local
 
 # Coverage reports
@@ -37,3 +38,7 @@ lerna-debug.log*
 .env
 .env.local
 .env.*.local
+
+# Playwright
+playwright-report/
+test-results/

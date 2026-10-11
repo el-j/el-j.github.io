@@ -1,0 +1,65 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import LatestDeployment from '@/components/workstation/LatestDeployment.astro';
+import ProjectSchematicsDeck from '@/components/workstation/ProjectSchematicsDeck.astro';
+import LiveTerminal from '@/components/workstation/LiveTerminal.astro';
+import TokenAstVisualizer from '@/components/workstation/TokenAstVisualizer.astro';
+---
+
+<WorkstationLayout activeTab="about">
+  <!-- 2x2 Workstation Matrix (Unified Cyberdeck & Architecture Inspector) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
+    <!-- Top Left: Latest Deployment & Fleet Status -->
+    <div class="lg:col-span-5">
+      <LatestDeployment />
+    </div>
+
+    <!-- Top Right: Real Project Schematics & Architecture Deck -->
+    <div class="lg:col-span-7">
+      <ProjectSchematicsDeck />
+    </div>
+
+    <!-- Bottom Left: CLI / DEBUG_ENV Live Terminal REPL -->
+    <div class="lg:col-span-6">
+      <LiveTerminal />
+    </div>
+
+    <!-- Bottom Right: token specs -> AST Interactive Visualizer -->
+    <div class="lg:col-span-6">
+      <TokenAstVisualizer />
+    </div>
+  </div>
+
+  <!-- Deep Bio / Philosophy Drawer (Sourced from fabianalthaus.de) -->
+  <div class="mt-4 pt-3 border-t border-[var(--crt-border-dim)] text-xs font-mono grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
+      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
+        <span>[01]</span>
+        <span>CONCEPT & INTERFACE DESIGN</span>
+      </div>
+      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
+        Designer and professional consultant for digital and analogue interfaces, apps, and hardware. Human-centered ergonomics for complex industrial machines, SIEM platforms, and open-source electronics tools.
+      </p>
+    </div>
+
+    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
+      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
+        <span>[02]</span>
+        <span>FULLSTACK & CI/CD INFRASTRUCTURE</span>
+      </div>
+      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
+        Creator of <strong class="text-[var(--crt-phosphor-bright)]">RunZero</strong> (dual-engine runner fleet) and <strong class="text-[var(--crt-phosphor-bright)]">@el-j/google-sheet-translations</strong>. Zero-runtime Astro architecture, Docker/OrbStack micro-VMs, and Linux automation.
+      </p>
+    </div>
+
+    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
+      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
+        <span>[03]</span>
+        <span>HARDWARE & PHYSICAL COMPUTING</span>
+      </div>
+      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
+        Fritzing EDA concepts, DomeDrum MIDI controllers, E-CUBE biotech instruments, and KTM Motohall museum IoT sensor networks. Bridging physical circuits and microcontrollers with modern web software.
+      </p>
+    </div>
+  </div>
+</WorkstationLayout>
