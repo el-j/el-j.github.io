@@ -58,6 +58,29 @@ const { t } = useI18n()
           {{ t('hero.cta_github') }}
         </a>
       </div>
+
+      <div class="mt-8 flex justify-center">
+        <a
+          href="https://github.com/sponsors/el-j"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20 font-medium text-sm hover:bg-pink-500/20 transition-colors"
+        >
+          <i class="pi pi-heart-fill text-xs" />
+          Sponsor my open source work
+        </a>
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <iframe
+          src="https://github.com/sponsors/el-j/card"
+          title="Sponsor el-j"
+          height="225"
+          width="600"
+          class="max-w-full rounded-xl border-0"
+          style="border: 0;"
+        />
+      </div>
     </div>
 
     <!-- Scroll indicator -->
