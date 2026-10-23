@@ -26,6 +26,24 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
+      // Exclude non-code assets, generated data files, and the app entry point
+      exclude: [
+        '**/*.json',
+        '**/*.svg',
+        '**/main.ts',
+        'src/data/**',
+        'src/locales/**',
+        'src/assets/**',
+        '**/node_modules/**',
+        '**/__tests__/**',
+        '**/e2e/**',
+      ],
+      thresholds: {
+        statements: 90,
+        branches: 80,
+        functions: 90,
+        lines: 90,
+      },
     },
   },
 })
