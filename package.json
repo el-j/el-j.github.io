@@ -8,9 +8,14 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro sync",
+    "check": "astro check",
+    "fetch-i18n": "node scripts/fetch-i18n.mjs",
+    "fetch-projects": "node scripts/fetch-projects.mjs",
+    "prebuild": "npm run fetch-i18n && npm run fetch-projects",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
