@@ -8,10 +8,10 @@ on:
 permissions:
   contents: read
 
-# Share the 'pages' concurrency group with deploy.yml to avoid conflicting runs
 concurrency:
-  group: pages
+  group: sync-translations
   cancel-in-progress: false
+
 
 jobs:
   sync:
