@@ -1,0 +1,321 @@
+---
+// SynthGroovebox.astro - Playable Teenage Engineering Inspired Pocket Synthesizer (Issue #15)
+---
+
+<div class="synth-deck text-xs font-mono select-none" id="synth-module">
+  <!-- Synth Header Bar -->
+  <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#3c414f]">
+    <div class="flex items-center gap-2">
+      <span class="text-[var(--crt-phosphor-bright)] font-bold tracking-wider">+ SYNTH_T1 +</span>
+      <span class="text-[9px] px-1.5 py-0.2 bg-[#282c34] text-[#787f91] rounded border border-[#3e4451]">OP-ENGINE</span>
+    </div>
+
+    <!-- Power / Mute Switch -->
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-[#787f91]">AUDIO:</span>
+      <button
+        type="button"
+        id="synth-power-btn"
+        class="px-2 py-0.5 rounded text-[10px] font-bold border border-[var(--crt-phosphor)] text-[var(--crt-phosphor)] hover:bg-[var(--crt-phosphor)]/20 transition-all active:scale-95 flex items-center gap-1 cursor-pointer"
+        aria-label="Toggle Synth Audio"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--crt-phosphor)] inline-block animate-pulse"></span>
+        <span id="synth-power-text">UNMUTE</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+    <!-- Left Screen: Oscilloscope Waveform Display -->
+    <div class="md:col-span-6 bg-[#131519] border border-[#2c313a] rounded p-2 flex flex-col justify-between">
+      <div class="flex items-center justify-between text-[10px] text-[#787f91] mb-1">
+        <span>WAVE_OSC</span>
+        <span class="text-[var(--crt-phosphor-bright)]" id="synth-wave-label">SAWTOOTH</span>
+      </div>
+
+      <!-- Oscilloscope Canvas -->
+      <canvas
+        id="synth-scope-canvas"
+        class="w-full h-16 bg-[#0c0d10] border border-[#20242c] rounded"
+        width="240"
+        height="64"
+      ></canvas>
+
+      <!-- Waveform Selectors -->
+      <div class="grid grid-cols-4 gap-1 mt-2 text-[9px] text-center">
+        <button type="button" class="wave-select-btn py-0.5 bg-[#282c34] hover:bg-[#3e4451] rounded text-[#abb2bf] font-bold active cursor-pointer" data-wave="sawtooth">SAW</button>
+        <button type="button" class="wave-select-btn py-0.5 bg-[#282c34] hover:bg-[#3e4451] rounded text-[#abb2bf] font-bold cursor-pointer" data-wave="square">SQR</button>
+        <button type="button" class="wave-select-btn py-0.5 bg-[#282c34] hover:bg-[#3e4451] rounded text-[#abb2bf] font-bold cursor-pointer" data-wave="sine">SIN</button>
+        <button type="button" class="wave-select-btn py-0.5 bg-[#282c34] hover:bg-[#3e4451] rounded text-[#abb2bf] font-bold cursor-pointer" data-wave="triangle">TRI</button>
+      </div>
+    </div>
+
+    <!-- Right Controls: Knobs & Trigger Pads -->
+    <div class="md:col-span-6 flex flex-col justify-between gap-2">
+      <!-- Knobs Row -->
+      <div class="flex items-center justify-around bg-[#17191d] p-1.5 rounded border border-[#2b2f38]">
+        <div class="flex flex-col items-center">
+          <div class="synth-knob" id="knob-cutoff" title="Cutoff Filter">
+            <div class="synth-knob-indicator" style="transform: rotate(45deg);"></div>
+          </div>
+          <span class="text-[9px] text-[#787f91] mt-1">CUTOFF</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="synth-knob" id="knob-decay" title="Decay">
+            <div class="synth-knob-indicator" style="transform: rotate(-30deg);"></div>
+          </div>
+          <span class="text-[9px] text-[#787f91] mt-1">DECAY</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="synth-knob" id="knob-res" title="Resonance">
+            <div class="synth-knob-indicator" style="transform: rotate(60deg);"></div>
+          </div>
+          <span class="text-[9px] text-[#787f91] mt-1">RES</span>
+        </div>
+      </div>
+
+      <!-- 8 Playable Pads -->
+      <div class="grid grid-cols-4 gap-1.5" id="synth-pads-grid">
+        <button type="button" class="synth-pad" data-freq="261.63" data-key="A">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">A</span>
+          <span>C4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="293.66" data-key="S">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">S</span>
+          <span>D4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="329.63" data-key="D">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">D</span>
+          <span>E4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="349.23" data-key="F">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">F</span>
+          <span>F4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="392.00" data-key="G">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">G</span>
+          <span>G4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="440.00" data-key="H">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">H</span>
+          <span>A4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="493.88" data-key="J">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">J</span>
+          <span>B4</span>
+        </button>
+        <button type="button" class="synth-pad" data-freq="523.25" data-key="K">
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">K</span>
+          <span>C5</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-[9px] text-[#787f91] text-center mt-2 font-mono">
+    PLAY NOTES WITH MOUSE OR HOMEROW KEYS [<kbd class="text-[var(--crt-phosphor)]">A</kbd>..<kbd class="text-[var(--crt-phosphor)]">K</kbd>]
+  </div>
+</div>
+
+<script>
+  function setupSynthModule() {
+    let audioCtx: AudioContext | null = null;
+    let analyser: AnalyserNode | null = null;
+    let isPowered = false;
+    let activeWave: OscillatorType = 'sawtooth';
+    let cutoffFreq = 1800;
+
+    const powerBtn = document.getElementById('synth-power-btn');
+    const powerText = document.getElementById('synth-power-text');
+    const canvas = document.getElementById('synth-scope-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas ? canvas.getContext('2d') : null;
+    const pads = document.querySelectorAll<HTMLButtonElement>('.synth-pad');
+    const waveBtns = document.querySelectorAll<HTMLButtonElement>('.wave-select-btn');
+    const waveLabel = document.getElementById('synth-wave-label');
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContextClass) return;
+        audioCtx = new AudioContextClass();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        startScopeVisualizer();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playNote(freq: number) {
+      if (!isPowered) return;
+      initAudio();
+      if (!audioCtx || !analyser) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = activeWave;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(cutoffFreq, audioCtx.currentTime);
+        filter.Q.setValueAtTime(4, audioCtx.currentTime);
+
+        const now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } catch (e) {
+        console.warn('Audio error:', e);
+      }
+    }
+
+    // Oscilloscope visualizer loop
+    function startScopeVisualizer() {
+      if (!ctx || !canvas || !analyser) return;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        if (!ctx || !canvas || !analyser) return;
+        requestAnimationFrame(draw);
+
+        analyser.getByteTimeDomainData(dataArray);
+
+        ctx.fillStyle = '#0c0d10';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isPowered ? '#00ff66' : '#4a5060';
+        ctx.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          x += sliceWidth;
+        }
+
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
+      }
+      draw();
+    }
+
+    // Power / Mute toggle
+    if (powerBtn && powerText) {
+      powerBtn.onclick = () => {
+        isPowered = !isPowered;
+        if (isPowered) {
+          initAudio();
+          powerText.textContent = 'ACTIVE';
+          powerBtn.classList.add('bg-[var(--crt-phosphor)]/30');
+        } else {
+          powerText.textContent = 'UNMUTE';
+          powerBtn.classList.remove('bg-[var(--crt-phosphor)]/30');
+        }
+      };
+    }
+
+    // Waveform selector buttons
+    waveBtns.forEach((btn) => {
+      btn.onclick = () => {
+        waveBtns.forEach((b) => b.classList.remove('active', 'border', 'border-[var(--crt-phosphor)]'));
+        btn.classList.add('active', 'border', 'border-[var(--crt-phosphor)]');
+        const wave = btn.getAttribute('data-wave') as OscillatorType;
+        activeWave = wave || 'sawtooth';
+        if (waveLabel) waveLabel.textContent = (wave || '').toUpperCase();
+      };
+    });
+
+    // Touch & Mouse triggers
+    pads.forEach((pad) => {
+      const trigger = () => {
+        const freq = parseFloat(pad.getAttribute('data-freq') || '440');
+        pad.classList.add('playing');
+        playNote(freq);
+        setTimeout(() => pad.classList.remove('playing'), 150);
+      };
+
+      pad.onmousedown = trigger;
+      pad.ontouchstart = (e) => {
+        e.preventDefault();
+        trigger();
+      };
+    });
+
+    // Keyboard support (A..K)
+    const keyMap: Record<string, string> = {
+      a: '261.63',
+      s: '293.66',
+      d: '329.63',
+      f: '349.23',
+      g: '392.00',
+      h: '440.00',
+      j: '493.88',
+      k: '523.25',
+    };
+
+    const keyHandler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+
+      const freqStr = keyMap[e.key.toLowerCase()];
+      if (freqStr) {
+        const pad = document.querySelector(`.synth-pad[data-freq="${freqStr}"]`);
+        if (pad) {
+          pad.classList.add('playing');
+          playNote(parseFloat(freqStr));
+          setTimeout(() => pad.classList.remove('playing'), 150);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', keyHandler);
+
+    // Filter cutoff knob interaction
+    const knobCutoff = document.getElementById('knob-cutoff');
+    if (knobCutoff) {
+      let active = false;
+      let startY = 0;
+      knobCutoff.onmousedown = (e) => {
+        active = true;
+        startY = e.clientY;
+      };
+      window.addEventListener('mousemove', (e) => {
+        if (!active) return;
+        const dy = startY - e.clientY;
+        cutoffFreq = Math.min(8000, Math.max(300, cutoffFreq + dy * 20));
+        const rot = Math.min(135, Math.max(-135, (cutoffFreq - 4000) / 30));
+        const ind = knobCutoff.querySelector<HTMLElement>('.synth-knob-indicator');
+        if (ind) ind.style.transform = `rotate(${rot}deg)`;
+        startY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { active = false; });
+    }
+  }
+
+  setupSynthModule();
+  document.addEventListener('astro:page-load', setupSynthModule);
+</script>
