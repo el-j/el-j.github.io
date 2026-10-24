@@ -108,4 +108,14 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(page).toHaveURL(/\/projects/)
     await expect(page.locator('h2')).toContainText('[02_PROJECTS]')
   })
+
+  test('bezel live date and time clock is displayed and updates', async ({ page }) => {
+    const dateStamp = page.locator('#bezel-date-stamp')
+    await expect(dateStamp).toBeVisible()
+
+    // Verify it contains a time format with HH:MM:SS
+    await expect(dateStamp).toHaveText(/\d{1,2}:\d{2}:\d{2}/)
+    await expect(dateStamp).toHaveAttribute('datetime')
+  })
 })
+
