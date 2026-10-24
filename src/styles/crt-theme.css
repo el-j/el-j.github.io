@@ -438,16 +438,21 @@ html, body {
   box-shadow: 0 0 6px var(--crt-glow);
 }
 
-/* ── Accessible Motion Optimization ────────────────────────────────── */
+/* ── Accessible Motion Optimization (Issue #18) ────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .crt-screen-surface::before {
+  .crt-screen-surface::before,
+  .crt-screen-surface::after {
     opacity: 0 !important;
+    animation: none !important;
   }
+  .animate-pulse,
   .cursor-blink {
     animation: none !important;
     opacity: 1 !important;
   }
-  * {
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.001s !important;
   }
 }

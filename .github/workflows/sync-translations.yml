@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Sync translations to Google Sheets
-        uses: el-j/google-sheet-translations@v1
+        uses: el-j/google-sheet-translations@v2.2.0
         with:
           google-client-email: ${{ secrets.GOOGLE_CLIENT_EMAIL }}
           google-private-key: ${{ secrets.GOOGLE_PRIVATE_KEY }}

@@ -93,6 +93,16 @@ test.describe('CRT Workstation Landing page', () => {
     expect(newChecked).not.toBe(initialChecked)
   })
 
+  test('synth toggle engages pocket synthesizer', async ({ page }) => {
+    const synthBtn = page.locator('#btn-toggle-synth')
+    await expect(synthBtn).toBeVisible()
+    await synthBtn.click()
+
+    await expect(page.locator('#synth-surface')).toBeVisible()
+    await expect(page.locator('#schematic-surface')).toBeHidden()
+    await expect(page.locator('#synth-power-btn')).toBeVisible()
+  })
+
   test('navigation to projects page works', async ({ page }) => {
     await page.click('a[data-tab="projects"]')
     await expect(page).toHaveURL(/\/projects/)

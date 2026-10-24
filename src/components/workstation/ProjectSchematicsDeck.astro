@@ -1,6 +1,7 @@
 ---
 // ProjectSchematicsDeck.astro - Device-Native Architecture & Hardware Telemetry
 import { getCollection } from 'astro:content';
+import SynthGroovebox from './SynthGroovebox.astro';
 
 const projects = await getCollection('projects');
 const initialProject = projects[0];
@@ -48,11 +49,20 @@ const initialProject = projects[0];
           {p.id.toUpperCase().replace('.MD', '')}
         </button>
       ))}
+      <button
+        type="button"
+        id="btn-toggle-synth"
+        class="project-tab-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#ff9d00]/60 text-[#ff9d00] hover:bg-[#ff9d00]/20 transition-all cursor-pointer font-mono ml-auto"
+        title="Toggle Pocket Synthesizer (+ SYNTH_T1 +)"
+        data-slug="synth-t1"
+      >
+        [+ SYNTH_T1 +]
+      </button>
     </div>
   </div>
 
   <!-- Dynamic Project Schematic Inspector Surface -->
-  <div class="flex-1 flex flex-col justify-between font-mono p-1">
+  <div class="flex-1 flex flex-col justify-between font-mono p-1" id="schematic-surface">
     <div>
       <!-- Meta Badge Row -->
       <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5 text-[10px]">
@@ -140,6 +150,11 @@ const initialProject = projects[0];
       </div>
     </div>
   </div>
+
+  <!-- Embedded Playable Synthesizer Surface (Issue #15) -->
+  <div class="flex-1 hidden font-mono p-1" id="synth-surface">
+    <SynthGroovebox />
+  </div>
 </div>
 
 <style>
@@ -154,6 +169,8 @@ const initialProject = projects[0];
 <script>
   function setupSchematicsDeck() {
     const tabs = document.querySelectorAll<HTMLButtonElement>('.project-tab-btn');
+    const schematicSurface = document.getElementById('schematic-surface');
+    const synthSurface = document.getElementById('synth-surface');
     const titleEl = document.getElementById('deck-title');
     const catEl = document.getElementById('deck-cat');
     const roleEl = document.getElementById('deck-role');
@@ -173,6 +190,18 @@ const initialProject = projects[0];
         });
         tab.classList.add('active-project');
         tab.classList.remove('border-[#3c414f]', 'text-[#8b92a2]');
+
+        if (tab.id === 'btn-toggle-synth') {
+          if (schematicSurface) schematicSurface.classList.add('hidden');
+          if (synthSurface) synthSurface.classList.remove('hidden');
+          if ((window as any).__playClickSound) {
+            (window as any).__playClickSound();
+          }
+          return;
+        }
+
+        if (schematicSurface) schematicSurface.classList.remove('hidden');
+        if (synthSurface) synthSurface.classList.add('hidden');
 
         // Update inspector view
         if (titleEl) titleEl.textContent = tab.getAttribute('data-title') || '';
