@@ -59,15 +59,29 @@ const navItems = [
 </header>
 
 <script>
-  // Global Keyboard Navigation (1, 2, 3, 4)
-  document.addEventListener('keydown', (e) => {
-    // Only trigger if user is not actively typing inside input or textarea
-    const target = e.target as HTMLElement;
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+  import { navigate } from 'astro:transitions/client';
 
-    if (e.key === '1') window.location.href = '/';
-    if (e.key === '2') window.location.href = '/projects';
-    if (e.key === '3') window.location.href = '/cli-tools';
-    if (e.key === '4') window.location.href = '/dotfiles';
-  });
+  // Global Keyboard Navigation (1, 2, 3, 4, ~)
+  function setupKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      if (e.key === '`' || e.key === '~') {
+        e.preventDefault();
+        const termInput = document.getElementById('terminal-input') as HTMLInputElement | null;
+        if (termInput) {
+          termInput.focus();
+        }
+        return;
+      }
+
+      if (e.key === '1') navigate('/');
+      if (e.key === '2') navigate('/projects');
+      if (e.key === '3') navigate('/cli-tools');
+      if (e.key === '4') navigate('/dotfiles');
+    });
+  }
+
+  setupKeyboardNav();
 </script>

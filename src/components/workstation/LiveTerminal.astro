@@ -72,9 +72,16 @@
   theme <name>      - Switch phosphor theme (amber | green | ice | paper)
   git log --graph   - Render ASCII branch topology
   contact           - Display communication channels
+  synth             - Engage + SYNTH_T1 + pocket synthesizer
   cowsay <text>     - The quintessential Unix wisdom
   matrix            - Phosphor stream simulation
   clear             - Clear terminal buffer`,
+
+      synth: () => {
+        const synthBtn = document.getElementById('btn-toggle-synth');
+        if (synthBtn) synthBtn.click();
+        return `[AUDIO] Pocket Synthesizer (+ SYNTH_T1 +) engaged. Use keys [A..K] or mouse to trigger notes.`;
+      },
 
       'uname -a': () => `Linux el-j-station 6.12.9-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux`,
       uname: () => `Linux`,
