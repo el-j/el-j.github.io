@@ -1,7 +1,6 @@
 ---
 import '@/styles/crt-theme.css';
 import HeaderHud from '@/components/workstation/HeaderHud.astro';
-import StickyNotes from '@/components/workstation/StickyNotes.astro';
 import BezelControls from '@/components/workstation/BezelControls.astro';
 import AudioEngine from '@/components/workstation/AudioEngine.astro';
 import { ClientRouter } from 'astro:transitions';
@@ -34,38 +33,38 @@ const {
     <meta property="og:url" content="https://el-j.github.io/" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta name="theme-color" content="#18191c" />
+    <meta name="theme-color" content="#0c0701" />
 
     <!-- Astro View Transitions for instantaneous SPA routing -->
     <ClientRouter />
   </head>
-  <body>
-    <main class="workbench-container">
-      <!-- CRT Physical Monitor Housing -->
-      <div class="crt-monitor-casing">
-        <!-- Physical Sticky Notes pinned to frame -->
-        <StickyNotes />
+  <body class="crt-fullscreen-body">
+    <!-- CRT Curved Glass Optics Layers (Fixed Overlays) -->
+    <div class="crt-curved-tube-vignette" aria-hidden="true"></div>
+    <div class="crt-curved-rim" aria-hidden="true"></div>
+    <div class="crt-tube-glare" aria-hidden="true"></div>
+    <div class="crt-scanlines-layer" id="crt-scanlines-layer" aria-hidden="true"></div>
 
-        <!-- Inset Monitor Bezel -->
-        <div class="crt-bezel-inner">
-          <!-- Glass CRT Phosphor Screen Surface -->
-          <div class="crt-screen-surface p-4 sm:p-6" transition:animate="fade">
-            <!-- Top Header & Navigation HUD -->
-            <HeaderHud activeTab={activeTab} />
+    <!-- Main Fullscreen Workstation Surface -->
+    <div class="crt-workstation-viewport">
+      <main class="crt-screen-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col min-h-screen justify-between" transition:animate="fade">
+        <div class="flex-1">
+          <!-- Top Header & Navigation HUD -->
+          <HeaderHud activeTab={activeTab} />
 
-            <!-- Main Dynamic Content Slot -->
-            <div class="mt-2 min-h-[460px]">
-              <slot />
-            </div>
+          <!-- Main Dynamic Content Slot -->
+          <div class="mt-4 min-h-[460px]">
+            <slot />
           </div>
         </div>
 
-        <!-- Physical Bezel Controls (Date stamp, themes, knobs, scanlines) -->
+        <!-- Integrated Hardware Controls / Bezel Status Bar -->
         <BezelControls />
-      </div>
-    </main>
+      </main>
+    </div>
 
     <!-- Global Sound Synthesis Engine -->
     <AudioEngine />
   </body>
 </html>
+
