@@ -14,7 +14,7 @@ const initialTime = now.toLocaleTimeString('en-US', {
 });
 ---
 
-<footer class="mt-4 pt-3 border-t border-[#353842] flex flex-wrap items-center justify-between gap-4 text-xs select-none" aria-label="Workstation Hardware Controls">
+<footer class="mt-8 pt-4 pb-2 border-t border-[#353842]/70 flex flex-wrap items-center justify-between gap-4 text-xs select-none" aria-label="Workstation Hardware Controls">
   <!-- Left: Red Stencil Date Stamp & Model Badge -->
   <div class="flex items-center gap-3">
     <div class="bezel-screw" title="M4 Bezel Screw" aria-hidden="true"></div>
@@ -263,6 +263,13 @@ const initialTime = now.toLocaleTimeString('en-US', {
         localStorage.setItem('crt-theme', selected);
         updateThemeButtons(selected);
 
+        // Dynamically adjust scanlines intensity for paper vs phosphor themes
+        const isScanlinesActive = scanlinesBtn?.getAttribute('aria-checked') === 'true';
+        if (isScanlinesActive) {
+          const target = selected === 'paper' ? '0.15' : '0.68';
+          document.documentElement.style.setProperty('--scanline-opacity', target);
+        }
+
         if ((window as any).__playClickSound) {
           (window as any).__playClickSound();
         }
@@ -283,7 +290,9 @@ const initialTime = now.toLocaleTimeString('en-US', {
           ? 'text-[9px] font-bold text-[var(--crt-phosphor-bright)] w-6 text-left'
           : 'text-[9px] font-bold text-[#636875] w-6 text-left';
       }
-      document.documentElement.style.setProperty('--scanline-opacity', active ? '0.18' : '0');
+      const isPaper = document.documentElement.getAttribute('data-theme') === 'paper';
+      const targetOpacity = active ? (isPaper ? '0.15' : '0.68') : '0';
+      document.documentElement.style.setProperty('--scanline-opacity', targetOpacity);
       localStorage.setItem('crt-scanlines', active ? 'true' : 'false');
     }
 
