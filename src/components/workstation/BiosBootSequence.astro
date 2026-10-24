@@ -1,0 +1,301 @@
+---
+// BiosBootSequence.astro - 80s/90s BIOS POST & Drive A: Boot Sequence
+---
+
+<div
+  id="bios-boot-overlay"
+  class="fixed inset-0 z-[200] bg-black text-[#d4d4d8] font-mono text-xs sm:text-sm p-4 sm:p-10 select-none overflow-hidden flex flex-col justify-between hidden"
+  aria-modal="true"
+  role="dialog"
+  aria-label="System BIOS Boot Sequence"
+>
+  <!-- Main POST Screen Header & Detection Log -->
+  <div class="space-y-4 max-w-5xl">
+    <!-- Top Bar: BIOS Identity & Energy Star Badge -->
+    <div class="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-[#3f3f46] pb-3">
+      <div>
+        <div class="text-[#fbbf24] font-bold text-sm sm:text-base tracking-wider">
+          EL-J CYBER-BIOS (C) 1989-1996 EL-J TECHNOLOGIES LTD.
+        </div>
+        <div class="text-[#a1a1aa] text-[11px] sm:text-xs tracking-wide">
+          FABIAN-486DX4 WORKSTATION SYSTEM BIOS V2.084 // ARCH-LINUX ENGINE
+        </div>
+        <div class="text-[#71717a] text-[10px] sm:text-[11px] mt-0.5">
+          GATE A20 FAST SWITCH ACTIVATED // SHADOW RAM ENABLED
+        </div>
+      </div>
+
+      <!-- Energy Star Style Retro ASCII Logo -->
+      <div class="hidden sm:block font-mono text-[9px] text-[#22c55e] leading-tight border border-[#22c55e]/40 p-2 bg-black/60 rounded">
+        <pre class="m-0 leading-none">
+┌─────────────────────────┐
+│   *****         *****   │  energy
+│  *     *       *     *  │  ──────
+│  *      *     *      *  │  EPA POLLUTION
+│   *      *****      *   │  PREVENTER
+│    *               *    │
+│      *************      │  EL-J OS 2.0
+└─────────────────────────┘</pre>
+      </div>
+    </div>
+
+    <!-- Live Hardware POST & Boot Lines -->
+    <div id="bios-log" class="space-y-1 sm:space-y-1.5 font-mono text-[11px] sm:text-xs">
+      <div id="line-cpu" class="text-[#e4e4e7] opacity-0 transition-opacity duration-75">
+        CPU: CyberRISC 80486-DX @ 66MHz (Internal Clock)
+      </div>
+      <div id="line-mem" class="text-[#fbbf24] font-bold opacity-0 transition-opacity duration-75">
+        Memory Test : <span id="mem-counter">0</span>KB OK
+      </div>
+      <div id="line-pnp" class="text-[#a1a1aa] opacity-0 transition-opacity duration-75">
+        Award Plug and Play BIOS Extension v1.0A
+      </div>
+      <div id="line-ide1" class="text-[#a1a1aa] opacity-0 transition-opacity duration-75">
+        Detecting Primary Master   ... ARCH-NVME 4096MB [LBA MODE]
+      </div>
+      <div id="line-ide2" class="text-[#71717a] opacity-0 transition-opacity duration-75">
+        Detecting Primary Slave    ... NONE
+      </div>
+      <div id="line-floppy" class="text-[#38bdf8] opacity-0 transition-opacity duration-75">
+        Detecting Floppy Drive A:  ... 1.44M, 3.5 in. [READY]
+      </div>
+
+      <!-- Floppy A: OS Boot Sequence -->
+      <div id="line-boot-a" class="text-[#22c55e] font-bold pt-2 opacity-0 transition-opacity duration-75">
+        Searching for Boot Record from Floppy Drive A: ... OK
+      </div>
+      <div id="line-load-os" class="text-[#e4e4e7] opacity-0 transition-opacity duration-75">
+        Loading EL-J ARCH-DOS 2.0 (COMMAND.COM) ...
+      </div>
+      <div id="line-autoexec" class="text-[#a1a1aa] opacity-0 transition-opacity duration-75 space-y-0.5">
+        <div>A:\&gt; C:\DOS\HIMEM.SYS /TESTMEM:OFF</div>
+        <div>A:\&gt; C:\DRIVERS\MOUSE.COM (Ver 8.20 Installed)</div>
+        <div>A:\&gt; C:\DRIVERS\SOUNDBLASTER16.SYS /A220 /I5 /D1 /H5</div>
+        <div>A:\&gt; AUTOEXEC.BAT -&gt; START_WORKSTATION.EXE</div>
+      </div>
+      <div id="line-workstation" class="text-[#fbbf24] font-bold pt-1 opacity-0 transition-opacity duration-75">
+        Starting Cyber-Tactile CRT Workstation Interface...
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Interactive Bar -->
+  <div class="border-t border-[#27272a] pt-3 flex items-center justify-between text-[11px] text-[#71717a]">
+    <div class="flex items-center gap-3">
+      <span class="animate-pulse inline-block w-2 h-3.5 bg-[#fbbf24]"></span>
+      <span class="text-[#a1a1aa]">Press <kbd class="px-1.5 py-0.5 bg-[#27272a] text-[#e4e4e7] rounded text-[10px] border border-[#3f3f46]">ESC</kbd> or <kbd class="px-1.5 py-0.5 bg-[#27272a] text-[#e4e4e7] rounded text-[10px] border border-[#3f3f46]">SPACE</kbd> to Skip</span>
+    </div>
+    <button
+      type="button"
+      id="btn-skip-boot"
+      class="text-[#38bdf8] hover:underline cursor-pointer font-bold tracking-wider uppercase text-[10px]"
+    >
+      [ SKIP POST &gt;&gt; ]
+    </button>
+  </div>
+</div>
+
+<style>
+  /* CRT Screen Turn-On Phosphor Flare */
+  @keyframes crtPowerOn {
+    0% {
+      transform: scaleY(0.005) scaleX(0.8);
+      filter: brightness(10);
+      opacity: 1;
+    }
+    40% {
+      transform: scaleY(0.008) scaleX(1);
+      filter: brightness(5);
+      opacity: 1;
+    }
+    70% {
+      transform: scaleY(1) scaleX(1);
+      filter: brightness(2);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scaleY(1) scaleX(1);
+      filter: brightness(1);
+      opacity: 0;
+    }
+  }
+
+  .crt-power-flare {
+    animation: crtPowerOn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+</style>
+
+<script is:inline>
+  function setupBiosBoot() {
+    var overlay = document.getElementById('bios-boot-overlay');
+    if (!overlay) return;
+
+    // Expose trigger to window for terminal reboot command and reset button
+    window.__triggerBiosBoot = triggerBootSequence;
+
+    // Check if user already booted this session
+    var hasBooted = sessionStorage.getItem('crt-booted') === 'true';
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (hasBooted || prefersReducedMotion) {
+      overlay.classList.add('hidden');
+      return;
+    }
+
+    // Start boot sequence automatically on fresh session
+    triggerBootSequence();
+
+    function triggerBootSequence() {
+      if (!overlay) return;
+      overlay.classList.remove('hidden', 'crt-power-flare');
+      overlay.style.opacity = '1';
+      overlay.style.display = 'flex';
+
+      // Reset all lines
+      var lineIds = [
+        'line-cpu', 'line-mem', 'line-pnp', 'line-ide1',
+        'line-ide2', 'line-floppy', 'line-boot-a', 'line-load-os',
+        'line-autoexec', 'line-workstation'
+      ];
+      lineIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('opacity-100');
+      });
+
+      var memCounter = document.getElementById('mem-counter');
+      if (memCounter) memCounter.textContent = '0';
+
+      var isFinished = false;
+      var timeouts = [];
+
+      function schedule(fn, ms) {
+        var id = window.setTimeout(function() {
+          if (!isFinished) fn();
+        }, ms);
+        timeouts.push(id);
+      }
+
+      function finishBoot() {
+        if (isFinished) return;
+        isFinished = true;
+        timeouts.forEach(clearTimeout);
+        sessionStorage.setItem('crt-booted', 'true');
+
+        // CRT power flare exit
+        overlay.classList.add('crt-power-flare');
+        setTimeout(function() {
+          overlay.classList.add('hidden');
+          overlay.classList.remove('crt-power-flare');
+          overlay.style.display = 'none';
+        }, 400);
+      }
+
+      // Hook up skip triggers
+      var skipBtn = document.getElementById('btn-skip-boot');
+      if (skipBtn) skipBtn.onclick = finishBoot;
+      overlay.onclick = function(e) {
+        if (e.target && e.target.id !== 'btn-skip-boot') {
+          finishBoot();
+        }
+      };
+
+      var handleKey = function(e) {
+        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          window.removeEventListener('keydown', handleKey);
+          finishBoot();
+        }
+      };
+      window.addEventListener('keydown', handleKey);
+
+      // ── Step-by-Step POST Timeline ──
+      // 1. CPU line
+      schedule(function() {
+        var el = document.getElementById('line-cpu');
+        if (el) el.classList.add('opacity-100');
+      }, 150);
+
+      // 2. Memory Test counter
+      schedule(function() {
+        var memEl = document.getElementById('line-mem');
+        if (memEl) memEl.classList.add('opacity-100');
+
+        var currentMem = 0;
+        var targetMem = 65536;
+        var step = 4096;
+        var memInterval = window.setInterval(function() {
+          if (isFinished) {
+            clearInterval(memInterval);
+            return;
+          }
+          currentMem += step;
+          if (memCounter) memCounter.textContent = String(currentMem);
+
+          if (currentMem >= targetMem) {
+            clearInterval(memInterval);
+            if (memCounter) memCounter.textContent = '65536';
+            // Play BIOS POST Beep if sound is active
+            if (window.__playBiosBeep) {
+              window.__playBiosBeep();
+            }
+          }
+        }, 30);
+      }, 350);
+
+      // 3. Plug and Play & IDE detection
+      schedule(function() {
+        var el = document.getElementById('line-pnp');
+        if (el) el.classList.add('opacity-100');
+      }, 900);
+
+      schedule(function() {
+        var el = document.getElementById('line-ide1');
+        if (el) el.classList.add('opacity-100');
+      }, 1100);
+
+      schedule(function() {
+        var el = document.getElementById('line-ide2');
+        if (el) el.classList.add('opacity-100');
+      }, 1250);
+
+      // 4. Floppy Drive A: detection
+      schedule(function() {
+        var el = document.getElementById('line-floppy');
+        if (el) el.classList.add('opacity-100');
+      }, 1450);
+
+      // 5. Boot from Floppy A:
+      schedule(function() {
+        var el = document.getElementById('line-boot-a');
+        if (el) el.classList.add('opacity-100');
+        if (window.__playFloppySeek) {
+          window.__playFloppySeek();
+        }
+      }, 1700);
+
+      // 6. Loading OS & executing Autoexec
+      schedule(function() {
+        var el = document.getElementById('line-load-os');
+        if (el) el.classList.add('opacity-100');
+      }, 2000);
+
+      schedule(function() {
+        var el = document.getElementById('line-autoexec');
+        if (el) el.classList.add('opacity-100');
+      }, 2300);
+
+      schedule(function() {
+        var el = document.getElementById('line-workstation');
+        if (el) el.classList.add('opacity-100');
+      }, 2700);
+
+      // 7. Transition into Workstation
+      schedule(function() {
+        finishBoot();
+      }, 3100);
+    }
+  }
+
+  setupBiosBoot();
+  document.addEventListener('astro:page-load', setupBiosBoot);
+</script>
