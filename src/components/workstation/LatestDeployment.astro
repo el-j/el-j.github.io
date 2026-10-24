@@ -1,0 +1,55 @@
+---
+// LatestDeployment.astro
+---
+
+<div class="terminal-card text-xs">
+  <div class="terminal-header text-[var(--crt-phosphor)]">
+    <div class="flex items-center gap-1.5 font-bold">
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[+]</span>
+      <span>LATEST DEPLOYMENT</span>
+    </div>
+    <div class="text-[10px] text-[var(--crt-phosphor-dim)] flex items-center gap-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-[var(--crt-phosphor)] inline-block"></span>
+      <span>SHA: 1de3c49</span>
+    </div>
+  </div>
+
+  <!-- Git Graph Stream -->
+  <div class="font-mono text-[11px] leading-tight space-y-1 mb-3 text-[var(--crt-phosphor-bright)]">
+    <div class="text-[var(--crt-phosphor-dim)]">
+      git log --graph --oneline -n 4
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[var(--crt-phosphor)]">*</span>
+      <span class="text-[var(--crt-phosphor-dim)]">1de3c49</span>
+      <span class="truncate">feat(ast): renew cyber-tactile workstation</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[var(--crt-phosphor)]">*</span>
+      <span class="text-[var(--crt-phosphor-dim)]">7a8f092</span>
+      <span class="truncate">feat(tokens): map figma vars to typescript AST</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[var(--crt-phosphor)]">|\</span>
+      <span class="text-[var(--crt-phosphor-dim)]">e901b22</span>
+      <span class="truncate">merge: astro 5 zero-runtime baseline</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[var(--crt-phosphor)]">| *</span>
+      <span class="text-[var(--crt-phosphor-dim)]">a5b1284</span>
+      <span class="truncate">perf(audio): web audio polyphonic synth island</span>
+    </div>
+  </div>
+
+  <!-- Server Status Feed -->
+  <div class="border-t border-dashed border-[var(--crt-border-dim)] pt-2 text-[11px] flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <span class="text-[var(--crt-phosphor-dim)]">SERVER STATUS:</span>
+      <strong class="text-[var(--crt-phosphor-bright)] ml-1 glow-text">200 OK</strong>
+    </div>
+    <div>
+      <span class="text-[var(--crt-phosphor-dim)]">OUTPUT:</span>
+      <span class="text-[var(--crt-phosphor)] ml-1">STATIC_PAGES (100% LH)</span>
+    </div>
+  </div>
+</div>

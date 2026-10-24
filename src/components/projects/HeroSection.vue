@@ -5,14 +5,12 @@ const { t } = useI18n()
 
 <template>
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-    <!-- Background gradient blobs -->
     <div class="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
       <div class="absolute -top-40 -right-32 w-[600px] h-[600px] rounded-full bg-brand-600/10 blur-3xl" />
       <div class="absolute -bottom-40 -left-32 w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-3xl" />
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-brand-500/5 blur-3xl" />
     </div>
 
-    <!-- Grid pattern overlay -->
     <div
       class="absolute inset-0 -z-10 opacity-[0.03]"
       style="background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px); background-size: 60px 60px"
@@ -20,13 +18,11 @@ const { t } = useI18n()
     />
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <!-- Badge -->
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium text-brand-400 bg-brand-500/10 border border-brand-500/20 mb-8">
         <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
         Open Source
       </div>
 
-      <!-- Heading -->
       <h1 class="text-5xl sm:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 leading-[1.1]">
         {{ t('hero.greeting') }}
       </h1>
@@ -39,7 +35,6 @@ const { t } = useI18n()
         {{ t('hero.description') }}
       </p>
 
-      <!-- CTAs -->
       <div class="flex flex-wrap items-center justify-center gap-3">
         <a
           href="#projects"
@@ -83,7 +78,6 @@ const { t } = useI18n()
       </div>
     </div>
 
-    <!-- Scroll indicator -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-zinc-400 dark:text-zinc-600 animate-bounce">
       <i class="pi pi-chevron-down text-xs" />
     </div>

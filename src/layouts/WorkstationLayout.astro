@@ -1,0 +1,71 @@
+---
+import '@/styles/crt-theme.css';
+import HeaderHud from '@/components/workstation/HeaderHud.astro';
+import StickyNotes from '@/components/workstation/StickyNotes.astro';
+import BezelControls from '@/components/workstation/BezelControls.astro';
+import AudioEngine from '@/components/workstation/AudioEngine.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+  activeTab?: string;
+}
+
+const {
+  title = "Fabian Althaus (el-j) // Fullstack UX/UI & Linux Engineer",
+  description = "Cyber-tactile engineering workstation: fullstack architecture, design tokens, compiler ASTs, and terminal ergonomics.",
+  activeTab = "about"
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="amber">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://el-j.github.io/" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#18191c" />
+
+    <!-- Astro View Transitions for instantaneous SPA routing -->
+    <ClientRouter />
+  </head>
+  <body>
+    <main class="workbench-container">
+      <!-- CRT Physical Monitor Housing -->
+      <div class="crt-monitor-casing">
+        <!-- Physical Sticky Notes pinned to frame -->
+        <StickyNotes />
+
+        <!-- Inset Monitor Bezel -->
+        <div class="crt-bezel-inner">
+          <!-- Glass CRT Phosphor Screen Surface -->
+          <div class="crt-screen-surface p-4 sm:p-6" transition:animate="fade">
+            <!-- Top Header & Navigation HUD -->
+            <HeaderHud activeTab={activeTab} />
+
+            <!-- Main Dynamic Content Slot -->
+            <div class="mt-2 min-h-[460px]">
+              <slot />
+            </div>
+          </div>
+        </div>
+
+        <!-- Physical Bezel Controls (Date stamp, themes, knobs, scanlines) -->
+        <BezelControls />
+      </div>
+    </main>
+
+    <!-- Global Sound Synthesis Engine -->
+    <AudioEngine />
+  </body>
+</html>

@@ -1,0 +1,219 @@
+---
+// ProjectSchematicsDeck.astro - Device-Native Architecture & Hardware Telemetry
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const initialProject = projects[0];
+---
+
+<div class="terminal-card text-xs flex flex-col justify-between h-full min-h-[300px]" id="schematics-deck">
+  <!-- Header Bar -->
+  <div class="terminal-header text-[var(--crt-phosphor)]">
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[+]</span>
+      <span class="font-bold tracking-wider uppercase">SCHEMATICS_DECK // REAL_WORK_TELEMETRY</span>
+    </div>
+    <div class="flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+      <span>INSPECTOR: <strong class="text-[var(--crt-phosphor-bright)]">ACTIVE</strong></span>
+      <span class="px-1.5 py-0.2 border border-[var(--crt-border-dim)] bg-black/40">v2.4</span>
+    </div>
+  </div>
+
+  <!-- Project Rotary / Selector Dial -->
+  <div class="border-b border-dashed border-[var(--crt-border-dim)] pb-2 mb-2">
+    <div class="flex items-center justify-between text-[10px] text-[var(--crt-phosphor-dim)] mb-1 font-mono">
+      <span>SELECT REAL PROJECT TO INSPECT:</span>
+      <span>TOTAL: {projects.length}</span>
+    </div>
+
+    <!-- Scrollable/Wrap Buttons -->
+    <div class="flex flex-wrap items-center gap-1.5" id="project-selector-tabs">
+      {projects.map((p, idx) => (
+        <button
+          type="button"
+          class={`project-tab-btn px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer font-mono ${idx === 0 ? 'active-project' : 'border-[#3c414f] text-[#8b92a2] hover:border-[var(--crt-phosphor)] hover:text-[var(--crt-phosphor-bright)]'}`}
+          data-slug={p.id}
+          data-title={p.data.title}
+          data-cat={p.data.category}
+          data-role={p.data.role}
+          data-year={p.data.year}
+          data-desc={p.data.description}
+          data-ux={p.data.uxHighlight || ''}
+          data-arch={p.data.architectureHighlight || ''}
+          data-schematic={p.data.schematic || ''}
+          data-stack={JSON.stringify(p.data.stack)}
+          data-url={p.data.demoUrl || ''}
+          data-github={p.data.githubUrl || ''}
+        >
+          {p.id.toUpperCase().replace('.MD', '')}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Dynamic Project Schematic Inspector Surface -->
+  <div class="flex-1 flex flex-col justify-between font-mono p-1">
+    <div>
+      <!-- Meta Badge Row -->
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5 text-[10px]">
+        <div class="flex items-center gap-2">
+          <span class="px-1.5 py-0.2 bg-[var(--crt-phosphor)]/20 border border-[var(--crt-border)] text-[var(--crt-phosphor-bright)] font-bold text-[9px]" id="deck-cat">
+            {initialProject?.data.category || 'Software'}
+          </span>
+          <span class="text-[var(--crt-phosphor-dim)]" id="deck-role">
+            {initialProject?.data.role}
+          </span>
+        </div>
+        <span class="text-[var(--crt-phosphor-dim)]" id="deck-year">
+          {initialProject?.data.year}
+        </span>
+      </div>
+
+      <!-- Active Title -->
+      <h3 class="text-sm font-bold text-[var(--crt-phosphor-bright)] mb-1 glow-text leading-tight" id="deck-title">
+        {initialProject?.data.title}
+      </h3>
+
+      <!-- Description -->
+      <p class="text-[11px] text-[var(--crt-phosphor)] leading-relaxed opacity-90 mb-2.5" id="deck-desc">
+        {initialProject?.data.description}
+      </p>
+
+      <!-- System Architecture Schematic Diagram Box -->
+      <div class="p-2 bg-black/60 border border-dashed border-[var(--crt-border-dim)] rounded font-mono text-[10px] mb-2.5">
+        <div class="text-[var(--crt-phosphor-dim)] text-[9px] mb-0.5 flex items-center justify-between">
+          <span>// SYSTEM ARCHITECTURE FLOW:</span>
+          <span class="text-[8px] text-[var(--crt-phosphor-bright)]">TOPOLOGY</span>
+        </div>
+        <div class="text-[var(--crt-phosphor-bright)] leading-relaxed overflow-x-auto whitespace-pre font-bold" id="deck-schematic">
+          {initialProject?.data.schematic || '[Sensors & Webhook] -> [Pipeline Engine] -> [Interface]'}
+        </div>
+      </div>
+
+      <!-- UX & Engineering Highlights -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] mb-2" id="deck-highlights">
+        <div class="p-1.5 bg-black/40 border border-[var(--crt-border-dim)] rounded">
+          <strong class="text-[var(--crt-phosphor-bright)] block text-[9px] mb-0.5">&gt; UX/UI CRAFT:</strong>
+          <span class="text-[var(--crt-phosphor)] opacity-90" id="deck-ux">
+            {initialProject?.data.uxHighlight}
+          </span>
+        </div>
+        <div class="p-1.5 bg-black/40 border border-[var(--crt-border-dim)] rounded">
+          <strong class="text-[var(--crt-phosphor-bright)] block text-[9px] mb-0.5">&gt; ARCHITECTURE:</strong>
+          <span class="text-[var(--crt-phosphor)] opacity-90" id="deck-arch">
+            {initialProject?.data.architectureHighlight}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Toolset & Action Links -->
+    <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] flex flex-wrap items-center justify-between gap-2 mt-2">
+      <!-- Toolset chips -->
+      <div class="flex flex-wrap items-center gap-1" id="deck-stack">
+        {initialProject?.data.stack.slice(0, 5).map((tech) => (
+          <span class="text-[9px] px-1 py-0.2 bg-black/60 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-dim)]">
+            {tech}
+          </span>
+        ))}
+      </div>
+
+      <!-- Links -->
+      <div class="flex items-center gap-3 text-[11px]" id="deck-links">
+        <a
+          href={initialProject?.data.demoUrl || '/projects'}
+          target="_blank"
+          rel="noopener noreferrer"
+          id="deck-live-link"
+          class="text-[var(--crt-phosphor-bright)] hover:underline font-bold flex items-center gap-1"
+        >
+          <span>[VIEW CASE STUDY]</span>
+          <span>&nearr;</span>
+        </a>
+        <a
+          href="/projects"
+          class="text-[var(--crt-phosphor)] hover:underline flex items-center gap-1 opacity-80"
+        >
+          <span>[ALL PROJECTS]</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .project-tab-btn.active-project {
+    border-color: var(--crt-phosphor);
+    color: var(--crt-screen-bg);
+    background: var(--crt-phosphor);
+    box-shadow: 0 0 10px var(--crt-glow);
+  }
+</style>
+
+<script>
+  function setupSchematicsDeck() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.project-tab-btn');
+    const titleEl = document.getElementById('deck-title');
+    const catEl = document.getElementById('deck-cat');
+    const roleEl = document.getElementById('deck-role');
+    const yearEl = document.getElementById('deck-year');
+    const descEl = document.getElementById('deck-desc');
+    const schematicEl = document.getElementById('deck-schematic');
+    const uxEl = document.getElementById('deck-ux');
+    const archEl = document.getElementById('deck-arch');
+    const stackEl = document.getElementById('deck-stack');
+    const liveLink = document.getElementById('deck-live-link') as HTMLAnchorElement | null;
+
+    tabs.forEach((tab) => {
+      tab.onclick = () => {
+        tabs.forEach((t) => {
+          t.classList.remove('active-project');
+          t.classList.add('border-[#3c414f]', 'text-[#8b92a2]');
+        });
+        tab.classList.add('active-project');
+        tab.classList.remove('border-[#3c414f]', 'text-[#8b92a2]');
+
+        // Update inspector view
+        if (titleEl) titleEl.textContent = tab.getAttribute('data-title') || '';
+        if (catEl) catEl.textContent = tab.getAttribute('data-cat') || '';
+        if (roleEl) roleEl.textContent = tab.getAttribute('data-role') || '';
+        if (yearEl) yearEl.textContent = tab.getAttribute('data-year') || '';
+        if (descEl) descEl.textContent = tab.getAttribute('data-desc') || '';
+        if (schematicEl) schematicEl.textContent = tab.getAttribute('data-schematic') || '// DIRECT SCHEMATIC FLOW';
+        if (uxEl) uxEl.textContent = tab.getAttribute('data-ux') || '';
+        if (archEl) archEl.textContent = tab.getAttribute('data-arch') || '';
+
+        // Update Stack
+        if (stackEl) {
+          try {
+            const stackArr: string[] = JSON.parse(tab.getAttribute('data-stack') || '[]');
+            stackEl.innerHTML = stackArr.slice(0, 6).map((tech) => `
+              <span class="text-[9px] px-1 py-0.2 bg-black/60 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-dim)]">
+                ${tech}
+              </span>
+            `).join('');
+          } catch (e) {}
+        }
+
+        // Update Link
+        if (liveLink) {
+          const url = tab.getAttribute('data-url');
+          if (url) {
+            liveLink.href = url;
+            liveLink.style.display = 'inline-flex';
+          } else {
+            liveLink.href = '/projects';
+          }
+        }
+
+        if ((window as any).__playClickSound) {
+          (window as any).__playClickSound();
+        }
+      };
+    });
+  }
+
+  setupSchematicsDeck();
+  document.addEventListener('astro:page-load', setupSchematicsDeck);
+</script>

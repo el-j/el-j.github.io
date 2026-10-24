@@ -1,0 +1,73 @@
+---
+interface Props {
+  activeTab?: string;
+}
+
+const { activeTab = 'about' } = Astro.props;
+
+const navItems = [
+  { id: 'about', label: '[01_ABOUT]', href: '/' },
+  { id: 'projects', label: '[02_PROJECTS]', href: '/projects' },
+  { id: 'cli_tools', label: '[03_CLI_TOOLS]', href: '/cli-tools' },
+  { id: 'dotfiles', label: '[04_DOTFILES]', href: '/dotfiles' },
+];
+---
+
+<header class="border-b border-[var(--crt-border-dim)] pb-3 mb-4">
+  <!-- Top Identity & Status Bar -->
+  <div class="flex flex-wrap items-center justify-between gap-3 text-xs mb-3">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-[var(--crt-phosphor)] animate-pulse shadow-[0_0_8px_var(--crt-glow)]"></span>
+      <h1 class="font-bold tracking-wider text-sm sm:text-base glow-bright uppercase m-0">
+        FABIAN ALTHAUS (el-j) // FULLSTACK_UX_DEV // LINUX_NERD
+      </h1>
+    </div>
+
+    <div class="flex items-center gap-3 text-[11px] text-[var(--crt-phosphor-dim)] font-mono">
+      <span class="hidden sm:inline">SYS_LOAD: <strong class="text-[var(--crt-phosphor)]">0.12, 0.08, 0.05</strong></span>
+      <span>STATUS: <strong class="text-[var(--crt-phosphor-bright)] glow-text">ONLINE [200 OK]</strong></span>
+      <span class="px-2 py-0.5 border border-[var(--crt-border-dim)] bg-black/40 text-[10px]">TTY1</span>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="flex flex-wrap items-center justify-between gap-2 pt-1" aria-label="Main Navigation">
+    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class={`hud-nav-tab ${activeTab === item.id ? 'active' : ''}`}
+          data-tab={item.id}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Quick Keyboard Shortcut Hint -->
+    <div class="hidden md:flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono opacity-80">
+      <span>SHORTCUTS:</span>
+      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">1</kbd>
+      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">2</kbd>
+      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">3</kbd>
+      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">4</kbd>
+      <span>|</span>
+      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">~</kbd>
+      <span>TERMINAL</span>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // Global Keyboard Navigation (1, 2, 3, 4)
+  document.addEventListener('keydown', (e) => {
+    // Only trigger if user is not actively typing inside input or textarea
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+    if (e.key === '1') window.location.href = '/';
+    if (e.key === '2') window.location.href = '/projects';
+    if (e.key === '3') window.location.href = '/cli-tools';
+    if (e.key === '4') window.location.href = '/dotfiles';
+  });
+</script>
