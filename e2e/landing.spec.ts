@@ -83,14 +83,37 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'amber')
   })
 
-  test('scanlines toggle switch toggles state', async ({ page }) => {
+  test('scanlines toggle switch toggles state and updates scanlines overlay opacity', async ({ page }) => {
     const scanlinesBtn = page.locator('#btn-toggle-scanlines')
+    const scanlinesLayer = page.locator('#crt-scanlines-layer')
     await expect(scanlinesBtn).toBeVisible()
-    const initialChecked = await scanlinesBtn.getAttribute('aria-checked')
+    await expect(scanlinesLayer).toBeAttached()
 
+    // Initially ON
+    await expect(scanlinesBtn).toHaveAttribute('aria-checked', 'true')
+    const initialOpacity = await page.evaluate(() => 
+      getComputedStyle(document.documentElement).getPropertyValue('--scanline-opacity').trim()
+    )
+    expect(Number(initialOpacity)).toBeGreaterThan(0)
+
+    // Toggle OFF
     await scanlinesBtn.click()
-    const newChecked = await scanlinesBtn.getAttribute('aria-checked')
-    expect(newChecked).not.toBe(initialChecked)
+    await expect(scanlinesBtn).toHaveAttribute('aria-checked', 'false')
+    const offOpacity = await page.evaluate(() => 
+      getComputedStyle(document.documentElement).getPropertyValue('--scanline-opacity').trim()
+    )
+    expect(offOpacity).toBe('0')
+
+    // Toggle back ON
+    await scanlinesBtn.click()
+    await expect(scanlinesBtn).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('renders CRT curved optics layers for bended monitor simulation', async ({ page }) => {
+    await expect(page.locator('.crt-curved-tube-vignette')).toBeAttached()
+    await expect(page.locator('.crt-curved-rim')).toBeAttached()
+    await expect(page.locator('.crt-tube-glare')).toBeAttached()
+    await expect(page.locator('.crt-workstation-viewport')).toBeAttached()
   })
 
   test('synth toggle engages pocket synthesizer', async ({ page }) => {
