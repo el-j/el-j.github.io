@@ -1,0 +1,337 @@
+---
+// PersistentBottomCli.astro - Omnipresent Interactive DOS & Linux Command Line Interface
+---
+
+<div
+  class="persistent-bottom-cli border-t border-[var(--crt-border-dim)] bg-black/80 px-2.5 sm:px-4 py-1.5 font-mono select-none"
+  id="persistent-bottom-cli"
+  aria-label="Workstation Bottom Command Line Interface"
+>
+  <!-- Top Row: Live Output & Fast Action -->
+  <div class="flex items-center justify-between text-[10px] text-[var(--crt-phosphor-dim)] mb-1 gap-2">
+    <div class="flex items-center gap-2 truncate">
+      <span class="text-[var(--crt-phosphor-bright)] font-bold text-[10px] sm:text-[11px]">[CLI_TTY1]</span>
+      <span id="bottom-cli-output" class="text-[var(--crt-phosphor)] text-[10px] sm:text-[11px] truncate">
+        READY // Press [F5] or type 'refresh' to degauss & update view. Press [F1] for help.
+      </span>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button
+        type="button"
+        id="btn-bottom-cli-refresh"
+        class="px-2 py-0.5 rounded text-[10px] font-bold border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-bright)] bg-black/60 hover:bg-[var(--crt-phosphor)]/20 hover:border-[var(--crt-phosphor)] transition-all cursor-pointer font-mono"
+        title="Refresh Workstation CRT View (F5)"
+      >
+        [ REFRESH VIEW (F5) ]
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Prompt Input + DOS Function Key Toolbar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-1.5">
+    <!-- Active CLI Form -->
+    <form id="bottom-cli-form" class="flex-1 flex items-center gap-2 bg-black/70 px-2.5 py-1 border border-[var(--crt-border-dim)] rounded text-xs">
+      <label for="bottom-cli-input" class="text-[var(--crt-phosphor-bright)] font-bold whitespace-nowrap cursor-pointer text-[11px] sm:text-xs">
+        el-j@station:~$
+      </label>
+      <input
+        type="text"
+        id="bottom-cli-input"
+        class="flex-1 bg-transparent border-none outline-none text-[var(--crt-phosphor)] font-mono text-[11px] sm:text-xs p-0 m-0 focus:ring-0"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="type 'help', 'refresh', 'reboot', 'theme <name>', 'ls'..."
+      />
+      <span class="inline-block w-1.5 h-3 bg-[var(--crt-phosphor)] animate-pulse" aria-hidden="true"></span>
+    </form>
+
+    <!-- DOS Function Key Toolbar (F1..F10) -->
+    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-[var(--crt-phosphor-dim)] font-mono overflow-x-auto py-0.5 shrink-0" role="toolbar" aria-label="DOS Function Keys">
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="help">
+        <strong class="text-[var(--crt-phosphor)]">F1</strong>:Help
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="projects">
+        <strong class="text-[var(--crt-phosphor)]">F2</strong>:Proj
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="cli-tools">
+        <strong class="text-[var(--crt-phosphor)]">F3</strong>:Cli
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="dotfiles">
+        <strong class="text-[var(--crt-phosphor)]">F4</strong>:Dots
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-[var(--crt-phosphor)]/20 border border-[var(--crt-phosphor)] text-[var(--crt-phosphor-bright)] rounded transition-colors" data-cmd="refresh">
+        <strong class="text-[var(--crt-phosphor-bright)]">F5</strong>:Refresh
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="sound">
+        <strong class="text-[var(--crt-phosphor)]">F8</strong>:Sound
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="reboot">
+        <strong class="text-[var(--crt-phosphor)]">F10</strong>:Reboot
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  function setupBottomCli() {
+    const form = document.getElementById('bottom-cli-form') as HTMLFormElement | null;
+    const input = document.getElementById('bottom-cli-input') as HTMLInputElement | null;
+    const output = document.getElementById('bottom-cli-output');
+    const refreshBtn = document.getElementById('btn-bottom-cli-refresh');
+    const fnButtons = document.querySelectorAll('.fn-key-btn');
+
+    if (!form || !input || !output) return;
+
+    const history: string[] = [];
+    let historyIdx = -1;
+
+    function setOutput(msg: string, isError = false) {
+      if (!output) return;
+      output.textContent = msg;
+      output.className = isError
+        ? 'text-red-400 font-bold truncate text-[10px] sm:text-[11px]'
+        : 'text-[var(--crt-phosphor-bright)] truncate text-[10px] sm:text-[11px]';
+    }
+
+    // Comprehensive CRT Screen Refresh
+    function triggerScreenRefresh() {
+      const viewport = document.querySelector('.crt-workstation-viewport') as HTMLElement | null;
+      if (viewport) {
+        viewport.classList.remove('crt-refreshing');
+        void viewport.offsetWidth; // trigger reflow
+        viewport.classList.add('crt-refreshing');
+        setTimeout(() => viewport.classList.remove('crt-refreshing'), 320);
+      }
+
+      if ((window as any).__playClickSound) {
+        (window as any).__playClickSound();
+      }
+
+      // Update date stamp if visible
+      const dateEl = document.getElementById('bezel-date-stamp');
+      if (dateEl) {
+        const d = new Date();
+        const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).toUpperCase();
+        const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        dateEl.textContent = `${dateStr} ${timeStr}`;
+        dateEl.setAttribute('datetime', d.toISOString());
+      }
+
+      // Dispatch global refresh event for any custom listeners
+      window.dispatchEvent(new CustomEvent('crt:refresh', { detail: { timestamp: Date.now() } }));
+
+      const timeNow = new Date().toLocaleTimeString();
+      setOutput(`[OK] Screen refreshed at ${timeNow}. Cathode ray degaussed & all buffers synchronized.`);
+    }
+
+    (window as any).__refreshCrtScreen = triggerScreenRefresh;
+
+    function execute(raw: string) {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+
+      history.push(trimmed);
+      historyIdx = history.length;
+
+      const parts = trimmed.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const arg = parts.slice(1).join(' ').toLowerCase();
+
+      switch (cmd) {
+        case 'refresh':
+        case 'cls':
+        case 'clear':
+          triggerScreenRefresh();
+          break;
+
+        case 'help':
+        case '?':
+          setOutput('CMDS: refresh, reboot, theme <amber|green|ice|paper>, scanlines, sound, ls, cat <file>, whoami, goto <proj|cli|dots>');
+          break;
+
+        case 'reboot':
+        case 'restart':
+          setOutput('Initiating Hardware Reset POST...');
+          if ((window as any).__triggerBiosBoot) {
+            (window as any).__triggerBiosBoot();
+          } else {
+            sessionStorage.removeItem('crt-booted');
+            window.location.reload();
+          }
+          break;
+
+        case 'theme':
+          if (['amber', 'green', 'ice', 'paper'].includes(arg)) {
+            const btn = document.querySelector(`button[data-set-theme="${arg}"]`) as HTMLButtonElement | null;
+            if (btn) {
+              btn.click();
+              setOutput(`Theme switched to [${arg.toUpperCase()}].`);
+            } else {
+              document.documentElement.setAttribute('data-theme', arg);
+              localStorage.setItem('crt-theme', arg);
+              setOutput(`Theme set to [${arg.toUpperCase()}].`);
+            }
+          } else {
+            setOutput('Usage: theme <amber | green | ice | paper>', true);
+          }
+          break;
+
+        case 'scanlines': {
+          const scanBtn = document.getElementById('btn-toggle-scanlines') as HTMLButtonElement | null;
+          if (scanBtn) {
+            scanBtn.click();
+            const state = scanBtn.getAttribute('aria-checked') === 'true' ? 'ON' : 'OFF';
+            setOutput(`Scanlines toggled [${state}].`);
+          }
+          break;
+        }
+
+        case 'sound': {
+          const soundBtn = document.getElementById('btn-toggle-sound') as HTMLButtonElement | null;
+          if (soundBtn) {
+            soundBtn.click();
+            const state = soundBtn.getAttribute('aria-checked') === 'true' ? 'ON' : 'OFF';
+            setOutput(`Sound FX toggled [${state}].`);
+          }
+          break;
+        }
+
+        case 'ls':
+        case 'dir':
+          setOutput('A:\\> [01_ABOUT.TXT]  [02_PROJECTS.DIR]  [03_CLI_TOOLS.SH]  [04_DOTFILES.DIR]  [SYNTH.BIN]');
+          break;
+
+        case 'cat':
+        case 'type':
+          if (arg.includes('about')) {
+            setOutput('Fabian Althaus (el-j) // Fullstack UX/UI & Linux Engineer. 10+ yrs across design systems, compilers, & IoT.');
+          } else if (arg.includes('proj')) {
+            setOutput('RunZero (dual runners), @el-j/google-sheet-translations, E-Cube biotech, DomeDrum MIDI, Fritzing EDA.');
+          } else if (arg.includes('synth')) {
+            const synthBtn = document.getElementById('btn-toggle-synth') as HTMLButtonElement | null;
+            if (synthBtn) synthBtn.click();
+            setOutput('Engaging Pocket Synthesizer island...');
+          } else {
+            setOutput(`File [${arg || 'unknown'}] read: 100% OK. Use 'goto' or function keys to inspect.`);
+          }
+          break;
+
+        case 'whoami':
+          setOutput('fabian-althaus (uid=1000) // Fullstack UX/UI & Linux Engineer // el-j@station');
+          break;
+
+        case 'goto':
+        case 'cd':
+          if (arg.includes('proj') || arg === '2') {
+            navigate('/projects');
+          } else if (arg.includes('cli') || arg === '3') {
+            navigate('/cli-tools');
+          } else if (arg.includes('dot') || arg === '4') {
+            navigate('/dotfiles');
+          } else if (arg.includes('about') || arg === '1' || arg === '/' || arg === '~') {
+            navigate('/');
+          } else {
+            setOutput(`Directory [${arg}] not found. Try: cd projects | cli-tools | dotfiles | ~`, true);
+          }
+          break;
+
+        case 'projects':
+          navigate('/projects');
+          break;
+        case 'cli-tools':
+          navigate('/cli-tools');
+          break;
+        case 'dotfiles':
+          navigate('/dotfiles');
+          break;
+
+        default:
+          setOutput(`bash: ${cmd}: command not found. Type 'help' or press [F1].`, true);
+          break;
+      }
+    }
+
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const val = input.value;
+      input.value = '';
+      execute(val);
+    };
+
+    // Keyboard History & Interception
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIdx > 0) {
+          historyIdx--;
+          input.value = history[historyIdx] || '';
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIdx < history.length - 1) {
+          historyIdx++;
+          input.value = history[historyIdx] || '';
+        } else {
+          historyIdx = history.length;
+          input.value = '';
+        }
+      }
+    });
+
+    if (refreshBtn) {
+      refreshBtn.onclick = () => triggerScreenRefresh();
+    }
+
+    fnButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.getAttribute('data-cmd');
+        if (cmd) execute(cmd);
+      });
+    });
+
+    // Global DOS Function Keys interceptor
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F5') {
+        e.preventDefault();
+        triggerScreenRefresh();
+        return;
+      }
+      if (e.key === 'F1') {
+        e.preventDefault();
+        execute('help');
+        return;
+      }
+      if (e.key === 'F2') {
+        e.preventDefault();
+        navigate('/projects');
+        return;
+      }
+      if (e.key === 'F3') {
+        e.preventDefault();
+        navigate('/cli-tools');
+        return;
+      }
+      if (e.key === 'F4') {
+        e.preventDefault();
+        navigate('/dotfiles');
+        return;
+      }
+      if (e.key === 'F8') {
+        e.preventDefault();
+        execute('sound');
+        return;
+      }
+      if (e.key === 'F10') {
+        e.preventDefault();
+        execute('reboot');
+        return;
+      }
+    });
+  }
+
+  // Initialize on load and Astro page transitions
+  setupBottomCli();
+  document.addEventListener('astro:page-load', setupBottomCli);
+</script>

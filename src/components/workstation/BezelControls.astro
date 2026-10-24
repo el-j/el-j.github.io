@@ -276,7 +276,7 @@ const initialTime = now.toLocaleTimeString('en-US', {
         // Dynamically adjust scanlines intensity for paper vs phosphor themes
         const isScanlinesActive = scanlinesBtn?.getAttribute('aria-checked') === 'true';
         if (isScanlinesActive) {
-          const target = selected === 'paper' ? '0.15' : '0.68';
+          const target = selected === 'paper' ? '0.05' : '0.20';
           document.documentElement.style.setProperty('--scanline-opacity', target);
         }
 
@@ -301,7 +301,7 @@ const initialTime = now.toLocaleTimeString('en-US', {
           : 'text-[9px] font-bold text-[#636875] w-6 text-left';
       }
       const isPaper = document.documentElement.getAttribute('data-theme') === 'paper';
-      const targetOpacity = active ? (isPaper ? '0.15' : '0.68') : '0';
+      const targetOpacity = active ? (isPaper ? '0.05' : '0.20') : '0';
       document.documentElement.style.setProperty('--scanline-opacity', targetOpacity);
       localStorage.setItem('crt-scanlines', active ? 'true' : 'false');
     }

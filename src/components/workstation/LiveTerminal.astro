@@ -2,12 +2,12 @@
 // LiveTerminal.astro - Interactive Command Line REPL for Fabian Althaus Workstation
 ---
 
-<div class="terminal-card text-xs flex flex-col h-full min-h-[300px]" id="terminal-island">
+<div class="terminal-card text-xs flex flex-col h-full min-h-0 flex-1" id="terminal-island">
   <!-- Terminal Title Bar -->
   <div class="terminal-header text-[var(--crt-phosphor)]">
     <div class="flex items-center gap-2">
-      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[LIVE]</span>
-      <span class="font-bold">CLI / DEBUG_ENV // TTY1</span>
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[DOS_TTY1]</span>
+      <span class="font-bold">COMMAND.COM // DEBUG_ENV</span>
     </div>
     <div class="flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
       <button type="button" class="hover:text-[var(--crt-phosphor)] cursor-pointer" id="term-btn-min" title="Minimize">[ _ ]</button>
@@ -77,6 +77,13 @@
   cowsay <text>     - The quintessential Unix wisdom
   matrix            - Phosphor stream simulation
   clear             - Clear terminal buffer`,
+
+      refresh: () => {
+        if ((window as any).__refreshCrtScreen) {
+          (window as any).__refreshCrtScreen();
+        }
+        return `[OK] CRT display refreshed & cathode ray degaussed.`;
+      },
 
       reboot: () => {
         sessionStorage.removeItem('crt-booted');

@@ -4,7 +4,7 @@
 
 <div
   id="bios-boot-overlay"
-  class="fixed inset-0 z-[200] bg-black text-[#d4d4d8] font-mono text-xs sm:text-sm p-4 sm:p-10 select-none overflow-hidden flex flex-col justify-between hidden"
+  class="fixed inset-0 z-[50] bg-black text-[#d4d4d8] font-mono text-xs sm:text-sm p-6 sm:p-12 md:p-16 select-none overflow-hidden flex flex-col justify-between hidden"
   aria-modal="true"
   role="dialog"
   aria-label="System BIOS Boot Sequence"
@@ -96,6 +96,12 @@
 </div>
 
 <style>
+  #bios-boot-overlay {
+    transform: perspective(1200px) scale(0.995);
+    transform-origin: center center;
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
+  }
+
   /* CRT Screen Turn-On Phosphor Flare */
   @keyframes crtPowerOn {
     0% {

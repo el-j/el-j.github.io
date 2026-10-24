@@ -16,7 +16,7 @@
   --crt-grid-line: rgba(255, 157, 0, 0.08);
 
   /* CRT Filter & Curved Optics controls */
-  --scanline-opacity: 0.68;
+  --scanline-opacity: 0.20;
   --crt-curve-active: 1;
 
   --font-mono: 'JetBrains Mono', monospace;
@@ -64,19 +64,23 @@
   --crt-border: #292524;
   --crt-border-dim: #a8a29e;
   --crt-grid-line: rgba(0, 0, 0, 0.05);
-  --scanline-opacity: 0.15;
+  --scanline-opacity: 0.05;
 }
 
-/* ── Global Base ────────────────────────────────────────────────────── */
+/* ── Global Base (Strict Fullscreen No-Scroll Terminal) ─────────────── */
 html, body {
   background-color: var(--crt-screen-bg);
   color: var(--crt-phosphor);
   font-family: var(--font-mono);
-  overflow-x: hidden;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 /* Custom Scrollbar for CRT windows */
@@ -99,7 +103,10 @@ html, body {
 .crt-fullscreen-body {
   position: relative;
   background-color: var(--crt-screen-bg);
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
 }
 
 /* 1. Deep Radial Vignette Curve (Spherical Bulb Optics) */
@@ -155,7 +162,7 @@ html, body {
   border-radius: 0 0 50% 50% / 0 0 25% 25%;
 }
 
-/* 4. High-Fidelity CRT Raster Scanlines & Aperture Mask */
+/* 4. High-Fidelity CRT Raster Scanlines & Aperture Mask (Softened for optimal readability) */
 .crt-scanlines-layer {
   position: fixed;
   inset: 0;
@@ -164,16 +171,16 @@ html, body {
   background: 
     linear-gradient(
       rgba(18, 16, 16, 0) 50%, 
-      rgba(0, 0, 0, 0.72) 50%
+      rgba(0, 0, 0, 0.40) 50%
     ),
     linear-gradient(
       90deg,
-      rgba(255, 0, 0, 0.04),
-      rgba(0, 255, 0, 0.02),
-      rgba(0, 0, 255, 0.04)
+      rgba(255, 0, 0, 0.02),
+      rgba(0, 255, 0, 0.01),
+      rgba(0, 0, 255, 0.02)
     );
   background-size: 100% 3px, 6px 100%;
-  opacity: var(--scanline-opacity, 0.68);
+  opacity: var(--scanline-opacity, 0.20);
   transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -181,9 +188,37 @@ html, body {
 .crt-workstation-viewport {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   transform: perspective(1200px) scale(0.995);
   transform-origin: center center;
+}
+
+/* 6. CRT Screen Refresh / Degauss Flash Sweep Animation */
+@keyframes crtRefreshSweep {
+  0% {
+    filter: brightness(1.6) contrast(1.15);
+    opacity: 0.88;
+    transform: perspective(1200px) scale(0.998);
+  }
+  30% {
+    filter: brightness(2.2) contrast(1.3);
+    opacity: 1;
+  }
+  60% {
+    filter: brightness(1.3);
+    opacity: 0.95;
+  }
+  100% {
+    filter: brightness(1) contrast(1);
+    opacity: 1;
+    transform: perspective(1200px) scale(0.995);
+  }
+}
+
+.crt-refreshing {
+  animation: crtRefreshSweep 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 /* ── Typography & Phosphor Glow ────────────────────────────────────── */

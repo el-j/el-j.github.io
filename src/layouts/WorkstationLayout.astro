@@ -2,6 +2,7 @@
 import '@/styles/crt-theme.css';
 import HeaderHud from '@/components/workstation/HeaderHud.astro';
 import BezelControls from '@/components/workstation/BezelControls.astro';
+import PersistentBottomCli from '@/components/workstation/PersistentBottomCli.astro';
 import BiosBootSequence from '@/components/workstation/BiosBootSequence.astro';
 import AudioEngine from '@/components/workstation/AudioEngine.astro';
 
@@ -47,24 +48,28 @@ const {
     <div class="crt-tube-glare" aria-hidden="true"></div>
     <div class="crt-scanlines-layer" id="crt-scanlines-layer" aria-hidden="true"></div>
 
-    <!-- 80s/90s BIOS POST & Floppy Boot Sequence Overlay -->
+    <!-- 80s/90s BIOS POST & Floppy Boot Sequence Overlay (Under curved optics layers) -->
     <BiosBootSequence />
 
     <!-- Main Fullscreen Workstation Surface -->
     <div class="crt-workstation-viewport">
-      <main class="crt-screen-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col min-h-screen justify-between" transition:animate="fade">
-        <div class="flex-1">
+      <main class="crt-screen-content max-w-[1440px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-3 flex flex-col h-full justify-between overflow-hidden" transition:animate="fade">
+        <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
           <!-- Top Header & Navigation HUD -->
           <HeaderHud activeTab={activeTab} />
 
-          <!-- Main Dynamic Content Slot -->
-          <div class="mt-4 min-h-[460px]">
+          <!-- Main Dynamic Content Slot (Non-scrolling fullscreen terminal view) -->
+          <div class="flex-1 min-h-0 overflow-hidden">
             <slot />
           </div>
         </div>
 
-        <!-- Integrated Hardware Controls / Bezel Status Bar -->
-        <BezelControls />
+        <!-- Omnipresent Persistent Command Line Interface (Docked at bottom to refresh & interact) -->
+        <div class="mt-1 flex-shrink-0">
+          <PersistentBottomCli />
+          <!-- Integrated Hardware Controls / Bezel Status Bar -->
+          <BezelControls />
+        </div>
       </main>
     </div>
 
