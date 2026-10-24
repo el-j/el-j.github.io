@@ -73,9 +73,20 @@
   git log --graph   - Render ASCII branch topology
   contact           - Display communication channels
   synth             - Engage + SYNTH_T1 + pocket synthesizer
+  reboot            - Trigger warm BIOS POST & Drive A: boot
   cowsay <text>     - The quintessential Unix wisdom
   matrix            - Phosphor stream simulation
   clear             - Clear terminal buffer`,
+
+      reboot: () => {
+        sessionStorage.removeItem('crt-booted');
+        if ((window as any).__triggerBiosBoot) {
+          (window as any).__triggerBiosBoot();
+        } else {
+          window.location.reload();
+        }
+        return `[SYSTEM] Resetting CPU registers. Initiating warm hardware reboot...`;
+      },
 
       synth: () => {
         const synthBtn = document.getElementById('btn-toggle-synth');

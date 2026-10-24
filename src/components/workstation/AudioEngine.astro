@@ -48,6 +48,58 @@
     }
   };
 
+  (window as any).__playBiosBeep = function() {
+    if (!(window as any).__soundEnabled) return;
+    initAudioCtx();
+    if (!audioCtx) return;
+
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Standard 880Hz PC speaker POST beep
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.11);
+    } catch (e) {}
+  };
+
+  (window as any).__playFloppySeek = function() {
+    if (!(window as any).__soundEnabled) return;
+    initAudioCtx();
+    if (!audioCtx) return;
+
+    try {
+      // Dual-pulse floppy head stepper motor seek sound
+      [0, 0.08, 0.16].forEach((offset) => {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(260, audioCtx.currentTime + offset);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + offset + 0.04);
+
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime + offset);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + offset + 0.045);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime + offset);
+        osc.stop(audioCtx.currentTime + offset + 0.05);
+      });
+    } catch (e) {}
+  };
+
   // Attach to all buttons and links across the site
   document.addEventListener('click', (e) => {
     const target = (e.target as HTMLElement).closest('button, a, input[type="checkbox"]');

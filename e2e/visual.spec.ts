@@ -15,6 +15,12 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Visual regression', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('crt-booted', 'true');
+    });
+  });
+
   test('landing page screenshot', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')

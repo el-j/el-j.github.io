@@ -2,7 +2,9 @@
 import '@/styles/crt-theme.css';
 import HeaderHud from '@/components/workstation/HeaderHud.astro';
 import BezelControls from '@/components/workstation/BezelControls.astro';
+import BiosBootSequence from '@/components/workstation/BiosBootSequence.astro';
 import AudioEngine from '@/components/workstation/AudioEngine.astro';
+
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -44,6 +46,9 @@ const {
     <div class="crt-curved-rim" aria-hidden="true"></div>
     <div class="crt-tube-glare" aria-hidden="true"></div>
     <div class="crt-scanlines-layer" id="crt-scanlines-layer" aria-hidden="true"></div>
+
+    <!-- 80s/90s BIOS POST & Floppy Boot Sequence Overlay -->
+    <BiosBootSequence />
 
     <!-- Main Fullscreen Workstation Surface -->
     <div class="crt-workstation-viewport">

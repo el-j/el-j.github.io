@@ -104,6 +104,16 @@ const initialTime = now.toLocaleTimeString('en-US', {
       <span id="label-sound-state" class="text-[9px] font-bold text-[#636875] w-6 text-left">OFF</span>
     </div>
 
+    <!-- Hardware Reset / Reboot Momentary Switch -->
+    <button
+      type="button"
+      id="btn-reboot-post"
+      class="px-2 py-0.5 rounded text-[10px] font-bold border border-[#454a57] text-[#8b92a2] hover:border-[var(--crt-phosphor)] hover:text-[var(--crt-phosphor-bright)] transition-all active:scale-95 cursor-pointer font-mono"
+      title="Hardware Reset (Re-run 80s/90s BIOS POST & Floppy Boot)"
+    >
+      RESET
+    </button>
+
     <!-- Power Indicator LED -->
     <div class="flex items-center gap-1.5 pl-2 border-l border-[#3a3e4b]">
       <span class="w-2.5 h-2.5 rounded-full bg-[#00ff66] shadow-[0_0_8px_#00ff66]" aria-hidden="true"></span>
@@ -335,6 +345,19 @@ const initialTime = now.toLocaleTimeString('en-US', {
         setSound(next);
         if (next && (window as any).__playClickSound) {
           (window as any).__playClickSound();
+        }
+      };
+    }
+
+    // 4. Reset / Reboot Button
+    const rebootBtn = document.getElementById('btn-reboot-post');
+    if (rebootBtn) {
+      rebootBtn.onclick = () => {
+        sessionStorage.removeItem('crt-booted');
+        if ((window as any).__triggerBiosBoot) {
+          (window as any).__triggerBiosBoot();
+        } else {
+          window.location.reload();
         }
       };
     }

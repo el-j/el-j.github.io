@@ -17,8 +17,11 @@ import { test, expect } from '@playwright/test'
 
 test.describe('CRT Workstation Landing page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
-  })
+    await page.addInitScript(() => {
+      sessionStorage.setItem('crt-booted', 'true');
+    });
+    await page.goto('/');
+  });
 
   test('renders the HUD header identity and status', async ({ page }) => {
     const h1 = page.locator('h1').first()
@@ -141,4 +144,47 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(dateStamp).toHaveAttribute('datetime')
   })
 })
+
+test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
+  test('displays BIOS POST screen on clean session and allows skip', async ({ page }) => {
+    // Navigate with empty sessionStorage
+    await page.goto('/')
+
+    const overlay = page.locator('#bios-boot-overlay')
+    await expect(overlay).toBeVisible()
+    await expect(overlay).toContainText('EL-J CYBER-BIOS')
+    await expect(overlay).toContainText('FABIAN-486DX4 WORKSTATION')
+    await expect(overlay).toContainText('Detecting Floppy Drive A:')
+
+    // Click skip button
+    const skipBtn = page.locator('#btn-skip-boot')
+    await expect(skipBtn).toBeVisible()
+    await skipBtn.click()
+
+    // Overlay is dismissed and workstation is visible
+    await expect(overlay).toBeHidden()
+    await expect(page.locator('#schematics-deck')).toBeVisible()
+
+    // Session storage is populated
+    const booted = await page.evaluate(() => sessionStorage.getItem('crt-booted'))
+    expect(booted).toBe('true')
+  })
+
+  test('reboot command in terminal triggers BIOS POST sequence', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('crt-booted', 'true')
+    })
+    await page.goto('/')
+
+    const terminalInput = page.locator('#terminal-input')
+    await expect(terminalInput).toBeVisible()
+    await terminalInput.fill('reboot')
+    await terminalInput.press('Enter')
+
+    const overlay = page.locator('#bios-boot-overlay')
+    await expect(overlay).toBeVisible()
+    await expect(overlay).toContainText('EL-J CYBER-BIOS')
+  })
+})
+
 
