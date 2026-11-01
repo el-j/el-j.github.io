@@ -82,8 +82,8 @@
       <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="cli-tools">
         <strong class="text-[#fbbf24]">F3</strong>:Cli
       </button>
-      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="clear" title="Clear Buffer (F4)">
-        <strong class="text-[#fbbf24]">F4</strong>:Cls
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="contributions" title="Upstream Contributions (F4)">
+        <strong class="text-[#fbbf24]">F4</strong>:Contrib
       </button>
       <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-[#fbbf24]/20 border border-[#fbbf24] text-[#fbbf24] transition-colors" data-cmd="refresh">
         <strong class="text-[#fbbf24]">F5</strong>:Refresh
@@ -220,7 +220,7 @@
 
         case 'ls':
         case 'dir':
-          setOutput('A:\\> [1:ABOUT.SYS]  [2:PROJECTS.DIR]  [3:CLI_TOOLS.COM]  [SYNTH.BIN]');
+          setOutput('A:\\> [1:ABOUT.SYS]  [2:PROJECTS.DIR]  [3:CLI_TOOLS.COM]  [4:CONTRIB.DIR]  [SYNTH.BIN]');
           break;
 
         case 'cat':
@@ -248,18 +248,25 @@
             navigate('/projects');
           } else if (arg.includes('cli') || arg === '3') {
             navigate('/cli-tools');
+          } else if (arg.includes('contrib') || arg === '4') {
+            navigate('/contributions');
           } else if (arg.includes('about') || arg === '1' || arg === '/' || arg === '~') {
             navigate('/');
           } else {
-            setOutput(`Directory [${arg}] not found. Try: cd projects | cli-tools | ~`, true);
+            setOutput(`Directory [${arg}] not found. Try: cd projects | cli-tools | contributions | ~`, true);
           }
           break;
 
         case 'projects':
           navigate('/projects');
           break;
+        case 'cli':
         case 'cli-tools':
           navigate('/cli-tools');
+          break;
+        case 'contrib':
+        case 'contributions':
+          navigate('/contributions');
           break;
 
         case 'pgup':

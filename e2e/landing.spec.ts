@@ -36,6 +36,7 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(nav.locator('a[data-tab="about"]')).toBeVisible()
     await expect(nav.locator('a[data-tab="projects"]')).toBeVisible()
     await expect(nav.locator('a[data-tab="cli_tools"]')).toBeVisible()
+    await expect(nav.locator('a[data-tab="contributions"]')).toBeVisible()
   })
 
   test('renders the 2x2 workstation matrix components', async ({ page }) => {

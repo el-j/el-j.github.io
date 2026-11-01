@@ -1,0 +1,177 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import { CONTRIBUTED_PROJECTS } from '@/data/contributions';
+
+const totalPrs = CONTRIBUTED_PROJECTS.reduce((sum, p) => sum + p.totalPrs, 0);
+const mergedPrs = CONTRIBUTED_PROJECTS.reduce((sum, p) => sum + p.mergedPrs, 0);
+const openPrs = CONTRIBUTED_PROJECTS.reduce((sum, p) => sum + p.openPrs, 0);
+---
+
+<WorkstationLayout activeTab="contributions" title="Upstream Contributions // el-j">
+  <div class="space-y-3 pb-8">
+    <!-- Header banner with sticky navigation & page scroll controls -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">
+      <div>
+        <h2 class="text-xs sm:text-sm font-bold uppercase m-0 flex items-center gap-2 text-[#fbbf24]">
+          <span>[04_CONTRIBUTIONS]</span>
+          <span>UPSTREAM OPEN-SOURCE COMMITS &amp; PULL REQUESTS</span>
+        </h2>
+        <p class="text-[10px] sm:text-[11px] text-[#71717a] m-0">
+          Real verified contributions to external repositories, compiler toolchains, vector engines, and EDA software.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="text-[10px] text-[#71717a] font-mono hidden sm:block">
+          REPOS: <strong class="text-[#fbbf24]">{CONTRIBUTED_PROJECTS.length}</strong> &bull;
+          PRS: <strong class="text-[#22c55e]">{totalPrs}+ ({mergedPrs} MERGED)</strong>
+        </div>
+        <!-- Tactile Scroll Controls for Quick Page Exploring -->
+        <div class="flex items-center gap-1 font-mono text-[10px]" role="toolbar" aria-label="Contributions page navigation">
+          <button
+            type="button"
+            data-scroll="up"
+            class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+            title="Page Up (PgUp / F6)"
+          >
+            <span>▲</span>
+            <span>PG UP</span>
+          </button>
+          <button
+            type="button"
+            data-scroll="down"
+            class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+            title="Page Down (PgDn / F7)"
+          >
+            <span>▼</span>
+            <span>PG DN</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telemetry Status Bar -->
+    <div class="p-2 bg-black border border-[#3f3f46] text-[10px] font-mono flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <span class="text-[#fbbf24] font-bold">SOURCE: GITHUB PUBLIC EVENT LOGS</span>
+        <span class="text-[#71717a]">TOTAL AUDITED PRs: <strong class="text-[#ffffff]">189+</strong></span>
+        <span class="text-[#71717a]">MERGED CODE: <strong class="text-[#22c55e]">{mergedPrs}+</strong></span>
+        <span class="text-[#71717a]">ACTIVE / IN-REVIEW: <strong class="text-[#38bdf8]">{openPrs}+</strong></span>
+      </div>
+      <div class="text-[9px] text-[#71717a]">
+        USER: <strong class="text-[#ffffff]">@el-j</strong>
+      </div>
+    </div>
+
+    <!-- Projects Grid (DOS Text Mode Contribution Cards) -->
+    <div class="grid grid-cols-1 gap-3">
+      {CONTRIBUTED_PROJECTS.map((project) => (
+        <article class="terminal-card text-xs flex flex-col justify-between border border-[#3f3f46] hover:border-[#fbbf24] bg-black p-3">
+          <div>
+            <!-- Top Header Strip -->
+            <div class="flex flex-wrap items-center justify-between border-b border-[#27272a] pb-1.5 mb-2 font-mono text-[10px] gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-[#38bdf8] font-bold px-1.5 py-0.2 bg-[#09090b] border border-[#27272a]">
+                  {project.category.toUpperCase()}
+                </span>
+                <span class="text-[#fbbf24] font-bold">
+                  ROLE: {project.role}
+                </span>
+              </div>
+              <div class="flex items-center gap-3 text-[10px]">
+                <span class="text-[#71717a]">
+                  ACTIVITY: <strong class="text-[#22c55e]">{project.mergedPrs} MERGED</strong>
+                  {project.openPrs > 0 && <span> / <strong class="text-[#38bdf8]">{project.openPrs} OPEN</strong></span>}
+                </span>
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-[#38bdf8] hover:underline font-bold flex items-center gap-1"
+                >
+                  <span>[{project.repo}]</span>
+                  <span>&nearr;</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Title & Summary -->
+            <h3 class="text-sm sm:text-base font-bold text-[#ffffff] mb-1 flex items-center gap-2">
+              <span>{project.name}</span>
+              <span class="text-[10px] text-[#71717a] font-mono font-normal">({project.repo})</span>
+            </h3>
+            <p class="text-[11px] text-[#d4d4d8] leading-relaxed mb-3">
+              {project.summary}
+            </p>
+
+            <!-- Key Pull Requests / Commits Table -->
+            <div class="space-y-1.5 font-mono text-[10px]">
+              <div class="text-[#71717a] font-bold mb-1">// KEY VERIFIED PULL REQUESTS:</div>
+              {project.keyContributions.map((pr) => (
+                <div class="p-1.5 bg-[#09090b] border border-[#27272a] flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                  <div class="flex items-start sm:items-center gap-1.5 min-w-0">
+                    <span class={`px-1 py-0.2 text-[9px] font-bold shrink-0 ${
+                      pr.state === 'MERGED'
+                        ? 'bg-[#22c55e]/20 border border-[#22c55e] text-[#22c55e]'
+                        : 'bg-[#38bdf8]/20 border border-[#38bdf8] text-[#38bdf8]'
+                    }`}>
+                      [{pr.state}]
+                    </span>
+                    <a
+                      href={pr.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[#d4d4d8] hover:text-[#fbbf24] hover:underline font-bold truncate"
+                      title={pr.title}
+                    >
+                      {pr.title}
+                    </a>
+                  </div>
+                  <span class="text-[#71717a] text-[9px] sm:text-right shrink-0 truncate max-w-sm">
+                    {pr.highlight}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Bottom Footer Strip -->
+          <div class="pt-2 border-t border-[#27272a] mt-3 font-mono text-[10px] flex items-center justify-between text-[#71717a]">
+            <span>TOTAL PRS ON REPO: <strong class="text-[#ffffff]">{project.totalPrs}</strong></span>
+            <a
+              href={`https://github.com/${project.repo}/pulls?q=is%3Apr+author%3Ael-j`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[#fbbf24] hover:underline font-bold flex items-center gap-1"
+            >
+              <span>VIEW ALL @el-j PRS ON {project.org.toUpperCase()}</span>
+              <span>&nearr;</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Bottom Buffer Strip & Return to Top -->
+    <div class="border-t border-[#3f3f46] pt-2 pb-2 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] font-mono text-[#71717a]">
+      <span>END OF BUFFER // ALL {CONTRIBUTED_PROJECTS.length} UPSTREAM REPOSITORIES LOADED</span>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-scroll="up"
+          class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+        >
+          <span>▲</span>
+          <span>PG UP</span>
+        </button>
+        <button
+          type="button"
+          data-scroll="top"
+          class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none font-bold flex items-center gap-1"
+        >
+          <span>⤒</span>
+          <span>RETURN TO TOP</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</WorkstationLayout>

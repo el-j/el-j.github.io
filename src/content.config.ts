@@ -33,6 +33,8 @@ const cli_tools = defineCollection({
     tags: z.array(z.string()),
     githubUrl: z.string().url().optional(),
     npmUrl: z.string().url().optional(),
+    releaseVersion: z.string().optional(),
+    releasesCount: z.number().optional(),
   })
 });
 

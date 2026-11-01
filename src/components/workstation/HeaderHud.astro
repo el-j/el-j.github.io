@@ -9,6 +9,7 @@ const navItems = [
   { id: 'about', label: '[1:ABOUT]', href: '/' },
   { id: 'projects', label: '[2:PROJECTS]', href: '/projects' },
   { id: 'cli_tools', label: '[3:CLI_TOOLS]', href: '/cli-tools' },
+  { id: 'contributions', label: '[4:CONTRIB]', href: '/contributions' },
 ];
 ---
 
@@ -68,6 +69,7 @@ const navItems = [
       if (e.key === '1') navigate('/');
       if (e.key === '2') navigate('/projects');
       if (e.key === '3') navigate('/cli-tools');
+      if (e.key === '4') navigate('/contributions');
     });
   }
 

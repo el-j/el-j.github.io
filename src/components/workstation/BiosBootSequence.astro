@@ -15,7 +15,7 @@
     <div class="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-[#3f3f46] pb-3">
       <div>
         <div class="text-[#fbbf24] font-bold text-sm sm:text-base tracking-wider">
-          EL-J CYBER-BIOS (C) 1989-1996 EL-J TECHNOLOGIES LTD.
+          EL-J CYBER-BIOS (C) 1986-<span id="this-year">2000</span> EL-J TECHNOLOGIES LTD.
         </div>
         <div class="text-[#a1a1aa] text-[11px] sm:text-xs tracking-wide">
           FABIAN-486DX4 WORKSTATION SYSTEM BIOS V2.084 // ARCH-LINUX ENGINE
@@ -138,7 +138,8 @@
 
     // Expose trigger to window for terminal reboot command and reset button
     window.__triggerBiosBoot = triggerBootSequence;
-
+    const thisYear = document.getElementById('this-year');
+    if (thisYear) thisYear.textContent = String(new Date().getFullYear());
     // Check if user already booted this session
     var hasBooted = sessionStorage.getItem('crt-booted') === 'true';
     var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
