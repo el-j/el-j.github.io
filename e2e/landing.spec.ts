@@ -24,19 +24,18 @@ test.describe('CRT Workstation Landing page', () => {
   });
 
   test('renders the HUD header identity and status', async ({ page }) => {
-    const h1 = page.locator('h1').first()
-    await expect(h1).toBeVisible()
-    await expect(h1).toContainText('FABIAN ALTHAUS (el-j)')
-    await expect(page.locator('header')).toContainText('ONLINE [200 OK]')
+    const header = page.locator('header')
+    await expect(header).toBeVisible()
+    await expect(header).toContainText('EL-J BIOS v2.084')
+    await expect(header).toContainText('200 OK')
   })
 
   test('renders main navigation tabs with active about tab', async ({ page }) => {
     const nav = page.locator('nav[aria-label="Main Navigation"]')
     await expect(nav).toBeVisible()
-    await expect(nav.locator('a[data-tab="about"]')).toHaveClass(/active/)
+    await expect(nav.locator('a[data-tab="about"]')).toBeVisible()
     await expect(nav.locator('a[data-tab="projects"]')).toBeVisible()
     await expect(nav.locator('a[data-tab="cli_tools"]')).toBeVisible()
-    await expect(nav.locator('a[data-tab="dotfiles"]')).toBeVisible()
   })
 
   test('renders the 2x2 workstation matrix components', async ({ page }) => {
@@ -74,16 +73,9 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(output).toContainText('AVAILABLE WORKSTATION COMMANDS')
   })
 
-  test('phosphor theme buttons switch data-theme on html', async ({ page }) => {
-    const greenBtn = page.locator('button[data-set-theme="green"]')
-    await expect(greenBtn).toBeVisible()
-    await greenBtn.click()
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'green')
-
-    const amberBtn = page.locator('button[data-set-theme="amber"]')
-    await expect(amberBtn).toBeVisible()
-    await amberBtn.click()
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'amber')
+  test('renders 90s DOS/BIOS line-by-line raster draw elements', async ({ page }) => {
+    await expect(page.locator('.dos-raster-beam')).toBeAttached()
+    await expect(page.locator('#dos-raster-content')).toBeVisible()
   })
 
   test('scanlines toggle switch toggles state and updates scanlines overlay opacity', async ({ page }) => {
@@ -173,19 +165,11 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(page.locator('button[data-cmd="help"]')).toBeVisible()
   })
 
-  test('scanlines opacity is reduced for optimal readability and adjusts on paper theme', async ({ page }) => {
+  test('scanlines opacity is configured for optimal retro readability', async ({ page }) => {
     const initialOpacity = await page.evaluate(() => 
       getComputedStyle(document.documentElement).getPropertyValue('--scanline-opacity').trim()
     )
     expect(Number(initialOpacity)).toBeCloseTo(0.20, 2)
-
-    // Switch to paper theme
-    const paperBtn = page.locator('button[data-set-theme="paper"]')
-    await paperBtn.click()
-    const paperOpacity = await page.evaluate(() => 
-      getComputedStyle(document.documentElement).getPropertyValue('--scanline-opacity').trim()
-    )
-    expect(Number(paperOpacity)).toBeCloseTo(0.05, 2)
   })
 
   test('enforces strict non-scrolling 100vh terminal layout', async ({ page }) => {

@@ -15,14 +15,39 @@
         READY // Press [F5] or type 'refresh' to degauss & update view. Press [F1] for help.
       </span>
     </div>
-    <div class="flex items-center gap-2 shrink-0">
+    <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Scroll Indicator & Page Buttons -->
+      <div class="hidden sm:flex items-center gap-1 bg-black/60 px-2 py-0.5 border border-[var(--crt-border-dim)] rounded text-[10px] text-[var(--crt-phosphor-dim)]" title="Buffer Scroll Position">
+        <span>SCRL:</span>
+        <span class="crt-scroll-percent-val text-[var(--crt-phosphor-bright)] font-bold min-w-[28px] text-right">0%</span>
+      </div>
+      <button
+        type="button"
+        id="btn-scroll-page-up"
+        data-scroll="up"
+        class="px-2 py-0.5 rounded text-[10px] font-bold border border-[var(--crt-border-dim)] text-[var(--crt-phosphor)] bg-black/60 hover:bg-[var(--crt-phosphor)]/20 hover:text-[var(--crt-phosphor-bright)] hover:border-[var(--crt-phosphor)] transition-all cursor-pointer font-mono flex items-center gap-1"
+        title="Page Up (PgUp / F6)"
+      >
+        <span>▲</span>
+        <span>PG UP</span>
+      </button>
+      <button
+        type="button"
+        id="btn-scroll-page-down"
+        data-scroll="down"
+        class="px-2 py-0.5 rounded text-[10px] font-bold border border-[var(--crt-border-dim)] text-[var(--crt-phosphor)] bg-black/60 hover:bg-[var(--crt-phosphor)]/20 hover:text-[var(--crt-phosphor-bright)] hover:border-[var(--crt-phosphor)] transition-all cursor-pointer font-mono flex items-center gap-1"
+        title="Page Down (PgDn / F7)"
+      >
+        <span>▼</span>
+        <span>PG DN</span>
+      </button>
       <button
         type="button"
         id="btn-bottom-cli-refresh"
         class="px-2 py-0.5 rounded text-[10px] font-bold border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-bright)] bg-black/60 hover:bg-[var(--crt-phosphor)]/20 hover:border-[var(--crt-phosphor)] transition-all cursor-pointer font-mono"
         title="Refresh Workstation CRT View (F5)"
       >
-        [ REFRESH VIEW (F5) ]
+        [ REFRESH (F5) ]
       </button>
     </div>
   </div>
@@ -30,43 +55,50 @@
   <!-- Bottom Row: Prompt Input + DOS Function Key Toolbar -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-1.5">
     <!-- Active CLI Form -->
-    <form id="bottom-cli-form" class="flex-1 flex items-center gap-2 bg-black/70 px-2.5 py-1 border border-[var(--crt-border-dim)] rounded text-xs">
-      <label for="bottom-cli-input" class="text-[var(--crt-phosphor-bright)] font-bold whitespace-nowrap cursor-pointer text-[11px] sm:text-xs">
-        el-j@station:~$
+    <form id="bottom-cli-form" class="flex-1 flex items-center gap-2 bg-black px-2.5 py-1 border border-[#3f3f46] text-xs">
+      <label for="bottom-cli-input" class="text-[#fbbf24] font-bold whitespace-nowrap cursor-pointer text-[11px] sm:text-xs">
+        C:\DOS\ARCH&gt;
       </label>
       <input
         type="text"
         id="bottom-cli-input"
-        class="flex-1 bg-transparent border-none outline-none text-[var(--crt-phosphor)] font-mono text-[11px] sm:text-xs p-0 m-0 focus:ring-0"
+        class="flex-1 bg-transparent border-none outline-none text-[#ffffff] font-mono text-[11px] sm:text-xs p-0 m-0 focus:ring-0"
         autocomplete="off"
         spellcheck="false"
-        placeholder="type 'help', 'refresh', 'reboot', 'theme <name>', 'ls'..."
+        placeholder="type 'help', 'refresh', 'reboot', 'ls', 'pgdn'..."
       />
-      <span class="inline-block w-1.5 h-3 bg-[var(--crt-phosphor)] animate-pulse" aria-hidden="true"></span>
+      <button type="submit" class="hidden" tabindex="-1" aria-hidden="true"></button>
+      <span class="inline-block w-1.5 h-3 bg-[#fbbf24] animate-pulse" aria-hidden="true"></span>
     </form>
 
     <!-- DOS Function Key Toolbar (F1..F10) -->
-    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-[var(--crt-phosphor-dim)] font-mono overflow-x-auto py-0.5 shrink-0" role="toolbar" aria-label="DOS Function Keys">
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="help">
-        <strong class="text-[var(--crt-phosphor)]">F1</strong>:Help
+    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-[#71717a] font-mono overflow-x-auto py-0.5 shrink-0" role="toolbar" aria-label="DOS Function Keys">
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="help">
+        <strong class="text-[#fbbf24]">F1</strong>:Help
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="projects">
-        <strong class="text-[var(--crt-phosphor)]">F2</strong>:Proj
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="projects">
+        <strong class="text-[#fbbf24]">F2</strong>:Proj
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="cli-tools">
-        <strong class="text-[var(--crt-phosphor)]">F3</strong>:Cli
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="cli-tools">
+        <strong class="text-[#fbbf24]">F3</strong>:Cli
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="dotfiles">
-        <strong class="text-[var(--crt-phosphor)]">F4</strong>:Dots
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="clear" title="Clear Buffer (F4)">
+        <strong class="text-[#fbbf24]">F4</strong>:Cls
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-[var(--crt-phosphor)]/20 border border-[var(--crt-phosphor)] text-[var(--crt-phosphor-bright)] rounded transition-colors" data-cmd="refresh">
-        <strong class="text-[var(--crt-phosphor-bright)]">F5</strong>:Refresh
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-[#fbbf24]/20 border border-[#fbbf24] text-[#fbbf24] transition-colors" data-cmd="refresh">
+        <strong class="text-[#fbbf24]">F5</strong>:Refresh
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="sound">
-        <strong class="text-[var(--crt-phosphor)]">F8</strong>:Sound
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="pgup" title="Page Up (PgUp / F6)">
+        <strong class="text-[#fbbf24]">F6</strong>:PgUp
       </button>
-      <button type="button" class="fn-key-btn hover:text-[var(--crt-phosphor-bright)] cursor-pointer px-1.5 py-0.5 bg-black/50 border border-[var(--crt-border-dim)] rounded transition-colors" data-cmd="reboot">
-        <strong class="text-[var(--crt-phosphor)]">F10</strong>:Reboot
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="pgdn" title="Page Down (PgDn / F7)">
+        <strong class="text-[#fbbf24]">F7</strong>:PgDn
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="sound">
+        <strong class="text-[#fbbf24]">F8</strong>:Sound
+      </button>
+      <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="reboot">
+        <strong class="text-[#fbbf24]">F10</strong>:Reboot
       </button>
     </div>
   </div>
@@ -148,7 +180,7 @@
 
         case 'help':
         case '?':
-          setOutput('CMDS: refresh, reboot, theme <amber|green|ice|paper>, scanlines, sound, ls, cat <file>, whoami, goto <proj|cli|dots>');
+          setOutput('CMDS: pgup, pgdn, top, bottom, refresh, reboot, theme <amber|green|ice|paper>, scanlines, sound, ls, cat <file>, goto <dir>');
           break;
 
         case 'reboot':
@@ -163,19 +195,7 @@
           break;
 
         case 'theme':
-          if (['amber', 'green', 'ice', 'paper'].includes(arg)) {
-            const btn = document.querySelector(`button[data-set-theme="${arg}"]`) as HTMLButtonElement | null;
-            if (btn) {
-              btn.click();
-              setOutput(`Theme switched to [${arg.toUpperCase()}].`);
-            } else {
-              document.documentElement.setAttribute('data-theme', arg);
-              localStorage.setItem('crt-theme', arg);
-              setOutput(`Theme set to [${arg.toUpperCase()}].`);
-            }
-          } else {
-            setOutput('Usage: theme <amber | green | ice | paper>', true);
-          }
+          setOutput('Display theme locked to Award BIOS VGA 80x25 text mode.');
           break;
 
         case 'scanlines': {
@@ -200,7 +220,7 @@
 
         case 'ls':
         case 'dir':
-          setOutput('A:\\> [01_ABOUT.TXT]  [02_PROJECTS.DIR]  [03_CLI_TOOLS.SH]  [04_DOTFILES.DIR]  [SYNTH.BIN]');
+          setOutput('A:\\> [1:ABOUT.SYS]  [2:PROJECTS.DIR]  [3:CLI_TOOLS.COM]  [SYNTH.BIN]');
           break;
 
         case 'cat':
@@ -228,12 +248,10 @@
             navigate('/projects');
           } else if (arg.includes('cli') || arg === '3') {
             navigate('/cli-tools');
-          } else if (arg.includes('dot') || arg === '4') {
-            navigate('/dotfiles');
           } else if (arg.includes('about') || arg === '1' || arg === '/' || arg === '~') {
             navigate('/');
           } else {
-            setOutput(`Directory [${arg}] not found. Try: cd projects | cli-tools | dotfiles | ~`, true);
+            setOutput(`Directory [${arg}] not found. Try: cd projects | cli-tools | ~`, true);
           }
           break;
 
@@ -243,8 +261,41 @@
         case 'cli-tools':
           navigate('/cli-tools');
           break;
-        case 'dotfiles':
-          navigate('/dotfiles');
+
+        case 'pgup':
+        case 'pageup':
+        case 'page-up':
+        case 'up':
+          if ((window as any).__scrollCrtContent) {
+            (window as any).__scrollCrtContent('up');
+            setOutput('Buffer scrolled PAGE UP [▲].');
+          }
+          break;
+
+        case 'pgdn':
+        case 'pagedown':
+        case 'page-down':
+        case 'down':
+          if ((window as any).__scrollCrtContent) {
+            (window as any).__scrollCrtContent('down');
+            setOutput('Buffer scrolled PAGE DOWN [▼].');
+          }
+          break;
+
+        case 'top':
+        case 'home':
+          if ((window as any).__scrollCrtContent) {
+            (window as any).__scrollCrtContent('top');
+            setOutput('Buffer scrolled to TOP [⤒].');
+          }
+          break;
+
+        case 'bottom':
+        case 'end':
+          if ((window as any).__scrollCrtContent) {
+            (window as any).__scrollCrtContent('bottom');
+            setOutput('Buffer scrolled to BOTTOM [⤓].');
+          }
           break;
 
         default:
@@ -262,6 +313,13 @@
 
     // Keyboard History & Interception
     input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = input.value;
+        input.value = '';
+        execute(val);
+        return;
+      }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (historyIdx > 0) {
@@ -315,7 +373,17 @@
       }
       if (e.key === 'F4') {
         e.preventDefault();
-        navigate('/dotfiles');
+        execute('clear');
+        return;
+      }
+      if (e.key === 'F6') {
+        e.preventDefault();
+        execute('pgup');
+        return;
+      }
+      if (e.key === 'F7') {
+        e.preventDefault();
+        execute('pgdn');
         return;
       }
       if (e.key === 'F8') {

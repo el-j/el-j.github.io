@@ -22,7 +22,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="amber">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,7 +36,7 @@ const {
     <meta property="og:url" content="https://el-j.github.io/" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta name="theme-color" content="#0c0701" />
+    <meta name="theme-color" content="#000000" />
 
     <!-- Astro View Transitions for instantaneous SPA routing -->
     <ClientRouter />
@@ -53,14 +53,17 @@ const {
 
     <!-- Main Fullscreen Workstation Surface -->
     <div class="crt-workstation-viewport">
-      <main class="crt-screen-content max-w-[1440px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-3 flex flex-col h-full justify-between overflow-hidden" transition:animate="fade">
+      <main class="crt-screen-content max-w-[1440px] w-full mx-auto px-2 sm:px-6 py-1.5 sm:py-2.5 flex flex-col h-full justify-between overflow-hidden" transition:animate="fade">
         <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
           <!-- Top Header & Navigation HUD -->
           <HeaderHud activeTab={activeTab} />
 
-          <!-- Main Dynamic Content Slot (Non-scrolling fullscreen terminal view) -->
-          <div class="flex-1 min-h-0 overflow-hidden">
-            <slot />
+          <!-- Main Dynamic Content Slot (90s BIOS/DOS Line-by-Line Screen Draw) -->
+          <div id="crt-content-viewport" class="flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 focus:outline-none scroll-smooth crt-content-scroll relative" tabindex="0">
+            <div class="dos-raster-beam" id="dos-raster-beam" aria-hidden="true"></div>
+            <div class="dos-screen-raster-lines" id="dos-raster-content">
+              <slot />
+            </div>
           </div>
         </div>
 
@@ -75,6 +78,134 @@ const {
 
     <!-- Global Sound Synthesis Engine -->
     <AudioEngine />
+
+    <!-- Workstation Viewport Page Navigation & Scroll Controller -->
+    <script>
+      function setupWorkstationScroller() {
+        const vp = document.getElementById('crt-content-viewport');
+
+        function updateScrollIndicator() {
+          if (!vp) return;
+          const maxScroll = vp.scrollHeight - vp.clientHeight;
+          let percent = 0;
+          if (maxScroll <= 0) {
+            percent = 100;
+          } else {
+            percent = Math.min(100, Math.max(0, Math.round((vp.scrollTop / maxScroll) * 100)));
+          }
+
+          const indicators = document.querySelectorAll('.crt-scroll-percent-val');
+          indicators.forEach((el) => {
+            el.textContent = `${percent}%`;
+          });
+        }
+
+        if (vp) {
+          vp.removeEventListener('scroll', updateScrollIndicator);
+          vp.addEventListener('scroll', updateScrollIndicator, { passive: true });
+          updateScrollIndicator();
+        }
+
+        // Global callable scroll helper
+        (window as any).__scrollCrtContent = function(direction: 'up' | 'down' | 'top' | 'bottom') {
+          const activeVp = document.getElementById('crt-content-viewport');
+          if (!activeVp) return;
+          const pageDelta = Math.max(220, Math.floor(activeVp.clientHeight * 0.75));
+
+          if (direction === 'up') {
+            activeVp.scrollBy({ top: -pageDelta, behavior: 'smooth' });
+          } else if (direction === 'down') {
+            activeVp.scrollBy({ top: pageDelta, behavior: 'smooth' });
+          } else if (direction === 'top') {
+            activeVp.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (direction === 'bottom') {
+            activeVp.scrollTo({ top: activeVp.scrollHeight, behavior: 'smooth' });
+          }
+
+          if ((window as any).__playClickSound) {
+            (window as any).__playClickSound();
+          }
+
+          setTimeout(updateScrollIndicator, 150);
+        };
+      }
+
+      // Global click delegate for [data-scroll] triggers
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+        const trigger = target.closest('[data-scroll]') as HTMLElement | null;
+        if (!trigger) return;
+        const action = trigger.getAttribute('data-scroll') as 'up' | 'down' | 'top' | 'bottom' | null;
+        if (action && (window as any).__scrollCrtContent) {
+          e.preventDefault();
+          (window as any).__scrollCrtContent(action);
+        }
+      });
+
+      // Global keyboard navigation: PageUp, PageDown, Home, End, vim j/k
+      window.addEventListener('keydown', (e) => {
+        const target = e.target as HTMLElement | null;
+        const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+        // PageUp / PageDown always scroll viewport
+        if (e.key === 'PageDown') {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('down');
+          return;
+        }
+        if (e.key === 'PageUp') {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('up');
+          return;
+        }
+
+        // Keys restricted when typing in CLI / input fields
+        if (isInput) return;
+
+        if (e.key === 'Home') {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('top');
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('bottom');
+        } else if (e.key === ' ' && !e.shiftKey) {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('down');
+        } else if (e.key === ' ' && e.shiftKey) {
+          e.preventDefault();
+          (window as any).__scrollCrtContent?.('up');
+        } else if (e.key === 'j' || e.key === 'ArrowDown') {
+          const vp = document.getElementById('crt-content-viewport');
+          if (vp) vp.scrollBy({ top: 90, behavior: 'smooth' });
+        } else if (e.key === 'k' || e.key === 'ArrowUp') {
+          const vp = document.getElementById('crt-content-viewport');
+          if (vp) vp.scrollBy({ top: -90, behavior: 'smooth' });
+        }
+      });
+
+      function triggerLineByLineDraw() {
+        const beam = document.getElementById('dos-raster-beam');
+        const lines = document.getElementById('dos-raster-content');
+        if (beam) {
+          beam.style.animation = 'none';
+          void beam.offsetWidth;
+          beam.style.animation = '';
+        }
+        if (lines) {
+          lines.style.animation = 'none';
+          void lines.offsetWidth;
+          lines.style.animation = '';
+        }
+      }
+
+      setupWorkstationScroller();
+      triggerLineByLineDraw();
+      document.addEventListener('astro:page-load', () => {
+        setupWorkstationScroller();
+        triggerLineByLineDraw();
+      });
+    </script>
   </body>
 </html>
 

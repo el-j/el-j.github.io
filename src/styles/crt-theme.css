@@ -1,70 +1,36 @@
 /* ── Typography Imports ─────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=VT323&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Default Theme: Amber P3 Phosphor */
-  --crt-bg: #0c0701;
-  --crt-screen-bg: #140b02;
-  --crt-phosphor: #ff9d00;
-  --crt-phosphor-bright: #ffbe4d;
-  --crt-phosphor-dim: #995500;
-  --crt-phosphor-dark: #3a1f00;
-  --crt-glow: rgba(255, 157, 0, 0.45);
-  --crt-border: #ff9d00;
-  --crt-border-dim: #7a3e00;
-  --crt-grid-line: rgba(255, 157, 0, 0.08);
+  /* 90's Award/AMI BIOS & MS-DOS Mode 3 Palette (No custom color themes) */
+  --crt-bg: #000000;
+  --crt-screen-bg: #000000;
+  --crt-phosphor: #d4d4d8;         /* Classic VGA light grey */
+  --crt-phosphor-bright: #ffffff;  /* High-intensity VGA white */
+  --crt-phosphor-dim: #71717a;     /* BIOS shadow RAM / secondary grey */
+  --crt-phosphor-dark: #18181b;    /* Inactive box interior */
+  --crt-bios-yellow: #fbbf24;      /* Award BIOS Header Yellow / Gold */
+  --crt-bios-cyan: #38bdf8;        /* DOS Drive & Keyword Cyan */
+  --crt-bios-green: #22c55e;       /* Floppy / Status OK Green */
+  --crt-glow: rgba(255, 255, 255, 0.05); /* Minimal raster aura, no modern blurry bloom */
+  --crt-border: #3f3f46;           /* Crisp DOS text-mode box border */
+  --crt-border-dim: #27272a;
+  --crt-border-bright: #fbbf24;
+  --crt-grid-line: rgba(255, 255, 255, 0.03);
 
   /* CRT Filter & Curved Optics controls */
   --scanline-opacity: 0.20;
   --crt-curve-active: 1;
 
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', 'VT323', monospace;
+  --font-display: 'JetBrains Mono', monospace;
   --font-pixel: 'VT323', monospace;
 }
 
-/* ── Matrix Green Theme (P1) ────────────────────────────────────────── */
-[data-theme="green"] {
-  --crt-bg: #010c05;
-  --crt-screen-bg: #02160a;
-  --crt-phosphor: #00ff66;
-  --crt-phosphor-bright: #66ffaa;
-  --crt-phosphor-dim: #00993d;
-  --crt-phosphor-dark: #003a17;
-  --crt-glow: rgba(0, 255, 102, 0.4);
-  --crt-border: #00ff66;
-  --crt-border-dim: #006629;
-  --crt-grid-line: rgba(0, 255, 102, 0.08);
-}
-
-/* ── Cyber Ice Theme (P4) ───────────────────────────────────────────── */
-[data-theme="ice"] {
-  --crt-bg: #010a12;
-  --crt-screen-bg: #021220;
-  --crt-phosphor: #00e5ff;
-  --crt-phosphor-bright: #66efff;
-  --crt-phosphor-dim: #008899;
-  --crt-phosphor-dark: #00333a;
-  --crt-glow: rgba(0, 229, 255, 0.4);
-  --crt-border: #00e5ff;
-  --crt-border-dim: #005966;
-  --crt-grid-line: rgba(0, 229, 255, 0.08);
-}
-
-/* ── High-Contrast Paper (Monochrome / Day Mode) ────────────────────── */
-[data-theme="paper"] {
-  --crt-bg: #f4efe6;
-  --crt-screen-bg: #fcf9f2;
-  --crt-phosphor: #1c1917;
-  --crt-phosphor-bright: #0c0a09;
-  --crt-phosphor-dim: #78716c;
-  --crt-phosphor-dark: #d6d3d1;
-  --crt-glow: rgba(0, 0, 0, 0.05);
-  --crt-border: #292524;
-  --crt-border-dim: #a8a29e;
-  --crt-grid-line: rgba(0, 0, 0, 0.05);
-  --scanline-opacity: 0.05;
+/* Strict 90s DOS Text-Mode: Zero rounded corners anywhere */
+*, *::before, *::after {
+  border-radius: 0 !important;
 }
 
 /* ── Global Base (Strict Fullscreen No-Scroll Terminal) ─────────────── */
@@ -84,19 +50,39 @@ html, body {
 }
 
 /* Custom Scrollbar for CRT windows */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #000000;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--crt-bg);
+  background: #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--crt-border-dim);
+  background: #3f3f46;
   border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--crt-phosphor);
+  background: #fbbf24;
+}
+
+#crt-content-viewport::-webkit-scrollbar {
+  width: 7px;
+}
+#crt-content-viewport::-webkit-scrollbar-track {
+  background: #000000;
+  border-left: 1px solid #27272a;
+}
+#crt-content-viewport::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border: 1px solid #52525b;
+}
+#crt-content-viewport::-webkit-scrollbar-thumb:hover {
+  background: #fbbf24;
 }
 
 /* ── Fullscreen CRT Viewport & Bended Curved Tube Optics ─────────────── */
@@ -221,57 +207,107 @@ html, body {
   animation: crtRefreshSweep 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* ── Typography & Phosphor Glow ────────────────────────────────────── */
+/* ── Typography & 90s BIOS Text Rendering ────────────────────────── */
 .glow-text {
-  text-shadow: 0 0 8px var(--crt-glow);
+  text-shadow: none;
 }
 
 .glow-bright {
-  color: var(--crt-phosphor-bright);
-  text-shadow: 0 0 12px var(--crt-glow), 0 0 2px rgba(255, 255, 255, 0.6);
+  color: var(--crt-bios-yellow);
+  text-shadow: none;
 }
 
-/* ── Header HUD Nav ────────────────────────────────────────────────── */
+/* ── 90's DOS/BIOS Line-by-Line Screen Draw Animation ─────────────── */
+@keyframes dosLineRasterDraw {
+  0% { clip-path: inset(0 0 100% 0); }
+  4% { clip-path: inset(0 0 96% 0); }
+  8% { clip-path: inset(0 0 92% 0); }
+  12% { clip-path: inset(0 0 88% 0); }
+  16% { clip-path: inset(0 0 84% 0); }
+  20% { clip-path: inset(0 0 80% 0); }
+  24% { clip-path: inset(0 0 76% 0); }
+  28% { clip-path: inset(0 0 72% 0); }
+  32% { clip-path: inset(0 0 68% 0); }
+  36% { clip-path: inset(0 0 64% 0); }
+  40% { clip-path: inset(0 0 60% 0); }
+  44% { clip-path: inset(0 0 56% 0); }
+  48% { clip-path: inset(0 0 52% 0); }
+  52% { clip-path: inset(0 0 48% 0); }
+  56% { clip-path: inset(0 0 44% 0); }
+  60% { clip-path: inset(0 0 40% 0); }
+  64% { clip-path: inset(0 0 36% 0); }
+  68% { clip-path: inset(0 0 32% 0); }
+  72% { clip-path: inset(0 0 28% 0); }
+  76% { clip-path: inset(0 0 24% 0); }
+  80% { clip-path: inset(0 0 20% 0); }
+  84% { clip-path: inset(0 0 16% 0); }
+  88% { clip-path: inset(0 0 12% 0); }
+  92% { clip-path: inset(0 0 8% 0); }
+  96% { clip-path: inset(0 0 4% 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes dosBeamSweep {
+  0% { top: 0%; opacity: 1; }
+  95% { top: 100%; opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.dos-screen-raster-lines {
+  animation: dosLineRasterDraw 0.28s steps(25, end) forwards;
+}
+
+.dos-raster-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 6px #fbbf24;
+  pointer-events: none;
+  z-index: 40;
+  animation: dosBeamSweep 0.28s linear forwards;
+}
+
+/* ── Header HUD Nav (Classic DOS Menu Bar) ─────────────────────────── */
 .hud-nav-tab {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--crt-border-dim);
-  background: rgba(0, 0, 0, 0.35);
-  color: var(--crt-phosphor-dim);
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid #3f3f46;
+  background: #000000;
+  color: #d4d4d8;
   font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.05em;
-  transition: all 0.15s ease;
   cursor: pointer;
   text-decoration: none;
-  border-radius: 2px;
+  border-radius: 0 !important;
 }
 
 .hud-nav-tab:hover {
-  border-color: var(--crt-phosphor);
-  color: var(--crt-phosphor-bright);
-  background: rgba(255, 157, 0, 0.1);
-  text-shadow: 0 0 8px var(--crt-glow);
+  background: #27272a;
+  color: #fbbf24;
+  border-color: #fbbf24;
 }
 
 .hud-nav-tab.active {
-  border-color: var(--crt-phosphor);
-  color: var(--crt-screen-bg);
-  background: var(--crt-phosphor);
-  font-weight: 700;
-  box-shadow: 0 0 12px var(--crt-glow);
+  background: #fbbf24;
+  color: #000000;
+  border-color: #fbbf24;
+  font-weight: 800;
 }
 
-/* ── Terminal Window Element ───────────────────────────────────────── */
+/* ── Terminal Card (DOS Text Mode Box) ─────────────────────────────── */
 .terminal-card {
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid var(--crt-border);
-  padding: 12px;
+  background: #050505;
+  border: 1px solid #3f3f46;
+  padding: 8px 10px;
   font-family: var(--font-mono);
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
+  border-radius: 0 !important;
   position: relative;
 }
 
@@ -279,11 +315,11 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px dashed var(--crt-border-dim);
-  padding-bottom: 8px;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #27272a;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 

@@ -6,62 +6,51 @@ interface Props {
 const { activeTab = 'about' } = Astro.props;
 
 const navItems = [
-  { id: 'about', label: '[01_ABOUT]', href: '/' },
-  { id: 'projects', label: '[02_PROJECTS]', href: '/projects' },
-  { id: 'cli_tools', label: '[03_CLI_TOOLS]', href: '/cli-tools' },
-  { id: 'dotfiles', label: '[04_DOTFILES]', href: '/dotfiles' },
+  { id: 'about', label: '[1:ABOUT]', href: '/' },
+  { id: 'projects', label: '[2:PROJECTS]', href: '/projects' },
+  { id: 'cli_tools', label: '[3:CLI_TOOLS]', href: '/cli-tools' },
 ];
 ---
 
-<header class="border-b border-[var(--crt-border-dim)] pb-3 mb-4">
-  <!-- Top Identity & Status Bar -->
-  <div class="flex flex-wrap items-center justify-between gap-3 text-xs mb-3">
-    <div class="flex items-center gap-2">
-      <span class="inline-block w-2.5 h-2.5 rounded-full bg-[var(--crt-phosphor)] animate-pulse shadow-[0_0_8px_var(--crt-glow)]"></span>
-      <h1 class="font-bold tracking-wider text-sm sm:text-base glow-bright uppercase m-0">
-        FABIAN ALTHAUS (el-j) // FULLSTACK_UX_DEV // LINUX_NERD
+<header class="border-b border-[#3f3f46] pb-1.5 mb-2 select-none" aria-label="Workstation DOS Menu Bar">
+  <!-- Ultra-Compact Authentic 90s DOS/Linux Menu Bar -->
+  <div class="flex items-center justify-between text-xs font-mono bg-black/90 px-2 py-1 border border-[#3f3f46] gap-2">
+    <!-- Left: Identity & DOS Menu Tabs -->
+    <div class="flex items-center gap-1.5 sm:gap-3 overflow-x-auto">
+      <h1 class="text-[#fbbf24] font-bold text-[11px] sm:text-xs whitespace-nowrap m-0 inline">
+        FABIAN ALTHAUS (el-j) // EL-J BIOS v2.084 //
       </h1>
+      <nav class="flex items-center gap-1" aria-label="Main Navigation">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class={`hud-nav-tab px-2 py-0.5 text-[10px] sm:text-xs font-bold transition-none whitespace-nowrap ${
+              activeTab === item.id
+                ? 'active bg-[#fbbf24] text-black'
+                : 'text-[#d4d4d8] hover:bg-[#27272a] hover:text-[#fbbf24]'
+            }`}
+            data-tab={item.id}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
     </div>
 
-    <div class="flex items-center gap-3 text-[11px] text-[var(--crt-phosphor-dim)] font-mono">
-      <span class="hidden sm:inline">SYS_LOAD: <strong class="text-[var(--crt-phosphor)]">0.12, 0.08, 0.05</strong></span>
-      <span>STATUS: <strong class="text-[var(--crt-phosphor-bright)] glow-text">ONLINE [200 OK]</strong></span>
-      <span class="px-2 py-0.5 border border-[var(--crt-border-dim)] bg-black/40 text-[10px]">TTY1</span>
+    <!-- Right: Real DOS/Linux Telemetry -->
+    <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-[#71717a] font-mono shrink-0">
+      <span class="hidden md:inline">CPU: <strong class="text-[#d4d4d8]">486-DX@66</strong></span>
+      <span class="hidden sm:inline">RAM: <strong class="text-[#fbbf24]">16MB</strong></span>
+      <span>SYS: <strong class="text-[#22c55e]">200 OK</strong></span>
+      <span class="text-[#38bdf8] font-bold px-1 bg-[#18181b] border border-[#3f3f46]">TTY1</span>
     </div>
   </div>
-
-  <!-- Navigation Bar -->
-  <nav class="flex flex-wrap items-center justify-between gap-2 pt-1" aria-label="Main Navigation">
-    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-      {navItems.map((item) => (
-        <a
-          href={item.href}
-          class={`hud-nav-tab ${activeTab === item.id ? 'active' : ''}`}
-          data-tab={item.id}
-        >
-          {item.label}
-        </a>
-      ))}
-    </div>
-
-    <!-- Quick Keyboard Shortcut Hint -->
-    <div class="hidden md:flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono opacity-80">
-      <span>SHORTCUTS:</span>
-      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">1</kbd>
-      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">2</kbd>
-      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">3</kbd>
-      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">4</kbd>
-      <span>|</span>
-      <kbd class="px-1.5 py-0.5 border border-[var(--crt-border-dim)] bg-black/50 text-[var(--crt-phosphor)]">~</kbd>
-      <span>TERMINAL</span>
-    </div>
-  </nav>
 </header>
 
 <script>
   import { navigate } from 'astro:transitions/client';
 
-  // Global Keyboard Navigation (1, 2, 3, 4, ~)
+  // Global Keyboard Navigation (1, 2, 3, ~)
   function setupKeyboardNav() {
     document.addEventListener('keydown', (e) => {
       const target = e.target as HTMLElement;
@@ -69,7 +58,7 @@ const navItems = [
 
       if (e.key === '`' || e.key === '~') {
         e.preventDefault();
-        const termInput = document.getElementById('terminal-input') as HTMLInputElement | null;
+        const termInput = (document.getElementById('bottom-cli-input') || document.getElementById('terminal-input')) as HTMLInputElement | null;
         if (termInput) {
           termInput.focus();
         }
@@ -79,7 +68,6 @@ const navItems = [
       if (e.key === '1') navigate('/');
       if (e.key === '2') navigate('/projects');
       if (e.key === '3') navigate('/cli-tools');
-      if (e.key === '4') navigate('/dotfiles');
     });
   }
 
