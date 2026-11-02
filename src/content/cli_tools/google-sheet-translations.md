@@ -13,3 +13,4 @@ releasesCount: 30
 
 ### Why it exists
 Eliminates tedious manual copy-pasting of translation files across multilingual codebases. Connects directly to Google Sheets via Workload Identity Federation (WIF) or service account credentials, auto-generates missing translation formulas (`=GOOGLETRANSLATE`), applies smart locale filtering, and writes typed JSON dictionary files directly into the build pipeline.
+

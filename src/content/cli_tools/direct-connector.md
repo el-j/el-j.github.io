@@ -12,3 +12,4 @@ releasesCount: 8
 
 ### Why it exists
 Enables direct peer-to-peer port sharing between two workstations or servers with zero third-party relay servers, telemetry, or recurring subscriptions. Ships both as a lightweight headless CLI binary (`direct-connector-cli`) for servers/Docker containers, and as a Wails desktop GUI for macOS and Windows.
+

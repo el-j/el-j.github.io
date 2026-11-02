@@ -12,3 +12,4 @@ releasesCount: 30
 
 ### Why it exists
 Nexus runs coding workflows across local open-source models (Ollama, LM Studio, vLLM) and editor subscriptions (Claude Code, GitHub Copilot) without wasted API spend. Provides a standard MCP server interface, deterministic rule gates, automated test verification, and a persistent project brain tracking architectural conventions.
+

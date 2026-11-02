@@ -13,3 +13,4 @@ releasesCount: 1
 
 ### Why it exists
 A companion developer package to `msitarzewski/agency-agents` that provides programmatic access to agent markdown personas. It shallow-clones the upstream roster into an ephemeral local cache with zero external dependencies, ships an executable CLI (`agency-agents`), and provides a clean typed API for compiling multi-agent swarms into LLM system prompts.
+

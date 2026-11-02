@@ -12,3 +12,4 @@ releasesCount: 3
 
 ### Why it exists
 Makes migrating existing macOS machines to reproducible Nix setups effortless. Scans active formulas, casks, and Mac App Store applications, automatically maps them to nixpkgs package equivalents across 60+ built-in mappings, and outputs ready-to-build `darwin-configuration.nix`, `home.nix`, and `flake.nix` configurations.
+

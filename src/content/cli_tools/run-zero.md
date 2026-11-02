@@ -12,3 +12,4 @@ releasesCount: 30
 
 ### Why it exists
 Eliminates expensive GitHub Actions cloud runner bills and long queue times. RunZero dynamically spawns local runners using a Dual-Engine architecture (isolated Docker containers for micro-jobs, and full Linux VMs via OrbStack or Multipass for systemd and browser tests), complete with Verdaccio, Athens, and persistent caching proxies.
+

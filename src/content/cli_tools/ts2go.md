@@ -12,3 +12,4 @@ releasesCount: 26
 
 ### Why it exists
 Bridges high-level TypeScript types, interfaces, and logic to performant Go backend microservices. Uses hexagonal architecture to parse TypeScript source tokens, map types cleanly to Go structs and interfaces, and output production-ready Go packages with idiomatic error propagation.
+

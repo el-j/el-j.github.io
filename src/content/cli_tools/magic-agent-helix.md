@@ -13,3 +13,4 @@ releasesCount: 21
 
 ### Why it exists
 Inspects codebases across nine language ecosystems (TypeScript, Python, Go, Rust, etc.) to detect architectures, frameworks, and conventions. Automatically produces granular, path-scoped instruction files for GitHub Copilot, Cursor, and autonomous AI agents with an automated quality-scoring engine.
+
