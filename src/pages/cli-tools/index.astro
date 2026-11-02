@@ -6,60 +6,90 @@ const tools = await getCollection('cli_tools');
 ---
 
 <WorkstationLayout activeTab="cli_tools" title="CLI Tools & Packages // el-j">
-  <div class="space-y-4">
-    <!-- Header banner -->
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--crt-border-dim)] pb-2">
+  <div class="space-y-3 pb-8">
+    <!-- Header banner with sticky navigation & page scroll controls -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">
       <div>
-        <h2 class="text-sm font-bold glow-bright uppercase m-0 flex items-center gap-2">
+        <h2 class="text-xs sm:text-sm font-bold uppercase m-0 flex items-center gap-2 text-[#fbbf24]">
           <span>[03_CLI_TOOLS]</span>
-          <span>OPEN-SOURCE CLI TOOLS & DEVELOPER ERGONOMICS</span>
+          <span>OPEN-SOURCE CLI UTILITIES &amp; PACKAGES</span>
         </h2>
-        <p class="text-[11px] text-[var(--crt-phosphor-dim)] m-0">
+        <p class="text-[10px] sm:text-[11px] text-[#71717a] m-0">
           Terminal-native workflows, AST query utilities, and developer ergonomics packages.
         </p>
       </div>
-      <div class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
-        PACKAGES: <strong class="text-[var(--crt-phosphor-bright)]">{tools.length}</strong>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="text-[10px] text-[#71717a] font-mono">
+          BINARIES: <strong class="text-[#fbbf24]">{tools.length}</strong>
+        </div>
+        <!-- Tactile Scroll Controls for Quick Page Exploring -->
+        <div class="flex items-center gap-1 font-mono text-[10px]" role="toolbar" aria-label="CLI tools page navigation">
+          <button
+            type="button"
+            data-scroll="up"
+            class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+            title="Page Up (PgUp / F6)"
+          >
+            <span>▲</span>
+            <span>PG UP</span>
+          </button>
+          <button
+            type="button"
+            data-scroll="down"
+            class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+            title="Page Down (PgDn / F7)"
+          >
+            <span>▼</span>
+            <span>PG DN</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Tools Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Tools Grid (DOS Text Mode Utility Entries) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       {tools.map((tool) => (
-        <article class="terminal-card text-xs flex flex-col justify-between hover:border-[var(--crt-phosphor-bright)] transition-colors">
+        <article class="terminal-card text-xs flex flex-col justify-between border border-[#3f3f46] hover:border-[#fbbf24] bg-black p-2.5">
           <div>
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-dashed border-[var(--crt-border-dim)] pb-1.5 mb-2">
-              <span class="text-[10px] px-1.5 py-0.2 bg-[var(--crt-phosphor)]/15 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-bright)] font-bold">
-                {tool.data.language}
-              </span>
-              <span class="text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
+            <div class="flex items-center justify-between border-b border-[#27272a] pb-1 mb-1.5 font-mono text-[10px]">
+              <div class="flex items-center gap-2">
+                <span class="text-[#38bdf8] font-bold">
+                  LANG: {tool.data.language.toUpperCase()}
+                </span>
+                {tool.data.releaseVersion && (
+                  <span class="text-[#22c55e] font-bold bg-[#09090b] px-1 border border-[#27272a]">
+                    REL: {tool.data.releaseVersion}
+                  </span>
+                )}
+              </div>
+              <span class="text-[#71717a]">
                 BIN: /{tool.data.name}
               </span>
             </div>
 
             <!-- Title & Summary -->
-            <h3 class="text-sm font-bold text-[var(--crt-phosphor-bright)] mb-1 glow-text">
+            <h3 class="text-xs sm:text-sm font-bold text-[#ffffff] mb-1">
               {tool.data.name}
             </h3>
-            <p class="text-[11px] text-[var(--crt-phosphor)] leading-relaxed opacity-90 mb-3">
+            <p class="text-[11px] text-[#d4d4d8] leading-relaxed mb-2.5">
               {tool.data.summary}
             </p>
 
             <!-- Command Run Demo -->
-            <div class="p-2 bg-black/60 border border-[var(--crt-border-dim)] rounded font-mono text-[10px] mb-3">
-              <div class="text-[var(--crt-phosphor-dim)] mb-1">// EXECUTE:</div>
-              <div class="text-[var(--crt-phosphor-bright)] flex items-center gap-2">
+            <div class="p-1.5 bg-[#09090b] border border-[#27272a] font-mono text-[10px] mb-2">
+              <div class="text-[#71717a] mb-0.5">// EXECUTE:</div>
+              <div class="text-[#22c55e] flex items-center gap-1.5">
                 <span>$</span>
                 <span>{tool.data.command}</span>
               </div>
             </div>
 
             <!-- Installation Box -->
-            <div class="p-2 bg-black/40 border border-dashed border-[var(--crt-border-dim)] rounded font-mono text-[10px] flex items-center justify-between gap-2">
-              <span class="text-[var(--crt-phosphor)] truncate">{tool.data.installCmd}</span>
+            <div class="p-1.5 bg-[#09090b] border border-[#27272a] font-mono text-[10px] flex items-center justify-between gap-2">
+              <span class="text-[#fbbf24] truncate">{tool.data.installCmd}</span>
               <button
-                class="copy-btn px-1.5 py-0.5 border border-[var(--crt-border-dim)] text-[9px] hover:bg-[var(--crt-phosphor)]/20 active:scale-95 transition-all text-[var(--crt-phosphor-bright)]"
+                class="copy-btn px-1.5 py-0.5 border border-[#3f3f46] text-[9px] hover:bg-[#27272a] text-[#ffffff] cursor-pointer font-bold"
                 data-cmd={tool.data.installCmd}
               >
                 COPY
@@ -68,23 +98,23 @@ const tools = await getCollection('cli_tools');
           </div>
 
           <!-- Tags & Links -->
-          <div class="pt-2 border-t border-dashed border-[var(--crt-border-dim)] mt-3">
+          <div class="pt-2 border-t border-[#27272a] mt-2 font-mono">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex flex-wrap items-center gap-1">
                 {tool.data.tags.map((tag) => (
-                  <span class="text-[9px] px-1 py-0.2 bg-black/60 border border-[var(--crt-border-dim)] text-[var(--crt-phosphor-dim)]">
+                  <span class="text-[9px] px-1 py-0.2 bg-[#18181b] border border-[#27272a] text-[#71717a]">
                     #{tag}
                   </span>
                 ))}
               </div>
 
-              <div class="flex items-center gap-2 text-[11px]">
+              <div class="flex items-center gap-2 text-[10px]">
                 {tool.data.githubUrl && (
                   <a
                     href={tool.data.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-[var(--crt-phosphor-bright)] hover:underline flex items-center gap-1"
+                    class="text-[#38bdf8] hover:underline flex items-center gap-1 font-bold"
                   >
                     <span>[GITHUB]</span>
                     <span>&nearr;</span>
@@ -95,7 +125,7 @@ const tools = await getCollection('cli_tools');
                     href={tool.data.npmUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-[var(--crt-phosphor)] hover:underline flex items-center gap-1 opacity-80"
+                    class="text-[#d4d4d8] hover:underline flex items-center gap-1"
                   >
                     <span>[NPM]</span>
                     <span>&nearr;</span>
@@ -106,6 +136,49 @@ const tools = await getCollection('cli_tools');
           </div>
         </article>
       ))}
+    </div>
+
+    <!-- Upstream Open Source Contributions Gateway Strip -->
+    <div class="p-2.5 bg-black border border-[#3f3f46] hover:border-[#fbbf24] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div>
+        <div class="text-[#fbbf24] font-bold flex items-center gap-2">
+          <span>[04_CONTRIBUTIONS]</span>
+          <span>UPSTREAM OPEN-SOURCE COMMITS (189+ PRs across 12+ Orgs)</span>
+        </div>
+        <p class="text-[10px] sm:text-[11px] text-[#71717a] m-0">
+          TypeScript compiler AST printer, VectorCraft Rust canvas engine, Fritzing EDA, CyberRover P2P sync, OpenAPI codegen, and more.
+        </p>
+      </div>
+      <a
+        href="/contributions"
+        class="px-2.5 py-1 bg-[#fbbf24] text-black font-bold hover:bg-[#ffffff] text-[11px] flex items-center gap-1.5 transition-none shrink-0"
+      >
+        <span>EXPLORE UPSTREAM CONTRIBUTIONS [4]</span>
+        <span>&rarr;</span>
+      </a>
+    </div>
+
+    <!-- Bottom Buffer Strip & Return to Top -->
+    <div class="border-t border-[#3f3f46] pt-2 pb-2 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] font-mono text-[#71717a]">
+      <span>END OF BUFFER // ALL {tools.length} PACKAGES LOADED</span>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-scroll="up"
+          class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none flex items-center gap-1 font-bold"
+        >
+          <span>▲</span>
+          <span>PG UP</span>
+        </button>
+        <button
+          type="button"
+          data-scroll="top"
+          class="px-2 py-0.5 bg-black border border-[#3f3f46] hover:bg-[#27272a] hover:border-[#fbbf24] text-[#fbbf24] cursor-pointer transition-none font-bold flex items-center gap-1"
+        >
+          <span>⤒</span>
+          <span>RETURN TO TOP</span>
+        </button>
+      </div>
     </div>
   </div>
 </WorkstationLayout>

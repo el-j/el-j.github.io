@@ -7,59 +7,47 @@ import TokenAstVisualizer from '@/components/workstation/TokenAstVisualizer.astr
 ---
 
 <WorkstationLayout activeTab="about">
-  <!-- 2x2 Workstation Matrix (Unified Cyberdeck & Architecture Inspector) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-    <!-- Top Left: Latest Deployment & Fleet Status -->
-    <div class="lg:col-span-5">
-      <LatestDeployment />
-    </div>
-
-    <!-- Top Right: Real Project Schematics & Architecture Deck -->
-    <div class="lg:col-span-7">
-      <ProjectSchematicsDeck />
-    </div>
-
-    <!-- Bottom Left: CLI / DEBUG_ENV Live Terminal REPL -->
-    <div class="lg:col-span-6">
-      <LiveTerminal />
-    </div>
-
-    <!-- Bottom Right: token specs -> AST Interactive Visualizer -->
-    <div class="lg:col-span-6">
-      <TokenAstVisualizer />
-    </div>
-  </div>
-
-  <!-- Deep Bio / Philosophy Drawer (Sourced from fabianalthaus.de) -->
-  <div class="mt-4 pt-3 border-t border-[var(--crt-border-dim)] text-xs font-mono grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
-      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
-        <span>[01]</span>
-        <span>CONCEPT & INTERFACE DESIGN</span>
+  <div class="h-full flex flex-col justify-between overflow-hidden gap-1.5 sm:gap-2">
+    <!-- Top DOS/Linux Telemetry & Status Bar -->
+    <div class="hidden sm:flex items-center justify-between px-2.5 py-1 bg-black border border-[#3f3f46] text-[10px] font-mono text-[#71717a] shrink-0 select-none">
+      <div class="flex items-center gap-3">
+        <span class="text-[#fbbf24] font-bold">OS: ARCH-DOS 2.0 // TTY1</span>
+        <span>CPU: CyberRISC 80486-DX @ 66MHz</span>
+        <span class="hidden md:inline">KERNEL: 6.12.9-arch1-1-lts</span>
       </div>
-      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Designer and professional consultant for digital and analogue interfaces, apps, and hardware. Human-centered ergonomics for complex industrial machines, SIEM platforms, and open-source electronics tools.
-      </p>
+      <div class="flex items-center gap-3">
+        <span>FLEET: <strong class="text-[#ffffff]">RUNZERO DUAL-ENGINE</strong></span>
+        <span>AST: <strong class="text-[#38bdf8]">ZERO-RUNTIME</strong></span>
+        <span class="text-[#22c55e] font-bold">[ONLINE 200 OK]</span>
+      </div>
     </div>
 
-    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
-      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
-        <span>[02]</span>
-        <span>FULLSTACK & CI/CD INFRASTRUCTURE</span>
+    <!-- Main Dual-Pane Terminal Matrix (100% Fullscreen, Zero Window Scrolling) -->
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-2.5 overflow-y-auto lg:overflow-hidden">
+      <!-- Left Column: DOS / Linux Live Terminal REPL & AST Compiler -->
+      <div class="lg:col-span-5 flex flex-col gap-2 h-full min-h-0">
+        <LiveTerminal />
+        <TokenAstVisualizer />
       </div>
-      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Creator of <strong class="text-[var(--crt-phosphor-bright)]">RunZero</strong> (dual-engine runner fleet) and <strong class="text-[var(--crt-phosphor-bright)]">@el-j/google-sheet-translations</strong>. Zero-runtime Astro architecture, Docker/OrbStack micro-VMs, and Linux automation.
-      </p>
+
+      <!-- Right Column: Real Project Schematics & Architecture Inspector Deck -->
+      <div class="lg:col-span-7 flex flex-col gap-2 h-full min-h-0">
+        <ProjectSchematicsDeck />
+      </div>
     </div>
 
-    <div class="border border-[var(--crt-border-dim)] p-2.5 bg-black/30 rounded">
-      <div class="text-[var(--crt-phosphor-bright)] font-bold mb-1 flex items-center gap-1.5">
-        <span>[03]</span>
-        <span>HARDWARE & PHYSICAL COMPUTING</span>
+    <!-- Bottom Operator Philosophy & Engineering Disciplines Status Strip -->
+    <div class="border-t border-[#3f3f46] bg-black px-2.5 py-1 text-[10px] font-mono text-[#71717a] flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
+      <div class="flex items-center gap-2 truncate">
+        <span class="text-[#fbbf24] font-bold">[FABIAN ALTHAUS // el-j]</span>
+        <span class="text-[#d4d4d8] truncate">
+          [01] Concept &amp; UX Design &bull; [02] Fullstack &amp; CI/CD &bull; [03] Hardware EDA &amp; Embedded IoT
+        </span>
       </div>
-      <p class="text-[var(--crt-phosphor)] text-[11px] leading-relaxed opacity-90 m-0">
-        Fritzing EDA concepts, DomeDrum MIDI controllers, E-CUBE biotech instruments, and KTM Motohall museum IoT sensor networks. Bridging physical circuits and microcontrollers with modern web software.
-      </p>
+      <div class="hidden md:flex items-center gap-2 text-[9px] text-[#71717a] shrink-0">
+        <span>PRESS <kbd class="px-1 py-0.2 bg-black border border-[#3f3f46] text-[#d4d4d8]">F5</kbd> REFRESH</span>
+        <span><kbd class="px-1 py-0.2 bg-black border border-[#3f3f46] text-[#d4d4d8]">F10</kbd> REBOOT</span>
+      </div>
     </div>
   </div>
 </WorkstationLayout>
