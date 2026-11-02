@@ -2,12 +2,12 @@
 // LiveTerminal.astro - Interactive Command Line REPL for Fabian Althaus Workstation
 ---
 
-<div class="terminal-card text-xs flex flex-col h-full min-h-[300px]" id="terminal-island">
+<div class="terminal-card text-xs flex flex-col h-full min-h-0 flex-1" id="terminal-island">
   <!-- Terminal Title Bar -->
   <div class="terminal-header text-[var(--crt-phosphor)]">
     <div class="flex items-center gap-2">
-      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[LIVE]</span>
-      <span class="font-bold">CLI / DEBUG_ENV // TTY1</span>
+      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[DOS_TTY1]</span>
+      <span class="font-bold">COMMAND.COM // DEBUG_ENV</span>
     </div>
     <div class="flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
       <button type="button" class="hover:text-[var(--crt-phosphor)] cursor-pointer" id="term-btn-min" title="Minimize">[ _ ]</button>
@@ -31,8 +31,8 @@
   </div>
 
   <!-- Terminal Input Prompt -->
-  <form class="flex items-center gap-1.5 pt-2 border-t border-[var(--crt-border-dim)] font-mono text-[11px]" id="terminal-form">
-    <span class="text-[var(--crt-phosphor-bright)] font-bold whitespace-nowrap">el-j@station:~$</span>
+  <form class="flex items-center gap-1.5 pt-2 border-t border-[#3f3f46] font-mono text-[11px]" id="terminal-form">
+    <span class="text-[#fbbf24] font-bold whitespace-nowrap">A:\&gt;</span>
     <input
       type="text"
       id="terminal-input"
@@ -68,15 +68,19 @@
   cat rex-at        - Inspect REX-AT industrial machine controls
   cat fritzing      - Inspect Fritzing open-source hardware EDA
   ls cli_tools      - List developer tools & CLI packages
-  ls dotfiles       - List Linux, Neovim, & Zsh configs
-  theme <name>      - Switch phosphor theme (amber | green | ice | paper)
   git log --graph   - Render ASCII branch topology
   contact           - Display communication channels
   synth             - Engage + SYNTH_T1 + pocket synthesizer
   reboot            - Trigger warm BIOS POST & Drive A: boot
   cowsay <text>     - The quintessential Unix wisdom
-  matrix            - Phosphor stream simulation
   clear             - Clear terminal buffer`,
+
+      refresh: () => {
+        if ((window as any).__refreshCrtScreen) {
+          (window as any).__refreshCrtScreen();
+        }
+        return `[OK] CRT display refreshed & cathode ray degaussed.`;
+      },
 
       reboot: () => {
         sessionStorage.removeItem('crt-booted');
@@ -138,16 +142,17 @@ Summary: Interaction redesign for the globally recognized open-source
          electronics prototyping tool and Fritzing 2.0 UX architecture.`,
 
       'ls cli_tools': () => `DEVELOPER TOOLS & PACKAGES:
-  [1] git-graph-stream        - Real-time ASCII branch visualizer
-  [2] ast-inspector           - Terminal REPL for AST token traversal
-Type 'open cli' to navigate to CLI tools view.`,
+  [1] agency-agents-sdk       - Multi-agent swarm SDK & CLI (npm)
+  [2] google-sheet-translations - Bidirectional Google Sheets i18n sync (npm)
+  [3] run-zero                - Zero-cost local runner fleet (Go/Docker)
+  [4] magic-agent-helix       - AI instruction generator (npm)
+  [5] nexus-orchestrator      - Multi-model AI task orchestrator (Go/MCP)
+  [6] ts2go                   - TypeScript-to-Go transpiler (Go)
+  [7] nix-config-collector    - Declarative Nix config generator (Go)
+  [8] direct-connector        - P2P tunnel & port forwarder (Go/Wails)
+Type 'open cli' or 'open contrib' to inspect open-source releases & contributions.`,
 
-      'ls dotfiles': () => `SYSTEM CONFIGURATIONS:
-  [1] neovim-lua-craft        - Zero-bloat Lua Neovim config with AST hover
-  [2] zsh-power-prompt        - Asynchronous Git cyber-prompt
-Type 'open dotfiles' to navigate to Dotfiles view.`,
-
-      'git log --graph': () => `* 65d36e5 (HEAD -> feat/renew-nerdy) feat: implement cyber-tactile workstation in astro 5
+      'git log --graph': () => `* 65d36e5 (HEAD -> feat/cli-tui-fullscreen-crt) feat: 90s dos text console & bios draw
 * 1de3c49 docs: add roadmap and live github issues
 * 7a8f092 feat(run-zero): hybrid auto-routing between docker & orbstack
 * e901b22 feat(gst): publish @el-j/google-sheet-translations`,
@@ -160,8 +165,7 @@ Type 'open dotfiles' to navigate to Dotfiles view.`,
       clear: () => '',
       sudo: () => `[SECURITY ALERT] User 'el-j' is not in sudoers file. This incident has been logged.`,
       matrix: () => `1010010101010101010101010101010101010101010101010101
-0101011010101010101010101010101010101010101010101010
-PHOSPHOR BUFFER OVERFLOW: Telemetry synchronized.`,
+0101011010101010101010101010101010101010101010101010`,
     };
 
     function appendLine(html: string) {
@@ -179,7 +183,7 @@ PHOSPHOR BUFFER OVERFLOW: Telemetry synchronized.`,
       commandHistory.push(raw);
       historyIdx = commandHistory.length;
 
-      appendLine(`<div class="text-[var(--crt-phosphor-bright)]"><span class="text-[var(--crt-phosphor-dim)]">el-j@station:~$</span> ${escapeHtml(raw)}</div>`);
+      appendLine(`<div class="text-[#ffffff]"><span class="text-[#fbbf24]">A:\\&gt;</span> ${escapeHtml(raw)}</div>`);
 
       const [cmd, ...args] = raw.split(' ');
       const lower = cmd.toLowerCase();
@@ -193,21 +197,13 @@ PHOSPHOR BUFFER OVERFLOW: Telemetry synchronized.`,
         const dest = args[0];
         if (dest === 'projects') window.location.href = '/projects';
         else if (dest === 'cli' || dest === 'cli_tools') window.location.href = '/cli-tools';
-        else if (dest === 'dotfiles') window.location.href = '/dotfiles';
         else if (dest === 'about') window.location.href = '/';
-        else appendLine(`<span class="text-red-400">Unknown destination: ${dest}. Try 'open projects', 'open cli', 'open dotfiles'.</span>`);
+        else appendLine(`<span class="text-red-400">Unknown destination: ${dest}. Try 'open projects', 'open cli'.</span>`);
         return;
       }
 
       if (lower === 'theme') {
-        const theme = (args[0] || '').toLowerCase();
-        if (['amber', 'green', 'ice', 'paper'].includes(theme)) {
-          document.documentElement.setAttribute('data-theme', theme);
-          localStorage.setItem('crt-theme', theme);
-          appendLine(`<span class="text-[var(--crt-phosphor-bright)]">Switched CRT phosphor theme to: [${theme.toUpperCase()}]</span>`);
-        } else {
-          appendLine(`<span class="text-red-400">Invalid theme. Supported: amber, green, ice, paper</span>`);
-        }
+        appendLine(`<span class="text-[#fbbf24]">Display locked to VGA Mode 3 text console (Award BIOS color profile).</span>`);
         return;
       }
 

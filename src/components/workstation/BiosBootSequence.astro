@@ -4,7 +4,7 @@
 
 <div
   id="bios-boot-overlay"
-  class="fixed inset-0 z-[200] bg-black text-[#d4d4d8] font-mono text-xs sm:text-sm p-4 sm:p-10 select-none overflow-hidden flex flex-col justify-between hidden"
+  class="fixed inset-0 z-[50] bg-black text-[#d4d4d8] font-mono text-xs sm:text-sm p-6 sm:p-12 md:p-16 select-none overflow-hidden flex flex-col justify-between hidden"
   aria-modal="true"
   role="dialog"
   aria-label="System BIOS Boot Sequence"
@@ -15,7 +15,7 @@
     <div class="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-[#3f3f46] pb-3">
       <div>
         <div class="text-[#fbbf24] font-bold text-sm sm:text-base tracking-wider">
-          EL-J CYBER-BIOS (C) 1989-1996 EL-J TECHNOLOGIES LTD.
+          EL-J CYBER-BIOS (C) 1986-<span id="this-year">2000</span> EL-J TECHNOLOGIES LTD.
         </div>
         <div class="text-[#a1a1aa] text-[11px] sm:text-xs tracking-wide">
           FABIAN-486DX4 WORKSTATION SYSTEM BIOS V2.084 // ARCH-LINUX ENGINE
@@ -96,6 +96,12 @@
 </div>
 
 <style>
+  #bios-boot-overlay {
+    transform: perspective(1200px) scale(0.995);
+    transform-origin: center center;
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
+  }
+
   /* CRT Screen Turn-On Phosphor Flare */
   @keyframes crtPowerOn {
     0% {
@@ -132,7 +138,8 @@
 
     // Expose trigger to window for terminal reboot command and reset button
     window.__triggerBiosBoot = triggerBootSequence;
-
+    const thisYear = document.getElementById('this-year');
+    if (thisYear) thisYear.textContent = String(new Date().getFullYear());
     // Check if user already booted this session
     var hasBooted = sessionStorage.getItem('crt-booted') === 'true';
     var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

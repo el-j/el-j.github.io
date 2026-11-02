@@ -29,37 +29,11 @@ const initialTime = now.toLocaleTimeString('en-US', {
     <span class="text-[10px] text-[#787f91] hidden sm:inline font-mono tracking-wider">CHASSIS: CRT-2084-UX // ARCH-LINUX</span>
   </div>
 
-  <!-- Center: Phosphor Theme Selector -->
-  <div class="flex items-center gap-1.5 font-mono text-[11px] bg-black/60 p-1 rounded-md border border-[#3c414f]" role="group" aria-label="CRT Phosphor Theme Selector">
-    <span class="text-[#787f91] px-1 text-[10px] uppercase font-bold">PHOSPHOR:</span>
-    <button
-      type="button"
-      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
-      data-set-theme="amber"
-    >
-      AMBER
-    </button>
-    <button
-      type="button"
-      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
-      data-set-theme="green"
-    >
-      GREEN
-    </button>
-    <button
-      type="button"
-      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
-      data-set-theme="ice"
-    >
-      ICE
-    </button>
-    <button
-      type="button"
-      class="theme-btn px-2.5 py-1 rounded text-[10px] font-bold border transition-all active:scale-95 cursor-pointer font-mono"
-      data-set-theme="paper"
-    >
-      PAPER
-    </button>
+  <!-- Center: BIOS & VGA Hardware Telemetry -->
+  <div class="flex items-center gap-2 font-mono text-[10px] sm:text-[11px] bg-black/80 px-2 py-0.5 border border-[#3c414f]">
+    <span class="text-[#787f91] uppercase font-bold">DISPLAY:</span>
+    <span class="text-[#fbbf24] font-bold">VGA 80x25 TEXT MODE</span>
+    <span class="text-[#38bdf8] hidden md:inline">// SHADOW RAM: 640K + 15M</span>
   </div>
 
   <!-- Right: Physical Industrial Toggle Switches -->
@@ -248,45 +222,7 @@ const initialTime = now.toLocaleTimeString('en-US', {
     // 0. Live Date & Time Clock
     startLiveClock();
 
-    // 1. Phosphor Theme Buttons
-    const themeButtons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
-    const savedTheme = localStorage.getItem('crt-theme') || 'amber';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
-    function updateThemeButtons(current: string) {
-      themeButtons.forEach((btn) => {
-        const t = btn.getAttribute('data-set-theme');
-        if (t === current) {
-          btn.classList.add('active-theme');
-        } else {
-          btn.classList.remove('active-theme');
-        }
-      });
-    }
-
-    updateThemeButtons(savedTheme);
-
-    themeButtons.forEach((btn) => {
-      btn.onclick = () => {
-        const selected = btn.getAttribute('data-set-theme') || 'amber';
-        document.documentElement.setAttribute('data-theme', selected);
-        localStorage.setItem('crt-theme', selected);
-        updateThemeButtons(selected);
-
-        // Dynamically adjust scanlines intensity for paper vs phosphor themes
-        const isScanlinesActive = scanlinesBtn?.getAttribute('aria-checked') === 'true';
-        if (isScanlinesActive) {
-          const target = selected === 'paper' ? '0.15' : '0.68';
-          document.documentElement.style.setProperty('--scanline-opacity', target);
-        }
-
-        if ((window as any).__playClickSound) {
-          (window as any).__playClickSound();
-        }
-      };
-    });
-
-    // 2. Scanlines Switch
+    // 1. Scanlines Switch
     const scanlinesBtn = document.getElementById('btn-toggle-scanlines') as HTMLButtonElement | null;
     const scanlinesLabel = document.getElementById('label-scanlines-state');
     const savedScanlines = localStorage.getItem('crt-scanlines');
@@ -301,7 +237,7 @@ const initialTime = now.toLocaleTimeString('en-US', {
           : 'text-[9px] font-bold text-[#636875] w-6 text-left';
       }
       const isPaper = document.documentElement.getAttribute('data-theme') === 'paper';
-      const targetOpacity = active ? (isPaper ? '0.15' : '0.68') : '0';
+      const targetOpacity = active ? (isPaper ? '0.05' : '0.20') : '0';
       document.documentElement.style.setProperty('--scanline-opacity', targetOpacity);
       localStorage.setItem('crt-scanlines', active ? 'true' : 'false');
     }

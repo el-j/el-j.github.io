@@ -7,22 +7,22 @@ const projects = await getCollection('projects');
 const initialProject = projects[0];
 ---
 
-<div class="terminal-card text-xs flex flex-col justify-between h-full min-h-[300px]" id="schematics-deck">
+<div class="terminal-card text-xs flex flex-col justify-between h-full min-h-0 flex-1 border border-[#3f3f46] bg-black p-2.5" id="schematics-deck">
   <!-- Header Bar -->
-  <div class="terminal-header text-[var(--crt-phosphor)]">
+  <div class="terminal-header text-[#d4d4d8] border-b border-[#27272a] pb-1 mb-2">
     <div class="flex items-center gap-2">
-      <span class="text-[10px] text-[var(--crt-phosphor-bright)]">[+]</span>
-      <span class="font-bold tracking-wider uppercase">SCHEMATICS_DECK // REAL_WORK_TELEMETRY</span>
+      <span class="text-[10px] text-[#fbbf24]">[+]</span>
+      <span class="font-bold tracking-wider uppercase text-[#ffffff]">SCHEMATICS_DECK // REAL_WORK_TELEMETRY</span>
     </div>
-    <div class="flex items-center gap-2 text-[10px] text-[var(--crt-phosphor-dim)] font-mono">
-      <span>INSPECTOR: <strong class="text-[var(--crt-phosphor-bright)]">ACTIVE</strong></span>
-      <span class="px-1.5 py-0.2 border border-[var(--crt-border-dim)] bg-black/40">v2.4</span>
+    <div class="flex items-center gap-2 text-[10px] text-[#71717a] font-mono">
+      <span>INSPECTOR: <strong class="text-[#22c55e]">ACTIVE</strong></span>
+      <span class="px-1.5 py-0.2 border border-[#3f3f46] bg-black">v2.4</span>
     </div>
   </div>
 
   <!-- Project Rotary / Selector Dial -->
-  <div class="border-b border-dashed border-[var(--crt-border-dim)] pb-2 mb-2">
-    <div class="flex items-center justify-between text-[10px] text-[var(--crt-phosphor-dim)] mb-1 font-mono">
+  <div class="border-b border-[#27272a] pb-2 mb-2">
+    <div class="flex items-center justify-between text-[10px] text-[#71717a] mb-1 font-mono">
       <span>SELECT REAL PROJECT TO INSPECT:</span>
       <span>TOTAL: {projects.length}</span>
     </div>
@@ -32,7 +32,7 @@ const initialProject = projects[0];
       {projects.map((p, idx) => (
         <button
           type="button"
-          class={`project-tab-btn px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer font-mono ${idx === 0 ? 'active-project' : 'border-[#3c414f] text-[#8b92a2] hover:border-[var(--crt-phosphor)] hover:text-[var(--crt-phosphor-bright)]'}`}
+          class={`project-tab-btn px-2 py-0.5 text-[10px] font-bold border transition-none cursor-pointer font-mono ${idx === 0 ? 'active-project' : 'border-[#3f3f46] text-[#a1a1aa] hover:border-[#fbbf24] hover:text-[#fbbf24]'}`}
           data-slug={p.id}
           data-title={p.data.title}
           data-cat={p.data.category}
@@ -52,7 +52,7 @@ const initialProject = projects[0];
       <button
         type="button"
         id="btn-toggle-synth"
-        class="project-tab-btn px-2 py-0.5 rounded text-[10px] font-bold border border-[#ff9d00]/60 text-[#ff9d00] hover:bg-[#ff9d00]/20 transition-all cursor-pointer font-mono ml-auto"
+        class="project-tab-btn px-2 py-0.5 text-[10px] font-bold border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24]/20 transition-none cursor-pointer font-mono ml-auto"
         title="Toggle Pocket Synthesizer (+ SYNTH_T1 +)"
         data-slug="synth-t1"
       >
@@ -159,10 +159,10 @@ const initialProject = projects[0];
 
 <style>
   .project-tab-btn.active-project {
-    border-color: var(--crt-phosphor);
-    color: var(--crt-screen-bg);
-    background: var(--crt-phosphor);
-    box-shadow: 0 0 10px var(--crt-glow);
+    border-color: #fbbf24;
+    color: #000000;
+    background: #fbbf24;
+    box-shadow: none;
   }
 </style>
 
