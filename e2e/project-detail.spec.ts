@@ -14,6 +14,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Projects Case Studies Page', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem('crt-booted', 'true'))
     await page.goto('/projects')
   })
 

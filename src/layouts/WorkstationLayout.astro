@@ -4,6 +4,7 @@ import HeaderHud from '@/components/workstation/HeaderHud.astro';
 import BezelControls from '@/components/workstation/BezelControls.astro';
 import PersistentBottomCli from '@/components/workstation/PersistentBottomCli.astro';
 import BiosBootSequence from '@/components/workstation/BiosBootSequence.astro';
+import GrubMenu from '@/components/workstation/GrubMenu.astro';
 import AudioEngine from '@/components/workstation/AudioEngine.astro';
 
 import { ClientRouter } from 'astro:transitions';
@@ -48,8 +49,11 @@ const {
     <div class="crt-tube-glare" aria-hidden="true"></div>
     <div class="crt-scanlines-layer" id="crt-scanlines-layer" aria-hidden="true"></div>
 
-    <!-- 80s/90s BIOS POST & Floppy Boot Sequence Overlay (Under curved optics layers) -->
+    <!-- 80s/90s BIOS POST & Linux Boot Sequence Overlay (Under curved optics layers) -->
     <BiosBootSequence />
+
+    <!-- GRUB boot manager: GUI / text mode selection after POST -->
+    <GrubMenu />
 
     <!-- Main Fullscreen Workstation Surface -->
     <div class="crt-workstation-viewport">
@@ -58,7 +62,7 @@ const {
           <!-- Top Header & Navigation HUD -->
           <HeaderHud activeTab={activeTab} />
 
-          <!-- Main Dynamic Content Slot (90s BIOS/DOS Line-by-Line Screen Draw) -->
+          <!-- Main Dynamic Content Slot (90s BIOS Line-by-Line Screen Draw) -->
           <div id="crt-content-viewport" class="flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 focus:outline-none scroll-smooth crt-content-scroll relative" tabindex="0">
             <div class="dos-raster-beam" id="dos-raster-beam" aria-hidden="true"></div>
             <div class="dos-screen-raster-lines" id="dos-raster-content">
@@ -68,7 +72,7 @@ const {
         </div>
 
         <!-- Omnipresent Persistent Command Line Interface (Docked at bottom to refresh & interact) -->
-        <div class="mt-1 flex-shrink-0">
+        <div class="mt-1 flex-shrink-0 chrome-bottom">
           <PersistentBottomCli />
           <!-- Integrated Hardware Controls / Bezel Status Bar -->
           <BezelControls />

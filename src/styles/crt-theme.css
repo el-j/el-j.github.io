@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 :root {
-  /* 90's Award/AMI BIOS & MS-DOS Mode 3 Palette (No custom color themes) */
+  /* 90's Award/AMI BIOS & VGA text mode palette (No custom color themes) */
   --crt-bg: #000000;
   --crt-screen-bg: #000000;
   --crt-phosphor: #d4d4d8;         /* Classic VGA light grey */
@@ -11,10 +11,10 @@
   --crt-phosphor-dim: #71717a;     /* BIOS shadow RAM / secondary grey */
   --crt-phosphor-dark: #18181b;    /* Inactive box interior */
   --crt-bios-yellow: #fbbf24;      /* Award BIOS Header Yellow / Gold */
-  --crt-bios-cyan: #38bdf8;        /* DOS Drive & Keyword Cyan */
-  --crt-bios-green: #22c55e;       /* Floppy / Status OK Green */
+  --crt-bios-cyan: #38bdf8;        /* Keyword Cyan */
+  --crt-bios-green: #22c55e;       /* Status OK Green */
   --crt-glow: rgba(255, 255, 255, 0.05); /* Minimal raster aura, no modern blurry bloom */
-  --crt-border: #3f3f46;           /* Crisp DOS text-mode box border */
+  --crt-border: #3f3f46;           /* Crisp text-mode box border */
   --crt-border-dim: #27272a;
   --crt-border-bright: #fbbf24;
   --crt-grid-line: rgba(255, 255, 255, 0.03);
@@ -28,7 +28,7 @@
   --font-pixel: 'VT323', monospace;
 }
 
-/* Strict 90s DOS Text-Mode: Zero rounded corners anywhere */
+/* Strict 90s Text-Mode: Zero rounded corners anywhere */
 *, *::before, *::after {
   border-radius: 0 !important;
 }
@@ -217,7 +217,7 @@ html, body {
   text-shadow: none;
 }
 
-/* ── 90's DOS/BIOS Line-by-Line Screen Draw Animation ─────────────── */
+/* ── 90's BIOS Line-by-Line Screen Draw Animation ─────────────── */
 @keyframes dosLineRasterDraw {
   0% { clip-path: inset(0 0 100% 0); }
   4% { clip-path: inset(0 0 96% 0); }
@@ -270,7 +270,7 @@ html, body {
   animation: dosBeamSweep 0.28s linear forwards;
 }
 
-/* ── Header HUD Nav (Classic DOS Menu Bar) ─────────────────────────── */
+/* ── Header HUD Nav (Classic BIOS Menu Bar) ─────────────────────────── */
 .hud-nav-tab {
   display: inline-flex;
   align-items: center;
@@ -301,7 +301,7 @@ html, body {
   font-weight: 800;
 }
 
-/* ── Terminal Card (DOS Text Mode Box) ─────────────────────────────── */
+/* ── Terminal Card (Text Mode Box) ─────────────────────────────── */
 .terminal-card {
   background: #050505;
   border: 1px solid #3f3f46;
@@ -471,4 +471,10 @@ html, body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001s !important;
   }
+}
+
+/* Text mode: the landing page becomes a bare full-screen shell */
+html[data-home-mode="text"] header,
+html[data-home-mode="text"] .chrome-bottom {
+  display: none;
 }

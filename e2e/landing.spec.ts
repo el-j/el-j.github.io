@@ -39,39 +39,47 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(nav.locator('a[data-tab="contributions"]')).toBeVisible()
   })
 
-  test('renders the 2x2 workstation matrix components', async ({ page }) => {
-    // 1. Schematics Deck
-    await expect(page.locator('#schematics-deck')).toBeVisible()
-    // 2. Live Terminal
-    await expect(page.locator('#terminal-island')).toBeVisible()
-    // 3. Token AST visualizer
-    await expect(page.locator('#ast-visualizer-card')).toBeVisible()
+  test('renders the GUI HUD with clickable tiles', async ({ page }) => {
+    const hud = page.locator('#gui-hud')
+    await expect(hud).toBeVisible()
+    await expect(hud.locator('.hud-item')).toHaveCount(4)
+
+    await hud.locator('.hud-item', { hasText: 'CLI Tools' }).hover()
+    await expect(page.locator('#hud-help')).toContainText('Agent SDKs')
+
+    await hud.locator('.hud-item', { hasText: 'Projects' }).click()
+    await expect(page).toHaveURL(/\/projects/)
   })
 
-  test('project schematics deck switches active project', async ({ page }) => {
-    const deck = page.locator('#schematics-deck')
-    await expect(deck).toBeVisible()
-
-    const tabButtons = deck.locator('button.project-tab-btn')
-    const count = await tabButtons.count()
-    expect(count).toBeGreaterThan(1)
-
-    // Click the second schematic button
-    const secondBtn = tabButtons.nth(1)
-    await secondBtn.click()
-
-    await expect(secondBtn).toHaveClass(/active-project/)
+  test('arrow keys move the HUD selection', async ({ page }) => {
+    await expect(page.locator('.hud-item.is-active')).toContainText('Projects')
+    await page.keyboard.press('ArrowDown')
+    await expect(page.locator('.hud-item.is-active')).toContainText('CLI Tools')
   })
 
-  test('live terminal REPL accepts input and executes help command', async ({ page }) => {
-    const input = page.locator('#terminal-input')
-    await expect(input).toBeVisible()
+  test('exit drops to the text shell and startx returns to the GUI', async ({ page }) => {
+    await page.locator('#hud-exit').click()
+    await expect(page.locator('#gui-hud')).toBeHidden()
+    const input = page.locator('#tty-input')
+    await expect(input).toBeFocused()
 
-    await input.fill('help')
+    await input.fill('ca')
+    await input.press('Tab')
+    await expect(input).toHaveValue('cat ')
+    await input.fill('ls')
     await input.press('Enter')
+    await expect(page.locator('#tty-output')).toContainText('about.md')
 
-    const output = page.locator('#terminal-output')
-    await expect(output).toContainText('AVAILABLE WORKSTATION COMMANDS')
+    await input.fill('startx')
+    await input.press('Enter')
+    await expect(page.locator('#gui-hud')).toBeVisible()
+  })
+
+  test('bottom CLI supports tab completion', async ({ page }) => {
+    const input = page.locator('#bottom-cli-input')
+    await input.fill('cd pro')
+    await input.press('Tab')
+    await expect(input).toHaveValue('cd projects ')
   })
 
   test('renders 90s DOS/BIOS line-by-line raster draw elements', async ({ page }) => {
@@ -110,16 +118,6 @@ test.describe('CRT Workstation Landing page', () => {
     await expect(page.locator('.crt-curved-rim')).toBeAttached()
     await expect(page.locator('.crt-tube-glare')).toBeAttached()
     await expect(page.locator('.crt-workstation-viewport')).toBeAttached()
-  })
-
-  test('synth toggle engages pocket synthesizer', async ({ page }) => {
-    const synthBtn = page.locator('#btn-toggle-synth')
-    await expect(synthBtn).toBeVisible()
-    await synthBtn.click()
-
-    await expect(page.locator('#synth-surface')).toBeVisible()
-    await expect(page.locator('#schematic-surface')).toBeHidden()
-    await expect(page.locator('#synth-power-btn')).toBeVisible()
   })
 
   test('navigation to projects page works', async ({ page }) => {
@@ -191,7 +189,16 @@ test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
     await expect(overlay).toBeVisible()
     await expect(overlay).toContainText('EL-J CYBER-BIOS')
     await expect(overlay).toContainText('FABIAN-486DX4 WORKSTATION')
-    await expect(overlay).toContainText('Detecting Floppy Drive A:')
+    await expect(overlay).toContainText('Detecting USB Boot Device')
+
+    // Verify BIOS overlay is positioned beneath the CRT curved glass layers (z-[50] vs z-88/89/90/91)
+    const zIndex = await overlay.evaluate((el) => getComputedStyle(el).zIndex)
+    expect(Number(zIndex)).toBe(50)
+
+    // Verify CRT curved tube optics are present over it
+    await expect(page.locator('.crt-curved-tube-vignette')).toBeAttached()
+    await expect(page.locator('.crt-curved-rim')).toBeAttached()
+    await expect(page.locator('.crt-scanlines-layer')).toBeAttached()
 
     // Verify BIOS overlay is positioned beneath the CRT curved glass layers (z-[50] vs z-88/89/90/91)
     const zIndex = await overlay.evaluate((el) => getComputedStyle(el).zIndex)
@@ -209,11 +216,32 @@ test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
 
     // Overlay is dismissed and workstation is visible
     await expect(overlay).toBeHidden()
-    await expect(page.locator('#schematics-deck')).toBeVisible()
+    await expect(page.locator('#grub-overlay')).toBeVisible()
 
     // Session storage is populated
     const booted = await page.evaluate(() => sessionStorage.getItem('crt-booted'))
     expect(booted).toBe('true')
+  })
+
+  test('GRUB menu counts down and boots the GUI by default', async ({ page }) => {
+    await page.goto('/')
+    await page.locator('#btn-skip-boot').click()
+
+    const grub = page.locator('#grub-overlay')
+    await expect(grub).toBeVisible()
+    await expect(grub).toContainText('GNU GRUB')
+    await expect(page.locator('#grub-countdown')).toContainText('automatically in')
+    await expect(grub).toBeHidden({ timeout: 8000 })
+    await expect(page.locator('#gui-hud')).toBeVisible()
+  })
+
+  test('GRUB menu can boot into text mode', async ({ page }) => {
+    await page.goto('/')
+    await page.locator('#btn-skip-boot').click()
+    await page.locator('.grub-entry[data-mode="text"]').click()
+    await expect(page.locator('#grub-overlay')).toBeHidden()
+    await expect(page.locator('#text-console')).toBeVisible()
+    await expect(page.locator('#gui-hud')).toBeHidden()
   })
 
   test('reboot command in terminal triggers BIOS POST sequence', async ({ page }) => {
@@ -222,7 +250,7 @@ test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
     })
     await page.goto('/')
 
-    const terminalInput = page.locator('#terminal-input')
+    const terminalInput = page.locator('#bottom-cli-input')
     await expect(terminalInput).toBeVisible()
     await terminalInput.fill('reboot')
     await terminalInput.press('Enter')
