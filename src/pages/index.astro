@@ -1,53 +1,362 @@
 ---
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
-import LatestDeployment from '@/components/workstation/LatestDeployment.astro';
-import ProjectSchematicsDeck from '@/components/workstation/ProjectSchematicsDeck.astro';
-import LiveTerminal from '@/components/workstation/LiveTerminal.astro';
-import TokenAstVisualizer from '@/components/workstation/TokenAstVisualizer.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const tools = await getCollection('cli_tools');
+
+const tiles = [
+  { label: 'Projects', href: '/projects', stat: String(projects.length), unit: 'case studies', help: 'CI runner fleets, industrial UIs, open-source hardware tools.' },
+  { label: 'CLI Tools', href: '/cli-tools', stat: String(tools.length), unit: 'packages', help: 'Agent SDKs, i18n sync, tunnels, transpilers.' },
+  { label: 'Contributions', href: '/contributions', stat: 'OSS', unit: 'upstream', help: 'Fixes and features sent to other open-source projects.' },
+  { label: 'Contact', href: 'mailto:info@fabianalthaus.de', stat: '@', unit: 'say hello', help: 'info@fabianalthaus.de' },
+];
+
+const ttyData = {
+  projects: projects.map((p) => p.id),
+  tools: tools.map((t) => t.id),
+};
 ---
 
 <WorkstationLayout activeTab="about">
-  <div class="h-full flex flex-col justify-between overflow-hidden gap-1.5 sm:gap-2">
-    <!-- Top DOS/Linux Telemetry & Status Bar -->
-    <div class="hidden sm:flex items-center justify-between px-2.5 py-1 bg-black border border-[#3f3f46] text-[10px] font-mono text-[#71717a] shrink-0 select-none">
-      <div class="flex items-center gap-3">
-        <span class="text-[#fbbf24] font-bold">OS: ARCH-DOS 2.0 // TTY1</span>
-        <span>CPU: CyberRISC 80486-DX @ 66MHz</span>
-        <span class="hidden md:inline">KERNEL: 6.12.9-arch1-1-lts</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <span>FLEET: <strong class="text-[#ffffff]">RUNZERO DUAL-ENGINE</strong></span>
-        <span>AST: <strong class="text-[#38bdf8]">ZERO-RUNTIME</strong></span>
-        <span class="text-[#22c55e] font-bold">[ONLINE 200 OK]</span>
-      </div>
-    </div>
-
-    <!-- Main Dual-Pane Terminal Matrix (100% Fullscreen, Zero Window Scrolling) -->
-    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-2.5 overflow-y-auto lg:overflow-hidden">
-      <!-- Left Column: DOS / Linux Live Terminal REPL & AST Compiler -->
-      <div class="lg:col-span-5 flex flex-col gap-2 h-full min-h-0">
-        <LiveTerminal />
-        <TokenAstVisualizer />
+  <div id="home" data-mode="gui" class="h-full">
+    <!-- GUI mode: game-menu style HUD -->
+    <section id="gui-hud" class="h-full flex flex-col items-center justify-center gap-5 py-2 font-mono" aria-label="Main menu">
+      <div class="w-full max-w-3xl flex justify-between text-[10px] sm:text-xs text-[#71717a] tracking-widest select-none">
+        <span>PLAYER 1: <span class="text-[#d4d4d8]">EL-J</span></span>
+        <span>STATUS: <span class="text-[#22c55e]">READY</span></span>
       </div>
 
-      <!-- Right Column: Real Project Schematics & Architecture Inspector Deck -->
-      <div class="lg:col-span-7 flex flex-col gap-2 h-full min-h-0">
-        <ProjectSchematicsDeck />
+      <div class="text-center select-none">
+        <div class="hud-title text-5xl sm:text-7xl font-bold text-[#fbbf24]">EL-J</div>
+        <p class="m-0 mt-2 text-xs sm:text-sm text-[#d4d4d8] tracking-wide">Fabian Althaus</p>
+        <p class="m-0 text-[10px] sm:text-xs text-[#71717a] tracking-[0.2em] uppercase">Software engineer &middot; Designer &middot; Consultant</p>
       </div>
-    </div>
 
-    <!-- Bottom Operator Philosophy & Engineering Disciplines Status Strip -->
-    <div class="border-t border-[#3f3f46] bg-black px-2.5 py-1 text-[10px] font-mono text-[#71717a] flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
-      <div class="flex items-center gap-2 truncate">
-        <span class="text-[#fbbf24] font-bold">[FABIAN ALTHAUS // el-j]</span>
-        <span class="text-[#d4d4d8] truncate">
-          [01] Concept &amp; UX Design &bull; [02] Fullstack &amp; CI/CD &bull; [03] Hardware EDA &amp; Embedded IoT
-        </span>
+      <nav class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Sections">
+        {tiles.map((t) => (
+          <a href={t.href} data-help={t.help} class="hud-tile hud-item flex items-center justify-between gap-3 p-3 sm:p-4 text-[#d4d4d8] focus:outline-none">
+            <span>
+              <span class="hud-cursor inline-block w-4 text-[#fbbf24]" aria-hidden="true"></span>
+              <span class="text-sm sm:text-base font-bold uppercase tracking-wider">{t.label}</span>
+              <span class="block text-[10px] sm:text-xs text-[#71717a] mt-1 pl-4">{t.unit}</span>
+            </span>
+            <span class="text-2xl sm:text-3xl font-bold text-[#38bdf8]">{t.stat}</span>
+          </a>
+        ))}
+      </nav>
+
+      <p id="hud-help" class="m-0 min-h-[1.25rem] text-[11px] sm:text-xs text-[#a1a1aa] text-center select-none"></p>
+
+      <div class="w-full max-w-3xl flex flex-wrap items-center justify-between gap-3 text-[10px] sm:text-xs text-[#71717a] select-none">
+        <span class="hidden sm:inline"><span class="text-[#fbbf24]">&uarr;&darr;</span> select &nbsp; <span class="text-[#fbbf24]">Enter</span> open &nbsp; <span class="text-[#fbbf24]">Q</span> exit</span>
+        <button type="button" id="hud-exit" class="hud-tile px-4 py-2 text-[#d4d4d8] hover:text-[#fbbf24] cursor-pointer font-bold uppercase tracking-wider">
+          Exit to shell
+        </button>
       </div>
-      <div class="hidden md:flex items-center gap-2 text-[9px] text-[#71717a] shrink-0">
-        <span>PRESS <kbd class="px-1 py-0.2 bg-black border border-[#3f3f46] text-[#d4d4d8]">F5</kbd> REFRESH</span>
-        <span><kbd class="px-1 py-0.2 bg-black border border-[#3f3f46] text-[#d4d4d8]">F10</kbd> REBOOT</span>
+    </section>
+
+    <!-- Text mode: bare full-screen shell -->
+    <section id="text-console" class="h-full font-mono text-[13px] leading-snug text-[#d4d4d8]" aria-label="Shell">
+      <div id="tty-scroll" class="h-full overflow-y-auto cursor-text">
+        <div id="tty-output"></div>
+        <form id="tty-form" class="flex items-center gap-2">
+          <label for="tty-input" class="text-[#22c55e] whitespace-nowrap">el-j@station:~$</label>
+          <input id="tty-input" type="text" class="flex-1 bg-transparent border-none outline-none text-[#ffffff] font-mono text-[13px] p-0 m-0 focus:ring-0" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        </form>
       </div>
-    </div>
+    </section>
+
+    <script type="application/json" id="tty-data" set:html={JSON.stringify(ttyData)} />
   </div>
 </WorkstationLayout>
+
+<style>
+  #home[data-mode='gui'] #text-console,
+  #home[data-mode='text'] #gui-hud {
+    display: none;
+  }
+
+  .hud-title {
+    letter-spacing: 0.35em;
+    padding-left: 0.35em;
+    text-shadow: 0 0 18px rgba(251, 191, 36, 0.25);
+  }
+
+  .hud-tile {
+    position: relative;
+    border: 1px solid #3f3f46;
+    background: rgba(24, 24, 27, 0.6);
+  }
+  .hud-tile::before,
+  .hud-tile::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 0 solid #3f3f46;
+  }
+  .hud-tile::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+  }
+  .hud-tile::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+  }
+
+  .hud-tile:hover,
+  .hud-tile:focus,
+  .hud-tile.is-active {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+  }
+  .hud-tile:hover::before,
+  .hud-tile:hover::after,
+  .hud-tile:focus::before,
+  .hud-tile:focus::after,
+  .hud-tile.is-active::before,
+  .hud-tile.is-active::after {
+    border-color: #fbbf24;
+  }
+  .hud-item:hover .hud-cursor::before,
+  .hud-item.is-active .hud-cursor::before {
+    content: '\25B6';
+    font-size: 0.7em;
+  }
+</style>
+
+<script>
+  type Mode = 'gui' | 'text';
+
+  const getMode = (): Mode => (sessionStorage.getItem('el-j-mode') === 'text' ? 'text' : 'gui');
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function selectTile(el: HTMLElement | null) {
+    document.querySelectorAll('.hud-item').forEach((t) => t.classList.toggle('is-active', t === el));
+    const help = document.getElementById('hud-help');
+    if (help) help.textContent = el?.dataset.help || '';
+  }
+
+  function print(text: string) {
+    const out = document.getElementById('tty-output');
+    if (!out) return;
+    const pre = document.createElement('pre');
+    pre.className = 'm-0 whitespace-pre-wrap font-mono';
+    pre.innerHTML = esc(text) || '&nbsp;';
+    out.appendChild(pre);
+    const sc = document.getElementById('tty-scroll');
+    if (sc) sc.scrollTop = sc.scrollHeight;
+  }
+
+  function printBanner() {
+    const out = document.getElementById('tty-output');
+    if (!out || out.childElementCount) return;
+    print('Debian GNU/Linux 12 el-j-station tty1\n');
+    print(`Last login: ${new Date().toDateString()} on tty1`);
+    print('Fabian Althaus - software engineer, designer, consultant.');
+    print("Type 'help' for commands, 'startx' for the graphical interface.\n");
+  }
+
+  function applyMode(mode: Mode) {
+    const home = document.getElementById('home');
+    if (!home) return;
+    home.dataset.mode = mode;
+    document.documentElement.dataset.homeMode = mode;
+    if (mode === 'text') {
+      printBanner();
+      (document.getElementById('tty-input') as HTMLInputElement | null)?.focus();
+    } else {
+      selectTile(document.querySelector<HTMLElement>('.hud-item'));
+    }
+  }
+
+  function setMode(mode: Mode) {
+    sessionStorage.setItem('el-j-mode', mode);
+    applyMode(mode);
+  }
+
+  const ttyData = () => {
+    try {
+      return JSON.parse(document.getElementById('tty-data')?.textContent || '{}');
+    } catch {
+      return {};
+    }
+  };
+
+  const FILES = ['about.md', 'contact.txt', 'projects/', 'cli-tools/', 'contributions/'];
+  const DIRS: Record<string, string> = { projects: '/projects', 'cli-tools': '/cli-tools', cli_tools: '/cli-tools', contributions: '/contributions' };
+  const COMMANDS = ['help', 'ls', 'cat', 'cd', 'pwd', 'whoami', 'date', 'uname', 'uptime', 'clear', 'startx', 'reboot'];
+  const ARGS: Record<string, string[]> = {
+    cd: ['projects', 'cli-tools', 'contributions'],
+    ls: ['projects', 'cli-tools', 'contributions'],
+    cat: ['about.md', 'contact.txt'],
+  };
+
+  const HELP = `commands:
+  ls [dir]     list files
+  cat <file>   show a file (about.md, contact.txt)
+  cd <dir>     open a section: projects, cli-tools, contributions
+  whoami       who is this
+  uname -a     system info
+  date         current date
+  clear        clear the screen
+  startx       start the graphical interface
+  reboot       restart the boot sequence
+
+Tab completes commands and paths.`;
+
+  function run(raw: string) {
+    const [cmd, ...args] = raw.trim().split(/\s+/);
+    const data = ttyData();
+    const dir = (args[0] || '').replace(/\/$/, '');
+
+    switch (cmd) {
+      case 'help':
+        return print(HELP);
+      case 'clear':
+        document.getElementById('tty-output')!.innerHTML = '';
+        return;
+      case 'ls':
+        if (!dir) return print(FILES.join('  '));
+        if (dir === 'projects') return print((data.projects || []).join('  '));
+        if (dir === 'cli-tools' || dir === 'cli_tools') return print((data.tools || []).join('  '));
+        if (dir === 'contributions') return print("see: cd contributions");
+        return print(`ls: cannot access '${args[0]}': No such file or directory`);
+      case 'cat':
+        if (args[0] === 'about.md') return print('Fabian Althaus (el-j)\nSoftware engineer, designer and consultant.\nDigital and analogue interfaces, apps and websites.\nConcept, design, implementation.');
+        if (args[0] === 'contact.txt') return print('info@fabianalthaus.de\nhttps://fabianalthaus.de/en/\nhttps://github.com/el-j');
+        if (DIRS[dir]) return print(`cat: ${args[0]}: Is a directory`);
+        return print(`cat: ${args[0] || ''}: No such file or directory`);
+      case 'cd':
+        if (!dir || dir === '~') return;
+        if (DIRS[dir]) {
+          window.location.href = DIRS[dir];
+          return;
+        }
+        return print(`bash: cd: ${args[0]}: No such file or directory`);
+      case 'pwd':
+        return print('/home/el-j');
+      case 'whoami':
+        return print('el-j');
+      case 'date':
+        return print(new Date().toString());
+      case 'uname':
+        return print(args[0] === '-a' ? 'Linux el-j-station 6.12.9-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' : 'Linux');
+      case 'uptime':
+        return print(` ${new Date().toTimeString().slice(0, 8)} up 11534 days,  1 user,  load average: 0.00, 0.01, 0.05`);
+      case 'startx':
+        return setMode('gui');
+      case 'reboot': {
+        sessionStorage.removeItem('crt-booted');
+        const boot = (window as any).__triggerBiosBoot;
+        if (boot) boot();
+        else window.location.reload();
+        return;
+      }
+      case 'sudo':
+        return print('el-j is not in the sudoers file. This incident will be reported.');
+      default:
+        return print(`bash: ${cmd}: command not found`);
+    }
+  }
+
+  function complete(input: HTMLInputElement) {
+    const parts = input.value.trimStart().split(/\s+/);
+    const partial = parts[parts.length - 1];
+    const head = parts.slice(0, -1);
+    const pool = head.length === 0 ? COMMANDS : ARGS[head[0]] || [];
+    const hits = pool.filter((n) => n.startsWith(partial));
+    if (!hits.length) return;
+    const prefix = hits.reduce((p, c) => {
+      let i = 0;
+      while (i < p.length && i < c.length && p[i] === c[i]) i++;
+      return p.slice(0, i);
+    });
+    const base = head.length ? head.join(' ') + ' ' : '';
+    if (hits.length === 1) {
+      input.value = base + hits[0] + ' ';
+    } else {
+      input.value = base + prefix;
+      print(`el-j@station:~$ ${input.value}`);
+      print(hits.join('  '));
+    }
+  }
+
+  function setupConsole() {
+    const form = document.getElementById('tty-form') as HTMLFormElement | null;
+    const input = document.getElementById('tty-input') as HTMLInputElement | null;
+    const scroll = document.getElementById('tty-scroll');
+    if (!form || !input || !scroll) return;
+
+    const history: string[] = [];
+    let idx = 0;
+
+    scroll.addEventListener('click', () => input.focus());
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = input.value;
+      input.value = '';
+      print(`el-j@station:~$ ${value}`);
+      if (!value.trim()) return;
+      history.push(value);
+      idx = history.length;
+      run(value);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        complete(input);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (idx > 0) input.value = history[--idx];
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        idx = Math.min(idx + 1, history.length);
+        input.value = history[idx] || '';
+      }
+    });
+  }
+
+  function setupHud() {
+    document.querySelectorAll<HTMLElement>('.hud-item').forEach((t) => {
+      t.addEventListener('mouseenter', () => selectTile(t));
+      t.addEventListener('focus', () => selectTile(t));
+    });
+    document.getElementById('hud-exit')?.addEventListener('click', () => setMode('text'));
+  }
+
+  const w = window as any;
+  if (!w.__homeKeys) {
+    w.__homeKeys = true;
+    window.addEventListener('el-j-mode-change', () => applyMode(getMode()));
+    document.addEventListener('keydown', (e) => {
+      const home = document.getElementById('home');
+      if (!home || home.dataset.mode !== 'gui') return;
+      const t = e.target as HTMLElement;
+      if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return;
+      if (e.key === 'q' || e.key === 'Q' || e.key === 'Escape') {
+        e.preventDefault();
+        setMode('text');
+        return;
+      }
+      const dir = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const tiles = Array.from(document.querySelectorAll<HTMLElement>('.hud-item'));
+      const cur = tiles.findIndex((x) => x.classList.contains('is-active'));
+      tiles[(cur + dir + tiles.length) % tiles.length].focus();
+    });
+  }
+
+  // Fires on the initial load and after every view-transition navigation.
+  document.addEventListener('astro:page-load', () => {
+    setupHud();
+    setupConsole();
+    applyMode(getMode());
+  });
+</script>

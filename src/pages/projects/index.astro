@@ -46,7 +46,7 @@ const projects = await getCollection('projects');
       </div>
     </div>
 
-    <!-- Projects Grid (DOS Style Text Mode Boxes) -->
+    <!-- Projects Grid (text mode cards) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       {projects.map((proj) => (
         <article class="terminal-card text-xs flex flex-col justify-between border border-[#3f3f46] hover:border-[#fbbf24] bg-black p-2.5">

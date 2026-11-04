@@ -1,5 +1,5 @@
 ---
-// PersistentBottomCli.astro - Omnipresent Interactive DOS & Linux Command Line Interface
+// PersistentBottomCli.astro - Omnipresent Interactive Linux Command Line Interface
 ---
 
 <div
@@ -52,12 +52,12 @@
     </div>
   </div>
 
-  <!-- Bottom Row: Prompt Input + DOS Function Key Toolbar -->
+  <!-- Bottom Row: Prompt Input + Function Key Toolbar -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-1.5">
     <!-- Active CLI Form -->
     <form id="bottom-cli-form" class="flex-1 flex items-center gap-2 bg-black px-2.5 py-1 border border-[#3f3f46] text-xs">
       <label for="bottom-cli-input" class="text-[#fbbf24] font-bold whitespace-nowrap cursor-pointer text-[11px] sm:text-xs">
-        C:\DOS\ARCH&gt;
+        el-j@station:~$
       </label>
       <input
         type="text"
@@ -71,8 +71,8 @@
       <span class="inline-block w-1.5 h-3 bg-[#fbbf24] animate-pulse" aria-hidden="true"></span>
     </form>
 
-    <!-- DOS Function Key Toolbar (F1..F10) -->
-    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-[#71717a] font-mono overflow-x-auto py-0.5 shrink-0" role="toolbar" aria-label="DOS Function Keys">
+    <!-- Function Key Toolbar (F1..F10) -->
+    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-[#71717a] font-mono overflow-x-auto py-0.5 shrink-0" role="toolbar" aria-label="Function Keys">
       <button type="button" class="fn-key-btn hover:text-[#fbbf24] cursor-pointer px-1.5 py-0.5 bg-black border border-[#3f3f46] transition-colors" data-cmd="help">
         <strong class="text-[#fbbf24]">F1</strong>:Help
       </button>
@@ -219,12 +219,10 @@
         }
 
         case 'ls':
-        case 'dir':
-          setOutput('A:\\> [1:ABOUT.SYS]  [2:PROJECTS.DIR]  [3:CLI_TOOLS.COM]  [4:CONTRIB.DIR]  [SYNTH.BIN]');
+          setOutput('about.md  projects/  cli-tools/  contributions/');
           break;
 
         case 'cat':
-        case 'type':
           if (arg.includes('about')) {
             setOutput('Fabian Althaus (el-j) // Fullstack UX/UI & Linux Engineer. 10+ yrs across design systems, compilers, & IoT.');
           } else if (arg.includes('proj')) {
@@ -342,8 +340,39 @@
           historyIdx = history.length;
           input.value = '';
         }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        complete();
       }
     });
+
+    const COMMANDS = ['help', 'ls', 'cat', 'cd', 'goto', 'whoami', 'clear', 'refresh', 'reboot', 'scanlines', 'sound', 'pgup', 'pgdn', 'top', 'bottom', 'projects', 'cli-tools', 'contributions'];
+    const ARGS: Record<string, string[]> = {
+      cd: ['projects', 'cli-tools', 'contributions', '~'],
+      goto: ['projects', 'cli-tools', 'contributions', '~'],
+      cat: ['about.md', 'projects'],
+    };
+
+    function complete() {
+      const parts = input!.value.trimStart().split(/\s+/);
+      const partial = parts[parts.length - 1];
+      const head = parts.slice(0, -1);
+      const pool = head.length === 0 ? COMMANDS : ARGS[head[0].toLowerCase()] || [];
+      const hits = pool.filter((n) => n.startsWith(partial));
+      if (hits.length === 0) return;
+      const prefix = hits.reduce((p, c) => {
+        let i = 0;
+        while (i < p.length && i < c.length && p[i] === c[i]) i++;
+        return p.slice(0, i);
+      });
+      const base = head.length ? head.join(' ') + ' ' : '';
+      if (hits.length === 1) {
+        input!.value = base + hits[0] + ' ';
+      } else {
+        input!.value = base + prefix;
+        setOutput(hits.join('  '));
+      }
+    }
 
     if (refreshBtn) {
       refreshBtn.onclick = () => triggerScreenRefresh();
@@ -356,7 +385,7 @@
       });
     });
 
-    // Global DOS Function Keys interceptor
+    // Global Function Keys interceptor
     document.addEventListener('keydown', (e) => {
       if (e.key === 'F5') {
         e.preventDefault();

@@ -1,5 +1,5 @@
 ---
-// BiosBootSequence.astro - 80s/90s BIOS POST & Drive A: Boot Sequence
+// BiosBootSequence.astro - BIOS POST & Linux Boot Sequence
 ---
 
 <div
@@ -34,7 +34,7 @@
 │  *      *     *      *  │  EPA POLLUTION
 │   *      *****      *   │  PREVENTER
 │    *               *    │
-│      *************      │  EL-J OS 2.0
+│      *************      │  EL-J LINUX
 └─────────────────────────┘</pre>
       </div>
     </div>
@@ -57,24 +57,24 @@
         Detecting Primary Slave    ... NONE
       </div>
       <div id="line-floppy" class="text-[#38bdf8] opacity-0 transition-opacity duration-75">
-        Detecting Floppy Drive A:  ... 1.44M, 3.5 in. [READY]
+        Detecting USB Boot Device  ... /dev/sda [READY]
       </div>
 
-      <!-- Floppy A: OS Boot Sequence -->
+      <!-- Linux boot sequence -->
       <div id="line-boot-a" class="text-[#22c55e] font-bold pt-2 opacity-0 transition-opacity duration-75">
-        Searching for Boot Record from Floppy Drive A: ... OK
+        GRUB 2.12 loading ... OK
       </div>
       <div id="line-load-os" class="text-[#e4e4e7] opacity-0 transition-opacity duration-75">
-        Loading EL-J ARCH-DOS 2.0 (COMMAND.COM) ...
+        Loading Linux 6.12.9-arch1-1 ... initramfs ...
       </div>
       <div id="line-autoexec" class="text-[#a1a1aa] opacity-0 transition-opacity duration-75 space-y-0.5">
-        <div>A:\&gt; C:\DOS\HIMEM.SYS /TESTMEM:OFF</div>
-        <div>A:\&gt; C:\DRIVERS\MOUSE.COM (Ver 8.20 Installed)</div>
-        <div>A:\&gt; C:\DRIVERS\SOUNDBLASTER16.SYS /A220 /I5 /D1 /H5</div>
-        <div>A:\&gt; AUTOEXEC.BAT -&gt; START_WORKSTATION.EXE</div>
+        <div>[  OK  ] Mounted /dev/nvme0n1p2 on /</div>
+        <div>[  OK  ] Started udev Kernel Device Manager</div>
+        <div>[  OK  ] Started ALSA Sound Card State</div>
+        <div>[  OK  ] Reached target Multi-User System (/etc/rc.local)</div>
       </div>
       <div id="line-workstation" class="text-[#fbbf24] font-bold pt-1 opacity-0 transition-opacity duration-75">
-        Starting Cyber-Tactile CRT Workstation Interface...
+        Starting workstation: /usr/local/bin/start-workstation.sh
       </div>
     </div>
   </div>
@@ -187,6 +187,7 @@
         isFinished = true;
         timeouts.forEach(clearTimeout);
         sessionStorage.setItem('crt-booted', 'true');
+        window.dispatchEvent(new Event('crt-boot-complete'));
 
         // CRT power flare exit
         overlay.classList.add('crt-power-flare');
