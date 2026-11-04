@@ -24,6 +24,7 @@ test.describe('CRT Workstation Landing page', () => {
   });
 
   test('renders the HUD header identity and status', async ({ page }) => {
+    await page.goto('/projects')
     const header = page.locator('header')
     await expect(header).toBeVisible()
     await expect(header).toContainText('EL-J BIOS v2.084')
@@ -31,6 +32,7 @@ test.describe('CRT Workstation Landing page', () => {
   })
 
   test('renders main navigation tabs with active about tab', async ({ page }) => {
+    await page.goto('/projects')
     const nav = page.locator('nav[aria-label="Main Navigation"]')
     await expect(nav).toBeVisible()
     await expect(nav.locator('a[data-tab="about"]')).toBeVisible()
@@ -76,6 +78,7 @@ test.describe('CRT Workstation Landing page', () => {
   })
 
   test('bottom CLI supports tab completion', async ({ page }) => {
+    await page.goto('/projects')
     const input = page.locator('#bottom-cli-input')
     await input.fill('cd pro')
     await input.press('Tab')
@@ -88,6 +91,7 @@ test.describe('CRT Workstation Landing page', () => {
   })
 
   test('scanlines toggle switch toggles state and updates scanlines overlay opacity', async ({ page }) => {
+    await page.goto('/projects')
     const scanlinesBtn = page.locator('#btn-toggle-scanlines')
     const scanlinesLayer = page.locator('#crt-scanlines-layer')
     await expect(scanlinesBtn).toBeVisible()
@@ -121,12 +125,14 @@ test.describe('CRT Workstation Landing page', () => {
   })
 
   test('navigation to projects page works', async ({ page }) => {
-    await page.click('a[data-tab="projects"]')
-    await expect(page).toHaveURL(/\/projects/)
+    await page.goto('/projects')
     await expect(page.locator('h2')).toContainText('[02_PROJECTS]')
+    await page.click('a[data-tab="about"]')
+    await expect(page.locator('#home')).toBeVisible()
   })
 
   test('bezel live date and time clock is displayed and updates', async ({ page }) => {
+    await page.goto('/projects')
     const dateStamp = page.locator('#bezel-date-stamp')
     await expect(dateStamp).toBeVisible()
 
@@ -136,6 +142,7 @@ test.describe('CRT Workstation Landing page', () => {
   })
 
   test('persistent bottom CLI is always docked at bottom and handles refresh command', async ({ page }) => {
+    await page.goto('/projects')
     const bottomCli = page.locator('#persistent-bottom-cli')
     await expect(bottomCli).toBeVisible()
 
@@ -239,7 +246,7 @@ test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
     await page.addInitScript(() => {
       sessionStorage.setItem('crt-booted', 'true')
     })
-    await page.goto('/')
+    await page.goto('/projects')
 
     const terminalInput = page.locator('#bottom-cli-input')
     await expect(terminalInput).toBeVisible()

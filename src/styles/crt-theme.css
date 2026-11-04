@@ -472,8 +472,12 @@ html, body {
   }
 }
 
-/* Text mode: the landing page becomes a bare full-screen shell */
-html[data-home-mode="text"] header,
-html[data-home-mode="text"] .chrome-bottom {
+/* Landing (GUI and text mode): bare full-bleed screen, no header/bottom chrome */
+html[data-home-mode] header,
+html[data-home-mode] .chrome-bottom {
   display: none;
+}
+html[data-home-mode] .crt-screen-content {
+  max-width: none;
+  padding: 12px 16px;
 }
