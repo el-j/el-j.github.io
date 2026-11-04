@@ -200,15 +200,6 @@ test.describe('80s/90s BIOS POST & Floppy Boot Sequence', () => {
     await expect(page.locator('.crt-curved-rim')).toBeAttached()
     await expect(page.locator('.crt-scanlines-layer')).toBeAttached()
 
-    // Verify BIOS overlay is positioned beneath the CRT curved glass layers (z-[50] vs z-88/89/90/91)
-    const zIndex = await overlay.evaluate((el) => getComputedStyle(el).zIndex)
-    expect(Number(zIndex)).toBe(50)
-
-    // Verify CRT curved tube optics are present over it
-    await expect(page.locator('.crt-curved-tube-vignette')).toBeAttached()
-    await expect(page.locator('.crt-curved-rim')).toBeAttached()
-    await expect(page.locator('.crt-scanlines-layer')).toBeAttached()
-
     // Click skip button
     const skipBtn = page.locator('#btn-skip-boot')
     await expect(skipBtn).toBeVisible()

@@ -154,6 +154,8 @@
 
     function triggerBootSequence() {
       if (!overlay) return;
+      // Cancel any run still in flight so only one sequence can emit crt-boot-complete
+      if (window.__biosCancel) window.__biosCancel();
       overlay.classList.remove('hidden', 'crt-power-flare');
       overlay.style.opacity = '1';
       overlay.style.display = 'flex';
@@ -174,6 +176,11 @@
 
       var isFinished = false;
       var timeouts = [];
+
+      window.__biosCancel = function() {
+        isFinished = true;
+        timeouts.forEach(clearTimeout);
+      };
 
       function schedule(fn, ms) {
         var id = window.setTimeout(function() {
