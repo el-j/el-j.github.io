@@ -1,11 +1,38 @@
 ---
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { getCollection } from 'astro:content';
+import { itemList, breadcrumbs, PERSON_ID } from '@/utils/seo';
 
 const tools = await getCollection('cli_tools');
+const jsonLd = [
+  itemList('CLI Tools & Packages', '/cli-tools/', tools.map((t) => ({
+    '@type': 'SoftwareApplication',
+    name: t.data.name,
+    description: t.data.summary,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Linux, macOS',
+    programmingLanguage: t.data.language,
+    keywords: t.data.tags.join(', '),
+    author: { '@id': PERSON_ID },
+    ...(t.data.githubUrl ? { codeRepository: t.data.githubUrl, url: t.data.githubUrl } : {}),
+    ...(t.data.npmUrl ? { sameAs: t.data.npmUrl } : {}),
+  }))),
+  breadcrumbs([{ name: 'Home', path: '/' }, { name: 'CLI tools', path: '/cli-tools/' }]),
+];
 ---
 
-<WorkstationLayout activeTab="cli_tools" title="CLI Tools & Packages // el-j">
+<WorkstationLayout
+  activeTab="cli_tools"
+  title="CLI Tools & npm Packages – Fabian Althaus (el-j)"
+  description="Open-source command-line tools, SDKs and npm packages by Fabian Althaus (el-j): install commands, languages and source links."
+  jsonLd={jsonLd}
+>
+  <Fragment slot="seo">
+    <p>Open-source CLI tools and packages by Fabian Althaus (el-j).</p>
+    <ul>
+      {tools.map((t) => <li>{t.data.name}: {t.data.summary} Install: {t.data.installCmd}</li>)}
+    </ul>
+  </Fragment>
   <div class="space-y-3 pb-8">
     <!-- Header banner with sticky navigation & page scroll controls -->
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">

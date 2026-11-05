@@ -1,6 +1,7 @@
 ---
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { getCollection } from 'astro:content';
+import { person, website, breadcrumbs } from '@/utils/seo';
 
 const projects = await getCollection('projects');
 const tools = await getCollection('cli_tools');
@@ -18,7 +19,15 @@ const ttyData = {
 };
 ---
 
-<WorkstationLayout activeTab="about">
+<WorkstationLayout
+  activeTab="about"
+  jsonLd={[{ '@context': 'https://schema.org', '@graph': [person, website] }, breadcrumbs([{ name: 'Home', path: '/' }])]}
+>
+  <Fragment slot="seo">
+    <p>Fabian Althaus (el-j) is a fullstack engineer and UX/UI designer. He builds web applications, design systems, developer tooling, embedded hardware prototypes and multi-agent AI tools, and contributes to open-source projects.</p>
+    <p>Services: fullstack web development (TypeScript, Vue, Astro), UX/UI design and design systems, Linux and command-line tooling, embedded and hardware prototyping, AI agent tooling.</p>
+    <p>Find work in <a href="/projects/">projects</a>, <a href="/cli-tools/">CLI tools</a> and <a href="/contributions/">open-source contributions</a>. Portfolio: <a href="https://fabianalthaus.de">fabianalthaus.de</a>. Code: <a href="https://github.com/el-j">github.com/el-j</a>.</p>
+  </Fragment>
   <div id="home" data-mode="gui" class="h-full">
     <!-- GUI mode: game-menu style HUD -->
     <section id="gui-hud" class="h-full flex flex-col items-center justify-center gap-5 py-2 font-mono" aria-label="Main menu">

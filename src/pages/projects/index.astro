@@ -1,11 +1,36 @@
 ---
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { getCollection } from 'astro:content';
+import { itemList, breadcrumbs, PERSON_ID } from '@/utils/seo';
 
 const projects = await getCollection('projects');
+const jsonLd = [
+  itemList('Projects & Case Studies', '/projects/', projects.map((p) => ({
+    '@type': 'CreativeWork',
+    name: p.data.title,
+    description: p.data.description,
+    dateCreated: p.data.year,
+    keywords: p.data.stack.join(', '),
+    author: { '@id': PERSON_ID },
+    ...(p.data.demoUrl ? { url: p.data.demoUrl } : {}),
+    ...(p.data.githubUrl ? { sameAs: p.data.githubUrl } : {}),
+  }))),
+  breadcrumbs([{ name: 'Home', path: '/' }, { name: 'Projects', path: '/projects/' }]),
+];
 ---
 
-<WorkstationLayout activeTab="projects" title="Projects & Case Studies // el-j">
+<WorkstationLayout
+  activeTab="projects"
+  title="Projects & Case Studies – Fabian Althaus (el-j)"
+  description="Case studies by Fabian Althaus: fullstack web apps, UX/UI and design systems, embedded hardware and open-source tooling, with stack, role and architecture notes."
+  jsonLd={jsonLd}
+>
+  <Fragment slot="seo">
+    <p>Selected projects and case studies by Fabian Althaus (el-j), a fullstack and UX/UI engineer. {projects.length} entries with role, year, tech stack and architecture highlights.</p>
+    <ul>
+      {projects.map((p) => <li>{p.data.title}: {p.data.description} (Stack: {p.data.stack.join(', ')})</li>)}
+    </ul>
+  </Fragment>
   <div class="space-y-3 pb-8">
     <!-- Header banner with sticky navigation & page scroll controls -->
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">

@@ -1,0 +1,35 @@
+# Fabian Althaus (el-j)
+
+> Fullstack engineer and UX/UI designer. Builds web applications, design systems, developer tooling, embedded hardware prototypes and multi-agent AI tools, and contributes to open-source projects. This site is a terminal-style portfolio; all content is also available as plain HTML.
+
+- Website: https://el-j.github.io/
+- Portfolio: https://fabianalthaus.de
+- GitHub: https://github.com/el-j
+
+## Sections
+
+- [Projects](https://el-j.github.io/projects/): case studies with role, stack and architecture notes
+- [CLI tools](https://el-j.github.io/cli-tools/): open-source command-line tools and npm packages
+- [Contributions](https://el-j.github.io/contributions/): upstream open-source pull requests
+
+## Projects
+
+- DomeDrum: Open Source Hardware MIDI Controller: Custom physical electronic musical instrument and MIDI drum controller with pressure-sensitive capacitive sensor domes. (https://fabianalthaus.de/en/domedrum/)
+- E-CUBE: Gel Electrophoresis Laboratory Instrument: Scientific biotechnology laboratory device casing and analogue/digital interface designed for DNA analysis and education. (https://fabianalthaus.de/en/e-cube/)
+- Enginsight: SIEM & Infrastructure Security Platform: Modular Single Page Application architecture and enterprise interface redesign for cybersecurity SIEM & autonomous penetration testing. (https://fabianalthaus.de/en/enginsight/)
+- Fritzing: Hardware Made Simple: Interaction redesign for the globally recognized open-source electronics EDA suite, Fritzing 2.0 UX concept, and Parts Editor. (https://fabianalthaus.de/en/fritzing/)
+- Google Sheet Translations (@el-j/google-sheet-translations): Open Source i18n synchronization engine and GitHub Action linking Google Sheets directly with static site codebases. (https://fabianalthaus.de/en/google-sheet-translations/)
+- KTM Motohall: Exhibition Sensor Monitors & Installations: Interactive sensor monitoring stations and visitor engagement displays for the KTM Motohall museum in Mattighofen. (https://fabianalthaus.de/en/ktm-motohall/)
+- REX-AT: Industrial Machinery Web-UIs & Shopfloor Telemetry: Hardware Web-UIs for real industry machines, production line time-tracking, and high-reliability machine controls. (https://fabianalthaus.de/en/rex-at/)
+- RunZero: Dual-Engine Autoscaling Runner Fleet: Autoscaling self-hosted GitHub Actions runner fleet with intelligent hybrid auto-routing between Docker containers and OrbStack VMs. (https://fabianalthaus.de/en/run-zero/)
+
+## CLI tools
+
+- agency-agents-sdk: TypeScript SDK, CLI, and GitHub Action for loading Agency Agents personalities programmatically and building multi-agent swarm prompts. Install: `npm install -g agency-agents-sdk` https://github.com/el-j/agency-agents-sdk
+- direct-connector: Zero-cloud-dependency cross-platform P2P tunneling utility with headless CLI binary and Wails desktop GUI for port sharing via SSH & WebRTC. Install: `go install github.com/el-j/direct-connector@latest` https://github.com/el-j/direct-connector
+- google-sheet-translations: Automated bidirectional localization sync using Google Spreadsheets as source with formula-driven translation and Next.js / Astro build integration. Install: `npm install @el-j/google-sheet-translations` https://github.com/el-j/google-sheet-translations
+- magic-agent-helix: Polyglot project analysis engine and CLI that inspects repositories and generates granular, path-specific AI agent instructions. Install: `npm install -g @el-j/magic-agent-helix` https://github.com/el-j/magic-agent-helix
+- nexus-orchestrator: Global AI task orchestrator and Model Context Protocol (MCP) server routing coding tasks to local LLMs and cloud APIs with project memory. Install: `go install github.com/el-j/nexus-orchestrator/cmd/nexus@latest` https://github.com/el-j/nexus-orchestrator
+- nix-config-collector: Scans macOS workstations (Homebrew, App Store, dotfiles, system preferences) and generates declarative nix-darwin & home-manager setups. Install: `curl -sSL https://raw.githubusercontent.com/el-j/nix-config-collector/main/install.sh | bash` https://github.com/el-j/nix-config-collector
+- run-zero: Zero-cloud-cost autoscaling local GitHub Actions runner fleet with Dual-Engine execution across Docker containers and native Linux VMs. Install: `go install github.com/el-j/run-zero@latest` https://github.com/el-j/run-zero
+- ts2go: TypeScript-to-Go transpiler that analyzes TypeScript AST definitions and compiles them into idiomatic, efficient Go code. Install: `go install github.com/el-j/ts2go/go/cmd/ts2go@latest` https://github.com/el-j/ts2go
