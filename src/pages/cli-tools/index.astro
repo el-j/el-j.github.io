@@ -2,6 +2,8 @@
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { getCollection } from 'astro:content';
 import { itemList, breadcrumbs, PERSON_ID } from '@/utils/seo';
+import AsciiArt from '@/components/AsciiArt.astro';
+import { BANNERS } from '@/data/ascii';
 
 const tools = await getCollection('cli_tools');
 const jsonLd = [
@@ -34,6 +36,7 @@ const jsonLd = [
     </ul>
   </Fragment>
   <div class="space-y-3 pb-8">
+    <AsciiArt art={BANNERS.cliTools} class="text-[#fbbf24] text-[13px] sm:text-[16px]" />
     <!-- Header banner with sticky navigation & page scroll controls -->
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">
       <div>

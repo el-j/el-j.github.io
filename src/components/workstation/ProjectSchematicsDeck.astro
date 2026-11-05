@@ -132,8 +132,8 @@ const initialProject = projects[0];
       <div class="flex items-center gap-3 text-[11px]" id="deck-links">
         <a
           href={initialProject?.data.demoUrl || '/projects'}
-          target="_blank"
-          rel="noopener noreferrer"
+          target={initialProject?.data.demoUrl ? '_blank' : undefined}
+          rel={initialProject?.data.demoUrl ? 'noopener noreferrer' : undefined}
           id="deck-live-link"
           class="text-[var(--crt-phosphor-bright)] hover:underline font-bold flex items-center gap-1"
         >
@@ -230,9 +230,13 @@ const initialProject = projects[0];
           const url = tab.getAttribute('data-url');
           if (url) {
             liveLink.href = url;
+            liveLink.target = '_blank';
+            liveLink.rel = 'noopener noreferrer';
             liveLink.style.display = 'inline-flex';
           } else {
             liveLink.href = '/projects';
+            liveLink.removeAttribute('target');
+            liveLink.removeAttribute('rel');
           }
         }
 

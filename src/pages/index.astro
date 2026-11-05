@@ -2,20 +2,23 @@
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { getCollection } from 'astro:content';
 import { person, website, breadcrumbs } from '@/utils/seo';
+import AsciiArt from '@/components/AsciiArt.astro';
+import { BANNERS, ICONS, TUX } from '@/data/ascii';
 
 const projects = await getCollection('projects');
 const tools = await getCollection('cli_tools');
 
 const tiles = [
-  { label: 'Projects', href: '/projects', stat: String(projects.length), unit: 'case studies', help: 'CI runner fleets, industrial UIs, open-source hardware tools.' },
-  { label: 'CLI Tools', href: '/cli-tools', stat: String(tools.length), unit: 'packages', help: 'Agent SDKs, i18n sync, tunnels, transpilers.' },
-  { label: 'Contributions', href: '/contributions', stat: 'OSS', unit: 'upstream', help: 'Fixes and features sent to other open-source projects.' },
-  { label: 'Contact', href: 'mailto:info@fabianalthaus.de', stat: '@', unit: 'say hello', help: 'info@fabianalthaus.de' },
+  { icon: ICONS.projects, label: 'Projects', href: '/projects', stat: String(projects.length), unit: 'case studies', help: 'CI runner fleets, industrial UIs, open-source hardware tools.' },
+  { icon: ICONS.cliTools, label: 'CLI Tools', href: '/cli-tools', stat: String(tools.length), unit: 'packages', help: 'Agent SDKs, i18n sync, tunnels, transpilers.' },
+  { icon: ICONS.contributions, label: 'Contributions', href: '/contributions', stat: 'OSS', unit: 'upstream', help: 'Fixes and features sent to other open-source projects.' },
+  { icon: ICONS.contact, label: 'Contact', href: 'mailto:info@fabianalthaus.de', stat: '@', unit: 'say hello', help: 'info@fabianalthaus.de' },
 ];
 
 const ttyData = {
   projects: projects.map((p) => p.id),
   tools: tools.map((t) => t.id),
+  tux: TUX,
 };
 ---
 
@@ -26,7 +29,7 @@ const ttyData = {
   <Fragment slot="seo">
     <p>Fabian Althaus (el-j) is a fullstack engineer and UX/UI designer. He builds web applications, design systems, developer tooling, embedded hardware prototypes and multi-agent AI tools, and contributes to open-source projects.</p>
     <p>Services: fullstack web development (TypeScript, Vue, Astro), UX/UI design and design systems, Linux and command-line tooling, embedded and hardware prototyping, AI agent tooling.</p>
-    <p>Find work in <a href="/projects/">projects</a>, <a href="/cli-tools/">CLI tools</a> and <a href="/contributions/">open-source contributions</a>. Portfolio: <a href="https://fabianalthaus.de">fabianalthaus.de</a>. Code: <a href="https://github.com/el-j">github.com/el-j</a>.</p>
+    <p>Find work in <a href="/projects/">projects</a>, <a href="/cli-tools/">CLI tools</a> and <a href="/contributions/">open-source contributions</a>. Portfolio: <a href="https://fabianalthaus.de" target="_blank" rel="noopener noreferrer">fabianalthaus.de</a>. Code: <a href="https://github.com/el-j" target="_blank" rel="noopener noreferrer">github.com/el-j</a>.</p>
   </Fragment>
   <div id="home" data-mode="gui" class="h-full">
     <!-- GUI mode: game-menu style HUD -->
@@ -37,20 +40,30 @@ const ttyData = {
       </div>
 
       <div class="text-center select-none">
-        <div class="hud-title text-5xl sm:text-7xl font-bold text-[#fbbf24]">EL-J</div>
+        <span class="sr-only">EL-J</span>
+        <AsciiArt art={BANNERS.logo} class="hud-title inline-block text-left text-[#fbbf24] text-[15px] sm:text-[22px]" />
         <p class="m-0 mt-2 text-xs sm:text-sm text-[#d4d4d8] tracking-wide">Fabian Althaus</p>
         <p class="m-0 text-[10px] sm:text-xs text-[#71717a] tracking-[0.2em] uppercase">Software engineer &middot; Designer &middot; Consultant</p>
       </div>
 
       <nav class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Sections">
         {tiles.map((t) => (
-          <a href={t.href} data-help={t.help} class="hud-tile hud-item flex items-center justify-between gap-3 p-3 sm:p-4 text-[#d4d4d8] focus:outline-none">
-            <span>
-              <span class="hud-cursor inline-block w-4 text-[#fbbf24]" aria-hidden="true"></span>
-              <span class="text-sm sm:text-base font-bold uppercase tracking-wider">{t.label}</span>
-              <span class="block text-[10px] sm:text-xs text-[#71717a] mt-1 pl-4">{t.unit}</span>
+          <a
+            href={t.href}
+            data-help={t.help}
+            target={t.href.startsWith('mailto:') ? '_blank' : undefined}
+            rel={t.href.startsWith('mailto:') ? 'noopener noreferrer' : undefined}
+            class="hud-tile hud-item flex items-center justify-between gap-3 p-3 sm:p-4 text-[#d4d4d8] focus:outline-none"
+          >
+            <span class="flex items-center gap-3">
+              <AsciiArt art={t.icon} class="hidden sm:block w-[9ch] text-[#71717a] text-[15px]" />
+              <span>
+                <span class="hud-cursor inline-block w-4 text-[#fbbf24]" aria-hidden="true"></span>
+                <span class="text-sm sm:text-base uppercase tracking-wider">{t.label}</span>
+                <span class="block text-[10px] sm:text-xs text-[#71717a] mt-1 pl-4">{t.unit}</span>
+              </span>
             </span>
-            <span class="text-2xl sm:text-3xl font-bold text-[#38bdf8]">{t.stat}</span>
+            <span class="font-pixel-display text-lg sm:text-2xl text-[#38bdf8]">{t.stat}</span>
           </a>
         ))}
       </nav>
@@ -151,23 +164,60 @@ const ttyData = {
     if (help) help.textContent = el?.dataset.help || '';
   }
 
-  function print(text: string) {
+  // Turns URLs and e-mail addresses in already-escaped text into links that open in a new tab
+  function linkify(html: string) {
+    return html
+      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#38bdf8] underline">$1</a>')
+      .replace(/(^|[\s>])([\w.+-]+@[\w-]+\.[\w.-]+)/g, '$1<a href="mailto:$2" target="_blank" rel="noopener noreferrer" class="text-[#38bdf8] underline">$2</a>');
+  }
+
+  function print(text: string, className = '') {
     const out = document.getElementById('tty-output');
     if (!out) return;
     const pre = document.createElement('pre');
-    pre.className = 'm-0 whitespace-pre-wrap font-mono';
-    pre.innerHTML = esc(text) || '&nbsp;';
+    pre.className = `m-0 whitespace-pre-wrap font-mono ${className}`.trim();
+    pre.innerHTML = linkify(esc(text)) || '&nbsp;';
     out.appendChild(pre);
     const sc = document.getElementById('tty-scroll');
     if (sc) sc.scrollTop = sc.scrollHeight;
   }
 
+  function neofetch() {
+    const data = ttyData();
+    const tux = String(data.tux || '').split('\n');
+    const info = [
+      'el-j@station',
+      '------------',
+      'OS: Arch Linux x86_64',
+      'Kernel: 6.12.9-arch1-1',
+      'Shell: bash',
+      'Role: software engineer, designer, consultant',
+      `Projects: ${(data.projects || []).length} case studies`,
+      `Tools: ${(data.tools || []).length} packages`,
+      'Web: https://fabianalthaus.de',
+      'GitHub: https://github.com/el-j',
+      'Mail: info@fabianalthaus.de',
+    ];
+    const width = Math.max(...tux.map((l) => l.length)) + 4;
+    const rows = Math.max(tux.length, info.length);
+    const out = document.getElementById('tty-output');
+    if (!out) return;
+    const pre = document.createElement('pre');
+    pre.className = 'm-0 whitespace-pre font-mono tty-pixel';
+    pre.innerHTML = Array.from({ length: rows }, (_, i) => {
+      const art = (tux[i] || '').padEnd(width);
+      return `<span style="color:#fbbf24">${esc(art)}</span>${linkify(esc(info[i] || ''))}`;
+    }).join('\n');
+    out.appendChild(pre);
+    print('');
+  }
+
   function printBanner() {
     const out = document.getElementById('tty-output');
     if (!out || out.childElementCount) return;
-    print('Debian GNU/Linux 12 el-j-station tty1\n');
-    print(`Last login: ${new Date().toDateString()} on tty1`);
-    print('Fabian Althaus - software engineer, designer, consultant.');
+    print('Arch Linux 6.12.9-arch1-1 (tty1)\n');
+    print(`Last login: ${new Date().toDateString()} on tty1\n`);
+    neofetch();
     print("Type 'help' for commands, 'startx' for the graphical interface.\n");
   }
 
@@ -199,7 +249,7 @@ const ttyData = {
 
   const FILES = ['about.md', 'contact.txt', 'projects/', 'cli-tools/', 'contributions/'];
   const DIRS: Record<string, string> = { projects: '/projects', 'cli-tools': '/cli-tools', cli_tools: '/cli-tools', contributions: '/contributions' };
-  const COMMANDS = ['help', 'ls', 'cat', 'cd', 'pwd', 'whoami', 'date', 'uname', 'uptime', 'clear', 'startx', 'reboot'];
+  const COMMANDS = ['help', 'ls', 'cat', 'cd', 'pwd', 'whoami', 'date', 'uname', 'uptime', 'clear', 'neofetch', 'startx', 'reboot'];
   const ARGS: Record<string, string[]> = {
     cd: ['projects', 'cli-tools', 'contributions'],
     ls: ['projects', 'cli-tools', 'contributions'],
@@ -213,6 +263,7 @@ const ttyData = {
   whoami       who is this
   uname -a     system info
   date         current date
+  neofetch     show system info
   clear        clear the screen
   startx       start the graphical interface
   reboot       restart the boot sequence
@@ -258,6 +309,8 @@ Tab completes commands and paths.`;
         return print(args[0] === '-a' ? 'Linux el-j-station 6.12.9-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' : 'Linux');
       case 'uptime':
         return print(` ${new Date().toTimeString().slice(0, 8)} up 11534 days,  1 user,  load average: 0.00, 0.01, 0.05`);
+      case 'neofetch':
+        return neofetch();
       case 'startx':
         return setMode('gui');
       case 'reboot': {

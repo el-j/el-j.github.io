@@ -1,0 +1,19 @@
+---
+import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
+import AsciiArt from '@/components/AsciiArt.astro';
+import { BANNERS } from '@/data/ascii';
+---
+
+<WorkstationLayout activeTab="" title="404 – Page not found | Fabian Althaus (el-j)" description="This page does not exist." noindex>
+  <div class="pt-6 space-y-4 text-xs sm:text-sm">
+    <AsciiArt art={BANNERS.notFound} class="text-[#fbbf24] text-[16px] sm:text-[22px]" />
+    <h2 class="m-0 text-[#d4d4d8] font-normal">bash: cd: no such file or directory</h2>
+    <p class="m-0 text-[#a1a1aa]">The page you asked for is not on this machine.</p>
+    <nav class="flex flex-wrap gap-x-5 gap-y-1 text-[#38bdf8]" aria-label="Recovery links">
+      <a class="hover:text-[#fbbf24]" href="/">cd ~</a>
+      <a class="hover:text-[#fbbf24]" href="/projects/">cd projects</a>
+      <a class="hover:text-[#fbbf24]" href="/cli-tools/">cd cli-tools</a>
+      <a class="hover:text-[#fbbf24]" href="/contributions/">cd contributions</a>
+    </nav>
+  </div>
+</WorkstationLayout>

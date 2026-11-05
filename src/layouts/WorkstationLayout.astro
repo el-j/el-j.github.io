@@ -14,6 +14,7 @@ interface Props {
   description?: string;
   activeTab?: string;
   ogImage?: string;
+  noindex?: boolean;
   jsonLd?: Record<string, unknown>[];
 }
 
@@ -22,6 +23,7 @@ const {
   description = "Cyber-tactile engineering workstation: fullstack architecture, design tokens, compiler ASTs, and terminal ergonomics.",
   activeTab = "about",
   ogImage = "/og-image.png",
+  noindex = false,
   jsonLd = []
 } = Astro.props;
 
@@ -41,7 +43,7 @@ const ogImageUrl = new URL(ogImage, SITE).href;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Fabian Althaus" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable summary" />
@@ -75,7 +77,7 @@ const ogImageUrl = new URL(ogImage, SITE).href;
       <slot name="seo" />
       <nav aria-label="Site pages">
         <a href="/">Home</a> · <a href="/projects/">Projects</a> · <a href="/cli-tools/">CLI tools</a> · <a href="/contributions/">Open-source contributions</a> ·
-        <a href="https://github.com/el-j">GitHub: el-j</a>
+        <a href="https://github.com/el-j" target="_blank" rel="noopener noreferrer">GitHub: el-j</a>
       </nav>
     </div>
     <!-- CRT Curved Glass Optics Layers (Fixed Overlays) -->
@@ -244,6 +246,28 @@ const ogImageUrl = new URL(ogImage, SITE).href;
         setupWorkstationScroller();
         triggerLineByLineDraw();
       });
+    </script>
+
+    <!-- External and mailto links always open in a new tab so visitors never leave the workstation -->
+    <script>
+      const isOutbound = (a: HTMLAnchorElement) =>
+        /^(mailto|tel):/i.test(a.getAttribute('href') || '') ||
+        (/^https?:$/.test(a.protocol) && a.origin !== window.location.origin);
+
+      const markOutbound = (a: HTMLAnchorElement) => {
+        if (!isOutbound(a)) return;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      };
+
+      document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(markOutbound);
+      });
+      // Catches links created or re-pointed at runtime (e.g. the schematics deck)
+      document.addEventListener('click', (e) => {
+        const a = (e.target as Element | null)?.closest?.('a[href]');
+        if (a) markOutbound(a as HTMLAnchorElement);
+      }, true);
     </script>
   </body>
 </html>

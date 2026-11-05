@@ -1,0 +1,9 @@
+---
+interface Props {
+  art: string;
+  class?: string;
+}
+const { art, class: className = '' } = Astro.props;
+---
+
+<pre class:list={['ascii-art', className]} aria-hidden="true">{art}</pre>

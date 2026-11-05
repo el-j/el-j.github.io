@@ -2,6 +2,8 @@
 import WorkstationLayout from '@/layouts/WorkstationLayout.astro';
 import { CONTRIBUTED_PROJECTS } from '@/data/contributions';
 import { itemList, breadcrumbs, PERSON_ID } from '@/utils/seo';
+import AsciiArt from '@/components/AsciiArt.astro';
+import { BANNERS } from '@/data/ascii';
 
 const totalPrs = CONTRIBUTED_PROJECTS.reduce((sum, p) => sum + p.totalPrs, 0);
 const mergedPrs = CONTRIBUTED_PROJECTS.reduce((sum, p) => sum + p.mergedPrs, 0);
@@ -29,10 +31,11 @@ const jsonLd = [
   <Fragment slot="seo">
     <p>Open-source contributions by Fabian Althaus (el-j): {totalPrs} pull requests, {mergedPrs} merged, {openPrs} open.</p>
     <ul>
-      {CONTRIBUTED_PROJECTS.map((p) => <li>{p.org}/{p.name}: {p.summary} (<a href={p.url}>{p.url}</a>)</li>)}
+      {CONTRIBUTED_PROJECTS.map((p) => <li>{p.org}/{p.name}: {p.summary} (<a href={p.url} target="_blank" rel="noopener noreferrer">{p.url}</a>)</li>)}
     </ul>
   </Fragment>
   <div class="space-y-3 pb-8">
+    <AsciiArt art={BANNERS.contributions} class="text-[#fbbf24] text-[13px] sm:text-[16px]" />
     <!-- Header banner with sticky navigation & page scroll controls -->
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#3f3f46] pb-1.5 sticky top-0 bg-black/95 z-10 py-1">
       <div>
